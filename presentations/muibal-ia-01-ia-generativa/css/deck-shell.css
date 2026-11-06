@@ -1,0 +1,594 @@
+/* ============================================================================
+   zenital deck — canonical shell CSS
+   ----------------------------------------------------------------------------
+   Paste this verbatim into the <style> block at the top of every deck.
+   It defines:
+     - the design tokens (:root)
+     - the stage / deck / slide / .dark / .black layout primitives
+     - cover slide chrome (.cover-logo, .cover-eyebrow, .cover-title, etc.)
+     - typography utilities (.label, h1.title, h2.section-title, .body-text)
+     - reveal helpers (.reveal, .reveal-fade, .reveal-scale)
+     - brand chrome (.watermark, .ornament, .chrome-bottom)
+     - section progress rail (#section-rail — runtime-injected wayfinding)
+     - deck menu (#deck-menu — runtime-injected actions + key legend)
+     - HUD overlay (#hud, .hud-item)
+     - help-hint (#help-hint, legacy)
+     - @media print rules (one A4 landscape page per slide)
+
+   Per-slide / per-component CSS goes after this block.
+   Do NOT modify these values per deck — that's what creates drift across the
+   portfolio. If you genuinely need a new chrome behaviour, update this file
+   in the brand repo so every deck inherits the change.
+   ========================================================================== */
+
+:root {
+  --navy: #00117D;
+  --navy-80: #344097;
+  --navy-64: #5B66AB;
+  --navy-40: #999ECC;
+  --navy-16: #D7D9E9;
+  --navy-08: #EBEBF4;
+  --foam: #FEFDF7;
+  --amber: #FFC857;
+  --amber-soft: #F4B942;
+  --salmon: #D98A6A;
+  --green: #77B28C;
+  --plum: #A96BB0;
+  --red: #9A1B1B;
+  --text: #1A1F52;
+  /* Labels, captions, page meta and footers on light grounds. Same value as
+     navy-64 since October 2026: 5.24:1 on foam, passing AA for small text.
+     It was #7A82BB, 3.6:1. On navy, labels use amber or navy-40. */
+  --muted: #5B66AB;
+  /* The edge of anything you fill in, tick or click when the edge is its
+     only cue. 5.24:1 on foam, above the 3:1 of WCAG 1.4.11. Dividers stay
+     on navy-16. */
+  --control-border: var(--navy-64);
+  --black: #0A0A14;
+  /* Word titles of 32px or more (cover, h1.title, h2.section-title, the
+     manifesto, component titles). Literata's optical-size axis gives them
+     the display cut, which needs less weight than the text cut did. Numerals
+     keep their own weight. One value for every deck: change it here, never
+     per deck. See style-presentation.md, "Display weight". */
+  --display-weight: 400;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden;
+  background: #000;
+  font-family: 'Libre Franklin', system-ui, sans-serif; color: var(--text);
+}
+
+/* ============= STAGE + DECK ============= */
+#stage {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #000;
+}
+/* The deck box is the unit of measure for everything drawn on a slide: the
+   cqh and cqw below resolve against this box, not against the window, which
+   is what keeps a deck proportional in a window that is not 16:9. It goes
+   here and not on .slide because container units resolve against the CONTENT
+   box, and .slide carries the 5.5%/7% frame: measuring inside that frame
+   would shrink every size on the slide by a tenth. Size containment is safe
+   because the box never sizes itself from its content, it is told 16:9.
+   Switched off for print below, where the deck stacks pages and has no
+   height of its own; cq units with no container fall back to the viewport,
+   which on paper is the page, exactly what the old vh/vw did there. */
+#deck {
+  container-type: size;
+  position: relative;
+  width: 100vw; height: 56.25vw;
+  max-height: 100vh; max-width: 177.78vh;
+  background: var(--foam);
+  overflow: hidden;
+  box-shadow: 0 0 80px rgba(0,0,0,.6);
+  transition: background-color .45s ease;
+}
+/* Small-viewport mode (runtime-toggled): the deck renders at its 1280x720
+   reference canvas and is scaled to fit, so the clamp() px floors (tuned for
+   desktop windows) can never overflow a phone or a narrow window. The runtime
+   sets .fit-scale plus the --deck-scale factor; desktop behaviour above the
+   breakpoint is untouched. */
+#deck.fit-scale {
+  width: 1280px; height: 720px;
+  max-width: none; max-height: none;
+  flex: none;
+  transform: scale(var(--deck-scale, 1));
+  transform-origin: center center;
+}
+
+/* Tall-window mode (runtime-toggled). The kit itself no longer needs this:
+   its sizes are container units now, so they track the box whatever shape the
+   window is. It stays for everything the kit does not own, the per-deck
+   <style> blocks that size in vh, which still read the window. In a window
+   taller than 16:9 the box is shorter than the viewport and those rules
+   overshoot the slide; holding the canvas at 100vh and scaling it down to the
+   window width keeps 1vh equal to 1% of the slide for them too. The runtime
+   sets .fit-h plus the --deck-fit factor; .fit-scale (above) still owns the
+   small-viewport case, where the px floors in the clamps, not the units,
+   are what would overflow. Ordered after .fit-scale on purpose: only one of
+   the two is ever on. */
+#deck.fit-h {
+  width: 177.78vh; height: 100vh;
+  max-width: none; max-height: none;
+  flex: none;
+  transform: scale(var(--deck-fit, 1));
+  transform-origin: center center;
+}
+#deck.bg-dark  { background: var(--navy); }
+#deck.bg-black { background: var(--black); }
+
+/* ============= SLIDE PRIMITIVE ============= */
+.slide {
+  position: absolute; inset: 0;
+  opacity: 0; pointer-events: none;
+  transition: opacity .45s ease;
+  padding: 5.5% 7%;
+  display: flex; flex-direction: column;
+  background: var(--foam);
+}
+.slide.active { opacity: 1; pointer-events: auto; }
+.slide.dark   { background: var(--navy);  color: var(--foam); }
+.slide.black  { background: var(--black); color: var(--foam); }
+
+/* ============= BRAND CHROME ============= */
+.chrome-bottom {
+  position: absolute; left: 7%; right: 7%; bottom: 2.8%;
+  display: flex; justify-content: space-between; align-items: center;
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.75cqw, 12px);
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.slide.dark .chrome-bottom,
+.slide.black .chrome-bottom { color: var(--navy-40); }
+
+.watermark {
+  position: absolute; bottom: 2.5%; right: 2.6%;
+  width:  clamp(20px, 1.6cqw, 30px);
+  height: clamp(20px, 1.6cqw, 30px);
+  opacity: 0.28; pointer-events: none; z-index: 4;
+}
+.watermark img { width: 100%; height: 100%; display: block; }
+.slide.no-watermark .watermark { display: none; }
+
+.ornament {
+  position: absolute; bottom: -10%; right: -10%;
+  width: 42%; height: 42%;
+  opacity: 0.06; pointer-events: none; z-index: 0;
+}
+.ornament svg { width: 100%; height: 100%; }
+.slide.dark .ornament { opacity: 0.10; }
+.slide.black .ornament,
+.slide.no-ornament .ornament { display: none; }
+/* Ornament volume, set with data-ornament on the .slide. The signature is
+   worth keeping on most slides and worth turning down on a few: a slide
+   carrying a dense figure does not need concentric ovals behind it, and a
+   signature that appears at the same strength thirty times stops reading as
+   a signature and starts reading as a template.
+
+   Default (no attribute) is unchanged, so this is additive like the density
+   section above. "none" is the attribute spelling of the existing
+   .no-ornament class; both keep working, and neither removes the injected
+   element, so the runtime is untouched. Do not reach past these three
+   values: a per-deck opacity is how a kit stops being one. */
+.slide[data-ornament="quiet"] .ornament { opacity: 0.03; }
+.slide.dark[data-ornament="quiet"] .ornament { opacity: 0.05; }
+.slide[data-ornament="full"] .ornament { opacity: 0.09; }
+.slide.dark[data-ornament="full"] .ornament { opacity: 0.15; }
+.slide[data-ornament="none"] .ornament { display: none; }
+
+
+/* ============= TYPOGRAPHY UTILITIES ============= */
+.label {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.9cqw, 14px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.slide.dark .label, .slide.black .label { color: var(--amber); }
+
+h1.title {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  color: var(--navy); line-height: 1.05; letter-spacing: -0.015em;
+  font-size: clamp(36px, 4.6cqw, 78px);
+  text-wrap: balance;
+}
+.slide.dark h1.title, .slide.black h1.title { color: var(--foam); }
+
+h2.section-title {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  color: var(--navy); line-height: 1.1; letter-spacing: -0.01em;
+  font-size: clamp(28px, 3.2cqw, 54px);
+  text-wrap: balance;
+}
+.slide.dark h2.section-title,
+.slide.black h2.section-title { color: var(--foam); }
+
+.body-text {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(16px, 1.4cqw, 22px); font-weight: 400;
+  line-height: 1.5; color: var(--text);
+}
+.slide.dark .body-text, .slide.black .body-text { color: var(--navy-16); }
+
+/* Header lede spacing: let the label -> title -> body stack breathe.
+   Adjacency-scoped, so it never affects component internals.
+   Do NOT tighten these with inline style="margin-top:…" in slide HTML —
+   the shell owns vertical rhythm. */
+.slide > .label { margin-top: 1cqh; }
+.label + h1.title,
+.label + h2.section-title { margin-top: 0.4em; }
+h1.title + .body-text,
+h2.section-title + .body-text { margin-top: 1.3em; }
+.body-text + .body-text { margin-top: 0.7em; }
+
+/* Fallback rhythm, for every block the adjacency rules above do not name.
+   The shell says it owns vertical rhythm, and until now it owned only the
+   label -> title -> body stack. Everything else relied on the component
+   carrying its own margin-top, which every kit component does and nothing
+   else does: a bespoke block, a bare <p>, a figure caption, a callout, all
+   arrive with zero and sit on the descenders of whatever is above them.
+
+   This is a floor, not an override. It is one class and two universals,
+   specificity (0,1,0), and deck-components.css loads after this file, so a
+   component margin still wins on source order; the header rules above are
+   (0,2,0) or better and win on specificity. Nothing that already has a
+   margin moves. Only what was touching stops touching.
+
+   .chrome-bottom, .watermark and .ornament are absolutely positioned and
+   .notes is hidden, so none of them take part. */
+.slide > * + * { margin-top: clamp(12px, 1.9cqh, 28px); }
+
+/* ============= SLIDE DENSITY =============
+   A slide has one job: explain, demonstrate, or land. Say which with
+   data-density on the .slide, and the shell composes for that job.
+
+     editorial   explain       running prose, capped to a readable measure
+     hero        land          one sentence, centred, nothing competing
+
+   Every rule in this section is scoped to the attribute, so it is purely
+   additive: a slide that does not carry data-density renders exactly as it
+   did before this section existed, and an existing deck picks up none of
+   it until it asks.
+
+   The failure this fixes is the thirty-slide deck where every slide is
+   editorial: correct, consistent, and flat from the fourth row of the room.
+   Choose the job slide by slide. Hero is a punctuation mark, not a chapter:
+   two or three in a deck, never two in a row.
+
+   "evidence", the third job, is deliberately not here yet. It needs one
+   big-number primitive to act on, and that promotion travels with the
+   components it belongs to rather than ahead of them. */
+
+/* Measure. Prose gets a line length the back of the room can follow, not
+   the full 86% of the slide that the frame would otherwise allow. */
+.slide[data-density="editorial"] { --measure: 62ch; }
+.slide[data-density="hero"]      { --measure: 30ch; }
+.slide[data-density] .body-text  { max-width: var(--measure); }
+
+/* Hero centres inside the frame. It does NOT widen it: the chrome, the
+   watermark and the ornament all align to the 5.5% / 7% frame, so moving
+   the padding here would leave the slide's own furniture behind. */
+.slide[data-density="hero"] { justify-content: center; }
+
+/* Under the cover's 116px on purpose. The cover stays the largest type in
+   the deck; a hero slide that beats it flattens the opening. */
+.slide[data-density="hero"] > h1.title,
+.slide[data-density="hero"] > h2.section-title {
+  font-size: clamp(44px, 6cqw, 92px);
+  line-height: 0.98;
+  max-width: 16ch;
+}
+
+/* ============= REVEAL HELPERS ============= */
+.reveal       { opacity: 0; transform: translateY(14px);
+                transition: opacity .65s ease, transform .65s cubic-bezier(.2,.7,.2,1); }
+.reveal.on    { opacity: 1; transform: translateY(0); }
+.reveal-fade  { opacity: 0; transition: opacity .8s ease; }
+.reveal-fade.on { opacity: 1; }
+.reveal-scale { opacity: 0; transform: scale(.92);
+                transition: opacity .55s ease, transform .55s cubic-bezier(.2,.7,.2,1); }
+.reveal-scale.on { opacity: 1; transform: scale(1); }
+
+/* Opt in with data-reveal-focus on the container of a stepped group, and every
+   step that already has a later step revealed steps back. The one that just
+   landed is the only thing at full strength.
+
+   What it fixes: a four-step build ends as four blocks competing for the same
+   eye, each click adding density instead of moving attention. The room then
+   re-reads all four looking for what changed. With this, what changed is the
+   only thing bright.
+
+   The selector says "is on, and has a later sibling that is also on". It is
+   scoped to the opted-in container, so the .on class other components use for
+   their own purposes is untouched. Its specificity is (0,3,0), above the
+   (0,2,0) of .reveal.on, so the reveal helpers need no change and the existing
+   opacity transition animates the step back for free.
+
+   The dimmed step stays readable on purpose: this is a hierarchy, not a hide.
+   Anyone who wants to re-read an earlier step still can, and on paper nothing
+   dims at all, because print puts every reveal in its final state. */
+[data-reveal-focus] > .on:has(~ .on) { opacity: 0.45; }
+
+/* Running prose needs less. At 45% a paragraph stops being a paragraph and
+   becomes a grey block the eye skips, which is the wrong trade when the
+   earlier step is a sentence the speaker may still be talking about. The soft
+   value pushes it back without taking it out of the argument. */
+[data-reveal-focus="soft"] > .on:has(~ .on) { opacity: 0.72; }
+
+/* ============= COVER (slide 01) ============= */
+.cover-content {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  position: relative; z-index: 2;
+  /* Reserve space for the absolutely-positioned .cover-logo so the
+     eyebrow / title can't collide with it on short covers. */
+  padding-top: clamp(72px, 9cqh, 110px);
+}
+.cover-logo {
+  position: absolute; top: 5%; left: 7%; z-index: 3;
+  height: clamp(32px, 3.2cqw, 56px);
+}
+.cover-logo img { height: 100%; width: auto; display: block; }
+.cover-eyebrow {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(11px, 1cqw, 16px);
+  letter-spacing: 0.04em;
+  color: var(--amber); margin-bottom: 1.5em;
+}
+.cover-title {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  font-size: clamp(48px, 6.4cqw, 116px);
+  line-height: 0.98; letter-spacing: -0.02em;
+  color: var(--foam); margin-bottom: 0.4em;
+}
+.cover-subtitle {
+  font-family: 'Literata', serif; font-style: italic; font-weight: 400;
+  font-size: clamp(20px, 2cqw, 34px);
+  line-height: 1.3; color: var(--navy-40); max-width: 75%;
+}
+.cover-meta {
+  margin-top: auto; padding-top: 3em;
+  display: flex; justify-content: space-between; align-items: end;
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(11px, 0.9cqw, 14px);
+  letter-spacing: 0.04em; color: var(--navy-40);
+}
+.cover-meta strong { color: var(--foam); font-weight: 700; }
+/* Optional photograph behind the cover, under the line art (z-index 0 vs 1).
+   `luminosity` blended against navy is a duotone in one element: the picture
+   keeps its light and loses its colour, so a stock photo reads as zenital
+   rather than as stock. The gradient is a readability scrim, heaviest on the
+   left where the title sits. Covers without a photo are unchanged: the
+   generator removes the element entirely. */
+.cover-photo {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background-size: cover; background-position: center;
+  background-color: var(--navy); background-blend-mode: luminosity;
+}
+.cover-photo::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(100deg,
+    rgba(0, 17, 125, 0.94) 0%,
+    rgba(0, 17, 125, 0.78) 46%,
+    rgba(0, 17, 125, 0.58) 100%);
+}
+.cover-lines { position: absolute; inset: 0; z-index: 1; opacity: 0.32; pointer-events: none; }
+.cover-lines path {
+  stroke-dasharray: 3000; stroke-dashoffset: 3000;
+  animation: draw-line 6s ease-out forwards;
+}
+.cover-lines path:nth-child(2) { animation-delay: .4s; }
+.cover-lines path:nth-child(3) { animation-delay: .8s; }
+.cover-lines path:nth-child(4) { animation-delay: 1.2s; }
+@keyframes draw-line { to { stroke-dashoffset: 0; } }
+
+/* ============= HUD (index overlay) ============= */
+/* The HUD is the canonical navy fullscreen overlay. Do NOT replace it with a
+   foam-coloured floating card — that's a frequent LLM mistake. */
+#hud {
+  position: fixed; inset: 0;
+  background: rgba(0,0,17,0.96);
+  z-index: 200; display: none;
+  padding: 6vh 8vw; overflow: auto;
+  color: var(--foam);
+}
+#hud.visible { display: block; }
+#hud h2 {
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(24px, 2.5vw, 40px); margin-bottom: 0.3em;
+}
+#hud .hud-sub {
+  font-family: 'PT Mono', monospace; font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--amber); margin-bottom: 2.5em;
+}
+.hud-list { display: grid; gap: 6px; }
+.hud-item {
+  display: grid;
+  grid-template-columns: 50px 1fr max-content;
+  gap: 24px; padding: 12px 18px;
+  cursor: pointer; border-radius: 3px;
+  align-items: center; transition: background .15s;
+}
+.hud-item:hover { background: rgba(255,255,255,0.05); }
+.hud-item .hn   { font-family: 'PT Mono', monospace; font-weight: 700;
+                  color: var(--amber); font-size: 14px; }
+.hud-item .ht   { font-family: 'Literata', serif; font-size: 18px; color: var(--foam); }
+.hud-item .hsec { font-family: 'PT Mono', monospace; font-size: 11px;
+                  letter-spacing: 0.04em; color: var(--navy-40); }
+.hud-item.is-current        { background: rgba(255,200,87,0.08); }
+.hud-item.is-current .ht    { color: var(--amber); }
+
+/* ---- HUD print action (injected by deck-runtime.js) -------------------
+   The index is where somebody who wants the whole deck already is, so the
+   PDF action sits at the foot of it as well as in the deck menu. Bordered
+   rather than filled: it is an offer, not the reason the overlay opened.
+   The tip is not decoration — landscape and "no headers and footers" are
+   the two settings that decide whether the PDF is usable. */
+.hud-action {
+  display: inline-flex; align-items: center; gap: 1em;
+  margin-top: 3em; padding: 12px 22px;
+  background: rgba(255,200,87,0.07);
+  border: 1px solid var(--amber); border-radius: 3px;
+  font-family: 'PT Mono', monospace; font-size: 12px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--amber); cursor: pointer;
+  transition: background .15s;
+}
+.hud-action:hover { background: rgba(255,200,87,0.16); }
+.hud-action .ha-key {
+  font-family: 'PT Mono', monospace; font-size: 11px;
+  padding: 2px 7px; border-radius: 2px;
+  background: rgba(255,200,87,0.18); color: var(--amber);
+}
+.hud-tip {
+  font-family: 'Literata', serif; font-style: italic;
+  font-size: 13px; line-height: 1.5;
+  color: var(--navy-40); margin-top: 1em; max-width: 60ch;
+}
+.hud-tip strong { color: var(--navy-16); font-weight: 500; font-style: normal; }
+
+/* ============= LANGUAGE SWITCH (top-right, opt-in via deck-i18n.js) ===
+   Only rendered when a deck includes <div class="lang-switch">…</div>
+   plus js/deck-i18n.js. See style-presentation.md §10b. */
+.lang-switch {
+  position: fixed; top: 12px; right: 14px; z-index: 60;
+  display: flex; gap: 4px;
+  font-family: 'PT Mono', monospace; font-size: 10px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  opacity: 0.4; transition: opacity .25s ease;
+}
+.lang-switch:hover { opacity: 1; }
+.lang-switch button {
+  background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.15); padding: 3px 7px;
+  border-radius: 2px; cursor: pointer; font: inherit; letter-spacing: 0.18em;
+  transition: background .2s ease, color .2s ease;
+}
+.lang-switch button:hover  { background: rgba(255,255,255,0.18); color: var(--foam); }
+.lang-switch button.active { background: var(--amber); color: var(--navy); border-color: var(--amber); }
+
+/* ============= SECTION RAIL (runtime-injected wayfinding) =============
+   One segment per data-section group, width proportional to slide count.
+   Injected + updated by deck-runtime.js; purely informative (no clicks).
+   Past sections read filled, the current one fills as you advance. */
+#section-rail {
+  position: absolute; bottom: 3.0%; left: 50%; transform: translateX(-50%);
+  width: clamp(160px, 22vw, 330px); height: 4px;
+  display: flex; gap: 4px; z-index: 6; pointer-events: none;
+}
+#section-rail .rail-seg {
+  flex: var(--n, 1); background: var(--navy-16);
+  border-radius: 2px; overflow: hidden;
+}
+#section-rail .rail-seg .rail-fill {
+  display: block; height: 100%; width: 0;
+  background: var(--amber); transition: width .45s ease;
+}
+#deck.bg-dark  #section-rail .rail-seg,
+#deck.bg-black #section-rail .rail-seg { background: rgba(254,253,247,0.16); }
+#section-rail.rail-hidden { display: none; }
+
+/* ============= HELP HINT (bottom-right keyboard cheat) ============= */
+/* Legacy: superseded by the runtime-injected #deck-menu, which hides it.
+   Kept so decks running an older runtime still get their hint. */
+#help-hint {
+  position: fixed; bottom: 10px; right: 14px; z-index: 50;
+  font-family: 'PT Mono', monospace; font-size: 10px;
+  letter-spacing: 0.15em; color: rgba(255,255,255,0.32);
+  pointer-events: none; transition: opacity 1s ease;
+}
+#help-hint kbd {
+  background: rgba(255,255,255,0.1);
+  padding: 2px 5px; border-radius: 2px; font-size: 9px;
+}
+
+/* ============= DECK MENU (runtime-injected actions + key legend) =========
+   A quiet, always-available launcher in the bottom-right corner. Collapsed:
+   a translucent dot button. Open: index / fullscreen / save-pdf actions with
+   their shortcut keys, plus the navigation legend. Replaces the auto-fading
+   help hint; never printed. */
+#deck-menu {
+  position: fixed; right: 12px; bottom: 12px; z-index: 60;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+  font-family: 'PT Mono', monospace;
+}
+#deck-menu .dm-panel {
+  display: none; flex-direction: column;
+  background: rgba(0, 0, 17, 0.92);
+  border: 1px solid rgba(254, 253, 247, 0.14);
+  border-radius: 6px; padding: 7px;
+  backdrop-filter: blur(6px);
+  min-width: 184px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+#deck-menu.open .dm-panel { display: flex; }
+#deck-menu .dm-item {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  background: none; border: 0; cursor: pointer; width: 100%; text-align: left;
+  color: rgba(254, 253, 247, 0.85); font: inherit; font-size: 11px;
+  letter-spacing: 0.08em; padding: 8px 9px; border-radius: 4px;
+  transition: background .15s ease, color .15s ease;
+}
+#deck-menu .dm-item:hover { background: rgba(255, 255, 255, 0.08); color: var(--foam); }
+#deck-menu .dm-item kbd {
+  font: inherit; font-size: 9px; color: var(--amber);
+  border: 1px solid rgba(255, 200, 87, 0.35); border-radius: 3px;
+  padding: 1px 5px;
+}
+#deck-menu .dm-hint {
+  display: flex; align-items: center; justify-content: space-between; gap: 20px;
+  color: rgba(254, 253, 247, 0.42); font-size: 9px; letter-spacing: 0.08em;
+  padding: 8px 9px 4px; border-top: 1px solid rgba(254, 253, 247, 0.10); margin-top: 4px;
+}
+#deck-menu .dm-toggle {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(0, 0, 17, 0.55); color: rgba(254, 253, 247, 0.8);
+  border: 1px solid rgba(254, 253, 247, 0.18);
+  cursor: pointer; opacity: 0.45;
+  backdrop-filter: blur(4px);
+  transition: opacity .25s ease, background .2s ease;
+}
+#deck-menu:hover .dm-toggle,
+#deck-menu.open .dm-toggle { opacity: 1; background: rgba(0, 0, 17, 0.85); }
+#deck-menu .dm-toggle svg { width: 16px; height: 16px; display: block; }
+
+/* ============= PRINT (each slide as A4 landscape page) ============= */
+@media print {
+  @page { size: A4 landscape; margin: 11mm 0; }
+  html, body { background: #fff; overflow: visible; height: auto; margin: 0; }
+  #stage { position: static; height: auto; display: block; background: #fff; padding: 0; }
+  /* The two fit modes are classed, so they out-specify a bare #deck and
+     would keep their screen box on paper. Named here, they cannot. */
+  #deck,
+  #deck.fit-scale,
+  #deck.fit-h {
+    container-type: normal;
+    position: static; width: 297mm; height: auto;
+    max-width: none; max-height: none;
+    box-shadow: none; background: #fff; transition: none;
+    transform: none !important;
+  }
+  .slide {
+    position: relative !important; inset: auto !important;
+    width: 297mm !important; height: 188mm !important;
+    opacity: 1 !important; pointer-events: auto;
+    page-break-after: always; break-after: page;
+    transition: none; overflow: hidden;
+    display: flex !important; flex-direction: column;
+  }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+  #hud, #help-hint, .lang-switch, #section-rail, #deck-menu { display: none !important; }
+  /* Paper has no clicks: every reveal and entrance animation renders in its
+     final, fully visible state so no slide content is missing from the PDF. */
+  .reveal, .reveal-fade, .reveal-scale, .person-detail-block {
+    opacity: 1 !important; transform: none !important; transition: none !important;
+  }
+  .cover-lines path { stroke-dashoffset: 0 !important; animation: none !important; }
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

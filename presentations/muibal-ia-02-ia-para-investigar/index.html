@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La IA para investigar · MUIBAL · zenital</title>
+  <link rel="icon" type="image/svg+xml" href="assets/zenital-icon-foam.svg" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/svg+xml" href="assets/zenital-icon-blue.svg" media="(prefers-color-scheme: light)">
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <link rel="stylesheet" href="css/deck-shell.css">
+  <link rel="stylesheet" href="css/deck-components.css">
+  <link rel="stylesheet" href="css/bsm-theme.css">
+</head>
+
+<body>
+  <div id="stage">
+    <div id="deck">
+
+      <!-- ================================================================ 01 · portada -->
+      <section class="slide dark active" data-slide="01" data-section="apertura" data-title="Portada">
+        <div class="cover-logo"><img src="assets/zenital-logo-foam.svg" alt="zenital"></div>
+        <svg class="cover-lines" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <g fill="none" stroke-width="1" opacity="0.7" style="stroke: var(--navy-64)">
+            <path d="M0,720 Q400,540 800,640 T1600,580" />
+            <path d="M0,780 Q500,600 1000,680 T1600,640" />
+            <path d="M0,840 Q600,660 1200,720 T1600,700" />
+            <path d="M0,900 Q400,840 800,860 T1600,820" />
+          </g>
+          <g fill="none" stroke-width="1" opacity="0.3" style="stroke: var(--amber)">
+            <circle cx="1320" cy="220" r="180" />
+            <circle cx="1320" cy="220" r="240" />
+            <circle cx="1320" cy="220" r="300" />
+          </g>
+        </svg>
+        <div class="cover-content">
+          <div class="cover-eyebrow">sesión de IA · muibal · 2026</div>
+          <h1 class="cover-title">La IA para investigar: prompts, documentos y agentes</h1>
+          <p class="cover-subtitle">Máster Universitario en Negocios Internacionales · UPF Barcelona School of Management</p>
+          <div class="bsm-cobrand">
+            <img src="assets/zenital-logo-foam.svg" alt="zenital">
+            <span class="cb-sep"></span>
+            <img src="assets/bsm-logo-footer.svg" alt="UPF Barcelona School of Management">
+          </div>
+        </div>
+        <div class="cover-meta">
+          <span><strong>Luis Esteve Elfau</strong> · formador</span>
+          <span>UPF Barcelona School of Management · lunes 16/11/2026</span>
+        </div>
+        <aside class="notes" hidden>
+          <p><em>Después del módulo 0 · unos 100 minutos con la pausa dentro: bloque 1 (30), pausa (15), bloque 2 (25) y bloque 3 (30, con el ejercicio 3 en su versión de 15 min)</em></p>
+          <p>Tres bloques, un ejercicio en cada uno, todos sobre el TFM de cada persona. Quien todavía no tiene tema trabaja con Envoltia, el caso de reserva. El módulo 0 ya ha contado tokens, alucinaciones, sesgos, human in the loop y el prompting básico: aquí no se repite, se construye encima.</p>
+          <p>Los tres ejercicios, en parejas: con unas 40 personas, unas 20 parejas. En la pareja, una persona trae su tema de TFM y la otra hace de tutora; en el ejercicio siguiente se cambian los papeles. En las puestas en común salen tres o cuatro parejas y el resto añade lo que falte.</p>
+          <p>Que tengan abiertos el compañero y los ficheros. Para el ejercicio 2 hace falta una cuenta de Google (o un proyecto de ChatGPT o de Claude); para el 3, al menos una persona por pareja con una herramienta que tenga investigación profunda en su plan (Gemini la tiene en el gratuito, con límite).</p>
+          <p>Ojo: las sesiones de Manel Vericat en esta misma asignatura ya han trabajado encuestas, análisis, reseñas, herramientas digitales y mercados internacionales con su propio caso. Aquí no se citan ni se repiten: si alguien pregunta por ellas, "eso ya lo visteis; hoy es la IA para el TFM".</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 02 · el hilo -->
+      <section class="slide" data-slide="02" data-section="apertura" data-title="Vuestro TFM, o Envoltia">
+        <div class="label">apertura · el caso</div>
+        <h2 class="section-title">Vuestro TFM, o Envoltia: lo que haremos hoy con IA</h2>
+        <p class="body-text">El caso de hoy es vuestro trabajo final de máster. Quien aún no tenga tema trabaja con <strong>Envoltia</strong>, una pyme de Sabadell que fabrica envases compostables y quiere saber qué valoran los compradores europeos de un proveedor como ella. Tres usos de la IA, uno por bloque.</p>
+        <div class="idea-grid">
+          <div class="idea-card reveal" data-rev="h-1">
+            <div class="idea-name">1 · Pedir bien</div>
+            <p class="idea-desc">De un tema vago a una pregunta de investigación con objetivos, hipótesis y método. Ejercicio 1.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="h-2">
+            <div class="idea-name">2 · Preguntar a vuestras fuentes</div>
+            <p class="idea-desc">Un mapa de la literatura con la cita de cada afirmación, y lo que vuestras fuentes no dicen. Ejercicio 2.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="h-3">
+            <div class="idea-name">3 · Dejar investigar a un agente</div>
+            <p class="idea-desc">Un estado de la cuestión con investigación profunda, y la auditoría de sus referencias. Ejercicio 3.</p>
+          </div>
+        </div>
+        <p class="src-note">Envoltia y todos sus datos son ficticios. El caso en una página está en el compañero: caso-envoltia.md.</p>
+        <div class="chrome-bottom"><span>02 · apertura</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · el hilo</em></p>
+          <p>Preguntar a mano alzada quién tiene ya tema de TFM. Los que no, Envoltia. Cada bloque deja una pieza del TFM: la pregunta, el mapa de fuentes y el estado de la cuestión auditado. Se recogen en la slide 32.</p>
+          <p>Si alguien pregunta si puede usar la IA en el TFM: lo que diga la guía del TFM y su tutor manda; hoy aprendemos a usarla sin que escriba por ellos y declarando cómo se ha usado (lo cierra la sesión).</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 03 · divisor 1 -->
+      <section class="slide dark" data-slide="03" data-hud="skip" data-section="pedir bien" data-title="1 · Pedir bien: el prompt de investigación">
+        <div class="divider-wrap">
+          <div class="divider-num">1</div>
+          <h1 class="divider-title">Pedir bien: el prompt de investigación</h1>
+          <ul class="div-sub">
+            <li>el marco, para investigar</li>
+            <li>técnicas con nombre</li>
+            <li>modelos generales y razonadores</li>
+            <li>ejercicio 1</li>
+          </ul>
+        </div>
+        <div class="chrome-bottom"><span>03 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Bloque 1 · unos 30 min</em></p>
+          <p>Slides 04 a 12. El módulo 0 dejó la idea: "no es magia, es ser claro". Aquí se le pone método. Si va justo: la 05 se cuenta dentro de la 04, la 07 se salta y la 08 y la 09 se cuentan como una.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 04 · el marco -->
+      <section class="slide" data-slide="04" data-section="pedir bien" data-title="El marco, aplicado a investigar">
+        <div class="label">pedir bien · el marco</div>
+        <h2 class="section-title">Rol, contexto, tarea y formato, para un encargo de investigación</h2>
+        <div class="stepway">
+          <div class="stepway-col reveal" data-rev="m-1">
+            <div class="stepway-num">1</div>
+            <div class="stepway-tag">rol</div>
+            <div class="stepway-title">Quién es para esta tarea</div>
+            <ul class="stepway-bullets">
+              <li>"Actúa como tutor de TFM de un máster en negocios internacionales"</li>
+              <li>Cambia el vocabulario y el enfoque, no hace que acierte más</li>
+            </ul>
+          </div>
+          <div class="stepway-col reveal" data-rev="m-2">
+            <div class="stepway-num">2</div>
+            <div class="stepway-tag">contexto</div>
+            <div class="stepway-title">Qué problema hay detrás</div>
+            <ul class="stepway-bullets">
+              <li>Pegad el tema, lo que ya sabéis, el tiempo que tenéis y a quién sirve</li>
+              <li>Es la palanca más potente de las cuatro</li>
+            </ul>
+          </div>
+          <div class="stepway-col reveal" data-rev="m-3">
+            <div class="stepway-num">3</div>
+            <div class="stepway-tag">tarea</div>
+            <div class="stepway-title">Un verbo claro, una tarea</div>
+            <ul class="stepway-bullets">
+              <li>"Propón la pregunta de investigación y cómo responderla"</li>
+              <li>No "hazme un TFM sobre envases", que no dice qué ni para qué</li>
+            </ul>
+          </div>
+          <div class="stepway-col reveal" data-rev="m-4">
+            <div class="stepway-num">4</div>
+            <div class="stepway-tag">formato</div>
+            <div class="stepway-title">La forma del resultado</div>
+            <ul class="stepway-bullets">
+              <li>"Una tabla: objetivo, hipótesis, método y fuente"</li>
+              <li>Con extensión y público: "para presentarla a mi tutora"</li>
+            </ul>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>04 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>3 min · el marco</em></p>
+          <p>El módulo 0 dio cinco hábitos sueltos; aquí se ordenan en un marco. Subrayar que <strong>el contexto manda</strong>: en un TFM, el contexto es el problema que hay detrás y el tiempo que hay para resolverlo. Una pregunta de investigación sin problema detrás es una curiosidad, y un tribunal lo nota.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 05 · ejemplos y límites -->
+      <section class="slide" data-slide="05" data-section="pedir bien" data-title="Dos piezas más: ejemplos y límites">
+        <div class="label">pedir bien · cuando el trabajo importa</div>
+        <h2 class="section-title">Dos piezas más cuando el resultado va a un tercero</h2>
+        <p class="body-text">Para el día a día bastan las cuatro. Cuando lo que sale va a vuestra tutora, a un tribunal o a un cliente, se añaden ejemplos y límites: el marco de cuatro pasa a ser de seis.</p>
+        <div class="idea-grid cols-2">
+          <div class="idea-card reveal" data-rev="s-1">
+            <div class="idea-name">5 · Ejemplos</div>
+            <p class="idea-desc">Una fila del resultado que queréis, escrita por vosotros: "así es un objetivo bien planteado". La IA imita el patrón mejor que cualquier descripción.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="s-2">
+            <div class="idea-name">6 · Límites</div>
+            <p class="idea-desc">Lo que no debe hacer. El que más sirve al investigar: "si un dato no está en el material, escribe no consta; no lo deduzcas ni lo completes". Así los huecos se ven en lugar de rellenarse solos.</p>
+          </div>
+        </div>
+        <p class="src-note">Los seis elementos, con ejemplos para un TFM, están en el compañero, ejercicio 1.</p>
+        <div class="chrome-bottom"><span>05 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · ejemplos y límites</em></p>
+          <p>El límite del "no consta" vuelve en el bloque 2: es lo que se comprueba con las preguntas trampa del ejercicio 2. Recorte: se cuenta en una frase al final de la 04.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 06 · técnicas con nombre -->
+      <section class="slide" data-slide="06" data-section="pedir bien" data-title="Técnicas con nombre">
+        <div class="label">pedir bien · el vocabulario</div>
+        <h2 class="section-title">Cuatro técnicas que vais a oír nombrar</h2>
+        <p class="body-text">No hace falta memorizarlas: hace falta reconocer cuándo toca cada una. Funcionan igual en ChatGPT, Claude, Gemini y Copilot.</p>
+        <div class="pill-grid cols-4">
+          <div class="pill reveal" data-rev="t-1">
+            <div class="pill-sub">zero-shot</div>
+            <div class="pill-name">Pregunta directa</div>
+            <div class="pill-desc">Sin ejemplos. Para lo sencillo: resumir un artículo, explicar un concepto, traducir un resumen.</div>
+          </div>
+          <div class="pill reveal" data-rev="t-2">
+            <div class="pill-sub">one-shot y few-shot</div>
+            <div class="pill-name">Con uno o varios ejemplos</div>
+            <div class="pill-desc">Le enseñáis el resultado que queréis y lo imita. Para clasificar, extraer datos o mantener un formato.</div>
+          </div>
+          <div class="pill reveal" data-rev="t-3">
+            <div class="pill-sub">cadena de pensamiento</div>
+            <div class="pill-name">Que razone paso a paso</div>
+            <div class="pill-desc">Ayuda a un modelo general en problemas de varios pasos. Los razonadores ya lo hacen por dentro: lo vemos ahora.</div>
+          </div>
+          <div class="pill reveal" data-rev="t-4">
+            <div class="pill-sub">instrucciones de sistema</div>
+            <div class="pill-name">Rol y reglas fijas</div>
+            <div class="pill-desc">Lo que se escribe una vez y vale para toda la conversación: público, tono, límites. Vive en los proyectos del bloque 2.</div>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>06 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · técnicas con nombre</em></p>
+          <p>Cuatro nombres que van a encontrar en cualquier guía de prompting. El few-shot ya salió en el módulo 0: la siguiente slide lo aplica a una tarea típica del TFM, ordenar la literatura.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 07 · few-shot aplicado -->
+      <section class="slide" data-slide="07" data-section="pedir bien" data-title="Un ejemplo vale más que una explicación">
+        <div class="label">pedir bien · few-shot, aplicado</div>
+        <h2 class="section-title">Clasificar resúmenes de artículos con un solo ejemplo</h2>
+        <div class="frames-wrap">
+          <div class="frame-col reveal" data-rev="f-1">
+            <div class="frame">
+              <div class="frame-head">el prompt</div>
+              <div class="frame-body">
+                <p class="frame-text">Clasifica cada resumen con este formato: método, tipo de fuente y tema.</p>
+                <p class="frame-text">Ejemplo: "Encuestamos a 412 responsables de compras de cinco países europeos..."<br><strong>Método:</strong> cuantitativo · <strong>Fuente:</strong> artículo académico · <strong>Tema:</strong> criterios de compra B2B</p>
+                <p class="frame-text">Si el resumen no dice el método, escribe "no consta". Resúmenes: [pegad los vuestros]</p>
+              </div>
+            </div>
+            <div class="frame-caption">una fila resuelta enseña el formato</div>
+          </div>
+          <div class="frames-arrow reveal" data-rev="f-2">
+            <svg viewBox="0 0 56 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 14 H 50"/>
+              <path d="M42 6 L 50 14 L 42 22"/>
+            </svg>
+          </div>
+          <div class="frame-col reveal" data-rev="f-2">
+            <div class="frame">
+              <div class="frame-head">lo que devuelve</div>
+              <div class="frame-body">
+                <p class="frame-text">"Entrevistas en profundidad a 18 gerentes de compras del sector lácteo..."<br><strong>Método:</strong> cualitativo · <strong>Fuente:</strong> artículo académico · <strong>Tema:</strong> barreras al cambio de proveedor</p>
+                <p class="frame-text">"Combina datos de aduanas con una encuesta a 60 envasadores..."<br><strong>Método:</strong> mixto · <strong>Fuente:</strong> informe sectorial · <strong>Tema:</strong> volumen de mercado</p>
+              </div>
+            </div>
+            <div class="frame-caption">el mismo formato en cada resumen, listo para ordenar la literatura</div>
+          </div>
+        </div>
+        <p class="src-note">Resúmenes inventados para el ejemplo.</p>
+        <div class="chrome-bottom"><span>07 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · few-shot aplicado</em></p>
+          <p>El mismo gesto que el módulo 0, aplicado a lo primero que hace casi todo TFM: ordenar la literatura. Con 30 o 40 resúmenes clasificados así, se ve enseguida si un tema solo tiene estudios cualitativos o si todo lo que hay son informes de consultoras. El "no consta" es el límite de la slide 05.</p>
+          <p>Avisar: la clasificación se revisa. Un resumen que dice "estudio de caso" puede ser cualitativo o mixto según lo que haya dentro. Recorte: es la primera que cae del bloque.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 08 · generales y razonadores -->
+      <section class="slide" data-slide="08" data-section="pedir bien" data-title="Modelos generales y modelos razonadores">
+        <div class="label">pedir bien · qué modelo</div>
+        <h2 class="section-title">Un modelo general y un razonador no se piden igual</h2>
+        <p class="body-text">Las herramientas dejan elegir entre responder rápido y pensar antes de responder: lo llaman "pensar", "razonar" o "thinking", y algunas dejan graduar el esfuerzo. Por dentro, el razonador gasta tokens de razonamiento antes de escribir la respuesta.</p>
+        <div class="compare-wrap is-compact">
+          <div class="compare-col is-them reveal" data-rev="r-1">
+            <div class="compare-tag">modelo general · rápido</div>
+            <div class="compare-name">Como un compañero junior</div>
+            <div class="compare-line">Rinde mejor con instrucciones explícitas y un ejemplo del resultado. Bueno para redactar, resumir, conversar y leer imágenes.</div>
+          </div>
+          <div class="compare-col is-us reveal" data-rev="r-2">
+            <div class="compare-tag">modelo razonador · más lento</div>
+            <div class="compare-name">Como un compañero senior</div>
+            <div class="compare-line">Le das el objetivo y el contexto, y resuelve los detalles. Mejor para diseñar una investigación, comparar fuentes o <strong>decidir con varios criterios</strong>.</div>
+          </div>
+        </div>
+        <p class="src-note">La analogía junior y senior es de la guía de buenas prácticas con modelos de razonamiento de OpenAI.</p>
+        <div class="chrome-bottom"><span>08 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · generales y razonadores</em></p>
+          <p>Diseñar la investigación de un TFM es tarea de razonador: en el ejercicio 1 lanzan el mismo prompt en los dos modos y comparan.</p>
+          <p>Los nombres del selector cambian cada pocos meses: enseñar dónde está en la herramienta que se proyecte, sin prometer el nombre.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 09 · cómo cambia el prompt -->
+      <section class="slide" data-slide="09" data-section="pedir bien" data-title="Cómo cambia el prompt con un razonador">
+        <div class="label">pedir bien · con un razonador</div>
+        <h2 class="section-title">Tres cambios en el prompt cuando el modelo razona</h2>
+        <div class="clinic">
+          <div class="clinic-row reveal" data-rev="c-1">
+            <div class="clinic-head">Quitad el paso a paso</div>
+            <div class="clinic-bad">"Piensa paso a paso antes de responder."</div>
+            <div class="clinic-why">ya razona por dentro: pedirlo sobra</div>
+            <div class="clinic-good">Activad el modo de razonamiento y dedicad esas palabras al contexto.</div>
+          </div>
+          <div class="clinic-row reveal" data-rev="c-2">
+            <div class="clinic-head">Dad el objetivo, no la receta</div>
+            <div class="clinic-bad">"Primero busca artículos, luego haz una tabla, luego resume."</div>
+            <div class="clinic-why">lo atáis a vuestro plan, que puede ser peor que el suyo</div>
+            <div class="clinic-good">"Mi TFM tiene que recomendar a Envoltia a qué comprador europeo dirigirse primero. Propón cómo investigarlo y explica tus criterios."</div>
+          </div>
+          <div class="clinic-row reveal" data-rev="c-3">
+            <div class="clinic-head">Decidle cómo sabréis que está bien</div>
+            <div class="clinic-bad">"Hazlo lo mejor posible."</div>
+            <div class="clinic-why">sin criterio, decide él qué es bueno</div>
+            <div class="clinic-good">"Cada objetivo tiene que poder responderse con datos que pueda conseguir en cuatro meses. Si alguno no, quítalo."</div>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>09 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>3 min · cómo cambia el prompt</em></p>
+          <p>Matiz respecto al módulo 0, que recomendaba "piénsalo paso a paso": con un modelo general sigue ayudando; con un razonador, sobra. El consejo depende del modelo.</p>
+          <p>La tercera fila es la que más rinde en un TFM: el criterio de éxito es la viabilidad. La IA propone sin problema una investigación que llevaría dos años; decirle el tiempo y los datos a los que se tiene acceso la baja a tierra.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 10 · el truco -->
+      <section class="slide dark" data-slide="10" data-section="pedir bien" data-title="El truco">
+        <div class="manifesto-wrap">
+          <p class="manifesto-quote">"Si te falta información, <em>pregúntame</em> antes de responder."</p>
+          <p class="manifesto-sub">una línea al final del prompt · un tema de TFM casi siempre llega vago</p>
+        </div>
+        <div class="chrome-bottom"><span>10 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>1 min · el truco</em></p>
+          <p>El de más retorno por esfuerzo. En el ejercicio 1 lo van a necesitar: "quiero hacer el TFM sobre sostenibilidad en el comercio exterior" no dice qué sector, qué país, qué datos ni para quién. Si la IA pregunta bien, ya tienen media lista de lo que le falta a su tema.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 11 · ejercicio 1 -->
+      <section class="slide" data-slide="11" data-section="pedir bien" data-title="Ejercicio 1 · De vuestro tema de TFM a la pregunta de investigación">
+        <span class="practice-badge">práctica · ejercicio 1</span>
+        <div class="label">pedir bien · del tema a la pregunta</div>
+        <h2 class="section-title">De vuestro tema de TFM a la pregunta de investigación</h2>
+        <p class="body-text">En parejas: uno trae su tema y el otro hace de tutor. Sin tema, Envoltia. Lo que sale: la pregunta, tres objetivos, las hipótesis, el método y las fuentes que habrá que comprobar.</p>
+        <div class="idea-grid cols-2">
+          <div class="idea-card reveal" data-rev="e1-1"><div class="idea-name">1 · El tema, sin IA</div><div class="idea-desc">En tres líneas: el tema, el problema que hay detrás y lo que ya sabéis. 3&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e1-2"><div class="idea-name">2 · Dos prompts</div><div class="idea-desc">El rápido ("dame una pregunta de investigación sobre...") y el vuestro, con los seis elementos y "pregúntame". 6&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e1-3"><div class="idea-name">3 · General o razonador</div><div class="idea-desc">El vuestro, en los dos modos. ¿Cuál es más viable? ¿Qué objetivo quitaríais? 3&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e1-4"><div class="idea-name">4 · Puesta en común</div><div class="idea-desc">Qué le faltaba al tema y qué objetivo habéis quitado. 3&nbsp;min.</div></div>
+        </div>
+        <p class="src-note">15 minutos, en parejas. Los prompts, los seis elementos y la plantilla están en el compañero, ejercicio 1.</p>
+        <div class="chrome-bottom"><span>11 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Ejercicio 1 · 15 min, puesta en común incluida</em></p>
+          <p>Minuto 0: que abran el ejercicio 1 en el compañero y la plantilla <code>plantilla-pregunta-investigacion.md</code>. Minuto 3: si una pareja no ha escrito sus tres líneas, que pase a Envoltia (<code>caso-envoltia.md</code>). Minuto 9: el mismo prompt en el otro modo. Minuto 12: puesta en común con la slide 12, tres parejas.</p>
+          <p>Con unas 20 parejas no se llega a todas las mesas: empezar por las que no tienen tema, que son las que más se atascan. Resultado de referencia para Envoltia, errores frecuentes y plan B: ficheros-practica/ejercicio-1-pregunta-investigacion/README.md.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 12 · ejercicio 1 · puesta en común -->
+      <section class="slide" data-slide="12" data-section="pedir bien" data-title="Ejercicio 1 · Qué hemos visto">
+        <span class="practice-badge">práctica · ejercicio 1</span>
+        <div class="label">pedir bien · puesta en común</div>
+        <h2 class="section-title">Qué hemos visto</h2>
+        <ul class="read-list" data-reveal-focus="soft">
+          <li class="reveal" data-rev="q1-1">¿Qué le faltaba a vuestro tema, y cómo lo habéis resuelto en el prompt?</li>
+          <li class="reveal" data-rev="q1-2">¿Qué cambia entre la pregunta del prompt rápido y la del prompt con marco?</li>
+          <li class="reveal" data-rev="q1-3">¿Os ha hecho preguntas la IA? ¿Alguna que no se os había ocurrido?</li>
+          <li class="reveal" data-rev="q1-4">¿Qué objetivo habéis quitado porque no se podía responder en el tiempo del TFM?</li>
+        </ul>
+        <div class="chrome-bottom"><span>12 · pedir bien</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Puesta en común · 3 min, del minuto 12 al 15</em></p>
+          <p>Lo habitual: el prompt rápido da una pregunta enorme ("¿cómo afecta la sostenibilidad al comercio internacional?") que no cabe en un TFM. El bueno la acota por sector, país, periodo y tipo de dato. Si alguien trae una hipótesis que no se puede contrastar con los datos que tendrá, es el mejor ejemplo de la tercera fila de la slide 09.</p>
+          <p>Que guarden la pregunta y los objetivos: son el contexto que pegarán en el ejercicio 3 y en el proyecto de Claude de la segunda parte.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 13 · divisor 2 -->
+      <section class="slide dark" data-slide="13" data-hud="skip" data-section="documentos" data-title="2 · Preguntar a vuestras fuentes: RAG y Gemini Notebook">
+        <div class="divider-wrap">
+          <div class="divider-num">2</div>
+          <h1 class="divider-title">Preguntar a vuestras fuentes: RAG y Gemini Notebook</h1>
+          <ul class="div-sub">
+            <li>la ventana de contexto</li>
+            <li>qué es RAG</li>
+            <li>proyectos, cuadernos y Gems</li>
+            <li>ejercicio 2</li>
+          </ul>
+        </div>
+        <div class="chrome-bottom"><span>13 · documentos</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Bloque 2 · unos 25 min, después de la pausa</em></p>
+          <p>Slides 14 a 19. NotebookLM se llama Gemini Notebook desde el 16/07/2026 (blog de Google); notebooklm.google sigue funcionando y redirige. Decirlo al principio: buscarán "NotebookLM" y encontrarán lo mismo. TODO: verificar la víspera que el nombre y la dirección siguen así.</p>
+          <p>Si va justo, la 14 se salta: el ejercicio 2 es lo que no se recorta del bloque.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 14 · ventana de contexto -->
+      <section class="slide" data-slide="14" data-section="documentos" data-title="La ventana de contexto">
+        <div class="label">documentos · antes de subir nada</div>
+        <h2 class="section-title">Lo único que el modelo ve: la ventana de contexto</h2>
+        <div class="def-callout">
+          <span class="def-word">ventana de contexto</span>
+          <p>Todo lo que el modelo tiene delante al responder: vuestras instrucciones, la conversación hasta ese punto, los ficheros adjuntos y lo que añada la herramienta. Tiene un tamaño máximo, medido en los tokens del módulo 0: <strong>lo que no cabe, para el modelo no existe</strong>.</p>
+        </div>
+        <div class="pill-grid cols-2">
+          <div class="pill reveal" data-rev="v-1">
+            <div class="pill-name">Un chat nuevo empieza de cero</div>
+            <div class="pill-desc">Lo que le explicasteis ayer de vuestro TFM no está, salvo que la herramienta lo guarde aparte y lo vuelva a meter. Lo estable se escribe donde lo lea siempre: en un proyecto.</div>
+          </div>
+          <div class="pill reveal" data-rev="v-2">
+            <div class="pill-name">Pegarlo todo no es la solución</div>
+            <div class="pill-desc">Lo que sobra diluye la respuesta, y lo que queda en medio de un texto muy largo se aprovecha peor que lo del principio y el final.</div>
+          </div>
+        </div>
+        <p class="src-note">Lo del medio: Liu et al., "Lost in the middle: how language models use long contexts", 2023.</p>
+        <div class="chrome-bottom"><span>14 · documentos</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · la ventana de contexto</em></p>
+          <p>Explica dos frustraciones que la sala ya ha vivido: que un chat nuevo no recuerde nada y que pegar diez artículos enteros dé respuestas flojas. La salida a las dos es la siguiente slide. Si preguntan cuánto cabe: depende del modelo y cambia cada pocos meses; la regla no cambia.</p>
+          <p>La referencia de Liu y otros es, de paso, un buen ejemplo de cita que se puede comprobar: sale en el bloque 3.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 15 · RAG -->
+      <section class="slide" data-slide="15" data-section="documentos" data-title="Qué es RAG">
+        <div class="label">documentos · lo que pasa por dentro</div>
+        <h2 class="section-title">Subir documentos tiene nombre: RAG</h2>
+        <p class="body-text">Generación aumentada con recuperación. La herramienta no se aprende vuestros documentos: los guarda troceados y, cada vez que preguntáis, va a buscar el trozo que hace falta y lo mete en la ventana.</p>
+        <div class="rag-flow">
+          <div class="rag-steps">
+            <div class="rag-step reveal" data-rev="rag-1">
+              <div class="rs-num">1</div>
+              <div class="rs-name">Trocea</div>
+              <div class="rs-desc">Vuestras fuentes se cortan en fragmentos: un párrafo de un artículo, una respuesta de una entrevista.</div>
+            </div>
+            <div class="rag-step reveal" data-rev="rag-2">
+              <div class="rs-num">2</div>
+              <div class="rs-name">Convierte en vectores</div>
+              <div class="rs-desc">Cada fragmento se guarda como una lista de números: los embeddings del módulo 0.</div>
+            </div>
+            <div class="rag-step reveal" data-rev="rag-3">
+              <div class="rs-num">3</div>
+              <div class="rs-name">Busca por significado</div>
+              <div class="rs-desc">Vuestra pregunta también se convierte en vector, y se buscan los fragmentos más cercanos. Encuentra por sentido, no por palabra exacta.</div>
+            </div>
+            <div class="rag-step reveal" data-rev="rag-4">
+              <div class="rs-num">4</div>
+              <div class="rs-name">Responde y cita</div>
+              <div class="rs-desc">Esos fragmentos entran en el prompt sin que los veáis. De ahí sale la respuesta, y de ahí sale la cita.</div>
+            </div>
+          </div>
+          <div class="rag-note reveal" data-rev="rag-5">
+            <div class="rn-lab">las dos consecuencias que importan</div>
+            <div class="rn-text"><strong>No cambia el modelo, le cambia el contexto.</strong> Por eso lo puede montar cualquiera subiendo ficheros, a diferencia del fine-tuning, que reentrena el modelo. Y la respuesta será tan buena como <strong>vuestras fuentes</strong>: si son viejas, parciales o de una sola parte interesada, el RAG lo hereda.</div>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>15 · documentos</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>3 min · RAG</em></p>
+          <p>Explicarlo con una biblioteca: no se lee todos los libros cada vez, va a la estantería que toca. Es exactamente lo que necesita un TFM: preguntar a 20 artículos a la vez sin pegarlos enteros.</p>
+          <p>Recorte: la nota de abajo se dice en una frase.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 16 · el mismo patrón -->
+      <section class="slide" data-slide="16" data-section="documentos" data-title="Proyectos, cuadernos y Gems">
+        <div class="label">documentos · las herramientas</div>
+        <h2 class="section-title">Cuadernos, proyectos y Gems: el mismo patrón con cuatro nombres</h2>
+        <p class="body-text">Por dentro tienen las mismas tres piezas: instrucciones fijas (las de sistema del bloque 1), una base de documentos (el RAG) y las conversaciones del tema agrupadas. Aprended el patrón y sabréis usarlas todas.</p>
+        <div class="pill-grid cols-4">
+          <div class="pill reveal" data-rev="p-1">
+            <div class="pill-sub">google</div>
+            <div class="pill-name">Gemini Notebook</div>
+            <div class="pill-desc">Antes NotebookLM. Un cuaderno con vuestras fuentes; responde a partir de ellas y enlaza cada cita al fragmento.</div>
+          </div>
+          <div class="pill reveal" data-rev="p-2">
+            <div class="pill-sub">chatgpt</div>
+            <div class="pill-name">Proyectos</div>
+            <div class="pill-desc">Instrucciones, ficheros y conversaciones de un mismo tema en una carpeta.</div>
+          </div>
+          <div class="pill reveal" data-rev="p-3">
+            <div class="pill-sub">claude</div>
+            <div class="pill-name">Proyectos</div>
+            <div class="pill-desc">Instrucciones y base de conocimiento compartidas por todas las conversaciones del proyecto. Lo veremos en la segunda parte.</div>
+          </div>
+          <div class="pill reveal" data-rev="p-4">
+            <div class="pill-sub">gemini</div>
+            <div class="pill-name">Gems</div>
+            <div class="pill-desc">Un asistente con rol, instrucciones y ficheros guardados. Google las está sustituyendo por skills.</div>
+          </div>
+        </div>
+        <p class="src-note">Gemini Notebook, plan gratuito: 100 cuadernos, 50 fuentes por cuaderno y hasta 500.000 palabras o 200 MB por fuente (ayuda de Google, consultada el 31/10/2026). Los límites de los demás cambian por plan.</p>
+        <div class="chrome-bottom"><span>16 · documentos</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · el mismo patrón</em></p>
+          <p>Gemini Notebook es el que usamos en el ejercicio 2 porque solo responde con las fuentes y enseña la cita al lado. Quien no tenga cuenta de Google: un proyecto de ChatGPT o de Claude, con los mismos ficheros.</p>
+          <p>Para un TFM, un cuaderno por capítulo o por bloque de literatura funciona mejor que uno con todo: menos ruido en cada respuesta.</p>
+          <p>Ojo con las Gems: Google anunció que pasan a solo lectura el 17/11/2026, el día después de esta sesión, y que desaparecen el 17/12 en cuentas personales (TODO: verificar la víspera en la ayuda de Google). No recomendar que monten nada nuevo en una Gem: mejor un cuaderno, un proyecto o una skill.</p>
+          <p>Lo que siempre se comparte son las instrucciones y los documentos. Según la herramienta y la configuración de memoria, un chat puede recordar o no otros chats del mismo proyecto (TODO: verificar el comportamiento actual en Claude y en ChatGPT).</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 17 · límites -->
+      <section class="slide" data-slide="17" data-section="documentos" data-title="Lo que hace bien y sus límites">
+        <div class="label">documentos · con criterio</div>
+        <h2 class="section-title">Preguntar a vuestras fuentes: lo que hace bien y dónde falla</h2>
+        <div class="gov-grid">
+          <div class="gov-col reveal" data-rev="g-1">
+            <h3>lo que hace bien</h3>
+            <div class="gov-list">
+              <div class="gov-item">
+                <div class="gov-name">Responde con vuestro material</div>
+                <div class="gov-desc">En Gemini Notebook, cada afirmación lleva su cita y con un clic leéis la frase original; en un proyecto, pedidle el documento y la frase.</div>
+              </div>
+              <div class="gov-item">
+                <div class="gov-name">Dice "no está en las fuentes"</div>
+                <div class="gov-desc">Con más frecuencia que un chat sin documentos, que tiende a rellenar con lo que sabe del mundo.</div>
+              </div>
+              <div class="gov-item">
+                <div class="gov-name">Cruza documentos largos</div>
+                <div class="gov-desc">Lo que dice un artículo académico frente a lo que dice un informe sectorial, en segundos.</div>
+              </div>
+            </div>
+          </div>
+          <div class="gov-col reveal" data-rev="g-2">
+            <h3>dónde falla</h3>
+            <div class="gov-list">
+              <div class="gov-item">
+                <div class="gov-name">Solo sabe lo que le subís</div>
+                <div class="gov-desc">Si todas vuestras fuentes son de la industria, os contará la versión de la industria.</div>
+              </div>
+              <div class="gov-item">
+                <div class="gov-name">Resume, no lee por vosotros</div>
+                <div class="gov-desc">Puede perder un matiz o mezclar dos documentos. La cita se abre y se lee.</div>
+              </div>
+              <div class="gov-item">
+                <div class="gov-name">Nunca datos personales</div>
+                <div class="gov-desc">Las entrevistas de vuestro trabajo de campo, anonimizadas: códigos, no nombres.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>17 · documentos</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · límites</em></p>
+          <p>"Con más frecuencia" es a propósito: no es infalible. Es lo que van a comprobar con las dos preguntas trampa del ejercicio 2.</p>
+          <p>Sobre las entrevistas propias: además de anonimizar, el consentimiento informado que firme la persona entrevistada tiene que permitir ese uso. Si su TFM tiene trabajo de campo con personas, que lo consulten con su tutor.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 18 · ejercicio 2 -->
+      <section class="slide" data-slide="18" data-section="documentos" data-title="Ejercicio 2 · Preguntar a vuestras fuentes">
+        <span class="practice-badge">práctica · ejercicio 2</span>
+        <div class="label">documentos · el mapa de la literatura</div>
+        <h2 class="section-title">Preguntar a vuestras fuentes con Gemini Notebook</h2>
+        <p class="body-text">Un cuaderno con las seis fuentes de Envoltia, o con 5 a 8 fuentes de vuestro TFM. El resultado: <strong>un mapa de la literatura</strong>, con la fuente y la cita de cada afirmación, y lo que vuestras fuentes no dicen.</p>
+        <div class="idea-grid cols-2">
+          <div class="idea-card reveal" data-rev="e2-1"><div class="idea-name">1 · El cuaderno</div><div class="idea-desc">Cread un cuaderno y subid las fuentes. 3&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e2-2"><div class="idea-name">2 · El mapa</div><div class="idea-desc">El prompt del compañero: temas, quién dice qué, dónde coinciden y dónde se contradicen. 7&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e2-3"><div class="idea-name">3 · Las trampas</div><div class="idea-desc">Dos preguntas cuya respuesta no está en las fuentes. ¿Contesta, o dice que no consta? 4&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e2-4"><div class="idea-name">4 · Tres citas abiertas</div><div class="idea-desc">¿Dice cada fuente lo que dice el mapa? Y puesta en común. 6&nbsp;min.</div></div>
+        </div>
+        <p class="src-note">20 minutos, en parejas. Las fuentes de Envoltia, el prompt y las trampas están en el compañero, ejercicio 2. Sin cuenta de Google: un proyecto de ChatGPT o de Claude.</p>
+        <div class="chrome-bottom"><span>18 · documentos</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Ejercicio 2 · 20 min, puesta en común incluida</em></p>
+          <p>Minuto 0: que descarguen las seis fuentes de Envoltia (o reúnan las suyas: PDF de artículos, informes, notas). Cambio de papeles: ahora trae el tema la otra persona de la pareja. Minuto 3: todos con el cuaderno creado; si alguien no puede, que se una a otra pareja. Minuto 10: las trampas. Minuto 14: abrir tres citas. Minuto 17: puesta en común con la slide 19.</p>
+          <p>Las trampas, la contradicción plantada entre dos fuentes de Envoltia y el mapa de referencia: ficheros-practica/ejercicio-2-fuentes-notebook/README.md. Quien use sus propias fuentes: las trampas se las inventa la pareja, preguntando algo que saben que sus fuentes no dicen.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 19 · ejercicio 2 · puesta en común -->
+      <section class="slide" data-slide="19" data-section="documentos" data-title="Ejercicio 2 · Qué hemos visto">
+        <span class="practice-badge">práctica · ejercicio 2</span>
+        <div class="label">documentos · puesta en común</div>
+        <h2 class="section-title">Qué hemos visto</h2>
+        <ul class="read-list" data-reveal-focus="soft">
+          <li class="reveal" data-rev="q2-1">¿Ha contestado a las trampas, o ha dicho que no constaba?</li>
+          <li class="reveal" data-rev="q2-2">¿Alguna cita no decía lo que decía el mapa?</li>
+          <li class="reveal" data-rev="q2-3">¿Habéis encontrado una contradicción entre dos fuentes? ¿Cuál pesa más, y por qué?</li>
+          <li class="reveal" data-rev="q2-4">¿Qué hueco de la literatura ha aparecido? ¿Podría ser vuestra aportación?</li>
+        </ul>
+        <div class="chrome-bottom"><span>19 · documentos</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Puesta en común · 3 min</em></p>
+          <p>La tercera pregunta es la clave de un estado de la cuestión: no basta con resumir, hay que decir qué fuente pesa más (artículo revisado por pares frente a informe de una asociación del sector, muestra grande frente a pequeña, reciente frente a vieja).</p>
+          <p>La cuarta es el puente al bloque 3: con seis fuentes se ve un hueco; para saber si el hueco es real hay que buscar fuera, y eso es lo que hace la investigación profunda.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 20 · divisor 3 -->
+      <section class="slide dark" data-slide="20" data-hud="skip" data-section="agentes" data-title="3 · Investigación profunda y agentes">
+        <div class="divider-wrap">
+          <div class="divider-num">3</div>
+          <h1 class="divider-title">Investigación profunda y agentes</h1>
+          <ul class="div-sub">
+            <li>de chat a agente</li>
+            <li>investigación profunda</li>
+            <li>¿existe la cita y dice eso?</li>
+            <li>ejercicio 3</li>
+          </ul>
+        </div>
+        <div class="chrome-bottom"><span>20 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Bloque 3 · unos 30 min con el ejercicio 3 en su versión de 15 min, 40 con todo</em></p>
+          <p>Slides 21 a 31. Lo que no se recorta: 22 a 26 (cómo trabaja, qué falla, cómo se audita una referencia y el ejercicio). Para cuadrar: el ejercicio 3 en su versión de 15 min (notas de la slide 25), la 28, la 29 y la 30 a casa, y la multimodalidad (31) en un minuto.</p>
+          <p>Lanzar la investigación profunda de referencia (Envoltia) la víspera y tenerla abierta en una pestaña: es la que se audita en directo mientras corren las de la sala.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 21 · qué es un agente -->
+      <section class="slide" data-slide="21" data-section="agentes" data-title="Qué es un agente">
+        <div class="label">agentes · la definición</div>
+        <h2 class="section-title">Agente = automatización + IA</h2>
+        <p class="body-text">Un chat responde a una pregunta. Un agente recibe un objetivo, planifica los pasos, los ejecuta con herramientas (buscar, leer, escribir), revisa cómo va y corrige el rumbo. El módulo 0 lo dejó en la escalera; aquí lo vemos trabajar.</p>
+        <div class="venn-wrap">
+          <svg viewBox="0 0 1000 490" role="img" aria-label="Diagrama de Venn: la intersección de automatización e IA es el agente">
+            <defs>
+              <clipPath id="venn-clip-left"><circle cx="390" cy="230" r="185"/></clipPath>
+            </defs>
+            <g class="reveal" data-rev="venn-1">
+              <circle cx="390" cy="230" r="185" style="fill: var(--navy); fill-opacity: 0.07; stroke: var(--navy); stroke-width: 2"/>
+              <text x="285" y="222" class="venn-set" text-anchor="middle" style="fill: var(--navy)">automatización</text>
+              <text x="285" y="252" class="venn-sub" text-anchor="middle" style="fill: var(--muted)">hace siempre lo mismo</text>
+              <text x="285" y="276" class="venn-sub" text-anchor="middle" style="fill: var(--muted)">sin cansarse</text>
+            </g>
+            <g class="reveal" data-rev="venn-2">
+              <circle cx="610" cy="230" r="185" style="fill: var(--amber-soft); fill-opacity: 0.07; stroke: var(--amber-soft); stroke-width: 2"/>
+              <text x="715" y="222" class="venn-set" text-anchor="middle" style="fill: var(--amber-soft)">IA</text>
+              <text x="715" y="252" class="venn-sub" text-anchor="middle" style="fill: var(--muted)">entiende y decide</text>
+              <text x="715" y="276" class="venn-sub" text-anchor="middle" style="fill: var(--muted)">pero no repite igual</text>
+            </g>
+            <g class="reveal" data-rev="venn-3">
+              <g clip-path="url(#venn-clip-left)">
+                <circle cx="610" cy="230" r="185" style="fill: var(--amber-soft); fill-opacity: 0.16"/>
+              </g>
+              <circle cx="500" cy="230" r="5" style="fill: var(--navy)"/>
+              <line x1="500" y1="238" x2="500" y2="420" style="stroke: var(--navy-40); stroke-width: 1.5"/>
+              <text x="500" y="455" class="venn-hit" text-anchor="middle" style="fill: var(--navy)">agente</text>
+              <text x="500" y="484" class="venn-sub" text-anchor="middle" style="fill: var(--muted)">decide con criterio y ejecuta sin cansarse</text>
+            </g>
+          </svg>
+        </div>
+        <div class="chrome-bottom"><span>21 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · qué es un agente</em></p>
+          <p>Un agente comprende un objetivo, planifica, ejecuta y corrige. La automatización sola se rompe con la primera excepción; la IA sola no repite igual. <strong>La IA pone el criterio, la automatización pone la constancia.</strong></p>
+          <p>Un agente de los que se usan hoy (ChatGPT, Gemini, Claude) no aprende solo entre una tarea y otra, salvo que guarde notas o memoria. Si sale el aprendizaje por refuerzo, es tu terreno: una frase, sin desviarse.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 22 · cómo trabaja la investigación profunda -->
+      <section class="slide" data-slide="22" data-section="agentes" data-title="Investigación profunda: cómo trabaja">
+        <div class="label">agentes · investigación profunda</div>
+        <h2 class="section-title">La investigación profunda es un agente que busca, lee y redacta</h2>
+        <div class="stepway">
+          <div class="stepway-col reveal" data-rev="d-1">
+            <div class="stepway-num">1</div>
+            <div class="stepway-tag">aclara</div>
+            <div class="stepway-title">Aclara o propone un plan antes de empezar</div>
+            <ul class="stepway-bullets">
+              <li>ChatGPT suele preguntar: qué país, qué periodo, para qué es el informe</li>
+              <li>Gemini enseña un plan: se revisa y se pulsa para empezar</li>
+            </ul>
+          </div>
+          <div class="stepway-col reveal" data-rev="d-2">
+            <div class="stepway-num">2</div>
+            <div class="stepway-tag">planifica</div>
+            <div class="stepway-title">Divide el encargo en búsquedas</div>
+            <ul class="stepway-bullets">
+              <li>Mercado, actores, literatura académica: una línea de búsqueda por tema</li>
+            </ul>
+          </div>
+          <div class="stepway-col reveal" data-rev="d-3">
+            <div class="stepway-num">3</div>
+            <div class="stepway-tag">busca y lee</div>
+            <div class="stepway-title">Decenas de páginas, varios minutos</div>
+            <ul class="stepway-bullets">
+              <li>Lee, descarta y vuelve a buscar según lo que encuentra</li>
+              <li>Por eso tarda: no responde de memoria</li>
+            </ul>
+          </div>
+          <div class="stepway-col reveal" data-rev="d-4">
+            <div class="stepway-num">4</div>
+            <div class="stepway-tag">redacta</div>
+            <div class="stepway-title">Un informe largo, con enlaces</div>
+            <ul class="stepway-bullets">
+              <li>Cada afirmación con su fuente; que esté enlazada no quiere decir que esté comprobada</li>
+            </ul>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>22 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · cómo trabaja</em></p>
+          <p>Contarlo con la de referencia abierta: enseñar el plan que hizo y la lista de fuentes que consultó. Paso 1: si nadie pulsa el botón del plan en Gemini, la investigación no empieza; decirlo en voz alta al lanzar el ejercicio 3 (comprobar el flujo actual la víspera). La última línea del paso 4 es el puente a la slide 24.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 23 · dónde está -->
+      <section class="slide" data-slide="23" data-section="agentes" data-title="Dónde está la investigación profunda">
+        <div class="label">agentes · las herramientas</div>
+        <h2 class="section-title">Dónde está, a 31 de octubre de 2026</h2>
+        <div class="mtab-wrap">
+          <table class="mtab is-lg">
+            <thead><tr><th>Herramienta</th><th>Cómo se llama</th><th>En el plan gratuito</th><th>A tener en cuenta</th></tr></thead>
+            <tbody>
+              <tr><td>Gemini</td><td>Deep Research</td><td class="is-key">Sí, con límite de uso</td><td>Sin plan puede no estar disponible en horas de mucha demanda</td></tr>
+              <tr><td>ChatGPT</td><td>Deep research</td><td class="is-key">Sí, limitado</td><td>El contador de usos que quedan está en la propia app</td></tr>
+              <tr><td>Claude</td><td>Research</td><td>No, solo planes de pago</td><td>Necesita la búsqueda web activada</td></tr>
+              <tr><td>Copilot</td><td>Researcher</td><td>No: Microsoft 365 Premium o licencia de empresa</td><td>Deep Research de la app gratuita se retiró el 18/08/2026</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="src-note">Ayudas oficiales de Google, Anthropic y Microsoft, consultadas el 31/10/2026; ChatGPT, según su página de precios recogida por terceros. Los nombres cambian con el idioma de la interfaz.</p>
+        <div class="chrome-bottom"><span>23 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · dónde está</em></p>
+          <p>Lo práctico: en cada pareja, al menos una persona con Gemini o ChatGPT. Perplexity también tiene un modo de investigación con límite diario en el plan gratuito (TODO: verificar el límite actual). Para literatura académica hay buscadores con IA especializados (Elicit, Consensus, Semantic Scholar); se pueden mencionar, sin recomendar uno.</p>
+          <p>Esta tabla caduca rápido: revisarla la víspera, el domingo 15/11, y cambiar la fecha del título si algo cambia (TODO: verificar los cuatro planes).</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 24 · qué inventa -->
+      <section class="slide" data-slide="24" data-section="agentes" data-title="Seis fallos típicos de la investigación profunda">
+        <div class="label">agentes · los fallos típicos</div>
+        <h2 class="section-title">Seis fallos que buscar en un informe de investigación profunda</h2>
+        <div class="idea-grid">
+          <div class="idea-card reveal" data-rev="x-1">
+            <div class="idea-name">La fuente no lo dice</div>
+            <p class="idea-desc">El enlace existe, pero la cifra no está, o es de otro año.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="x-1">
+            <div class="idea-name">Otro mercado</div>
+            <p class="idea-desc">Datos mundiales o de Estados Unidos contados como si fueran de Europa.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="x-1">
+            <div class="idea-name">La empresa habla de sí misma</div>
+            <p class="idea-desc">La web de una empresa es fuente de lo que dice la empresa, no de su cuota.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="x-2">
+            <div class="idea-name">Viejo como si fuera nuevo</div>
+            <p class="idea-desc">Un estudio de 2018 contado en presente, antes de un cambio de regulación.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="x-2">
+            <div class="idea-name">El hueco rellenado</div>
+            <p class="idea-desc">No encuentra el tamaño del mercado europeo y lo estima sin decirlo.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="x-2">
+            <div class="idea-name">El mismo tono para todo</div>
+            <p class="idea-desc">Suena igual de seguro cuando acierta que cuando se equivoca.</p>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>24 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>3 min · lo que falla</em></p>
+          <p>Lo que hace bien ya se ha visto: en diez minutos lee lo que a una persona le costaría una tarde, y deja la lista de fuentes. El problema es que el informe parece terminado. Las alucinaciones del módulo 0, aquí con enlaces.</p>
+          <p>Ejemplos de cada fallo, sacados de la de referencia de Envoltia: guion del ejercicio 3, apartado "Fallos típicos".</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 25 · existe la cita -->
+      <section class="slide" data-slide="25" data-section="agentes" data-title="¿Existe la cita y dice eso?">
+        <div class="label">agentes · auditar una referencia</div>
+        <h2 class="section-title">¿Existe la cita, y dice eso?</h2>
+        <div class="mtab-wrap">
+          <table class="mtab">
+            <thead><tr><th>Pregunta</th><th>Cómo se comprueba</th><th>Señal de alarma</th></tr></thead>
+            <tbody>
+              <tr class="reveal" data-rev="a-1"><td>¿Existe?</td><td>El DOI se abre en doi.org; el título exacto sale en Google Scholar; la revista existe</td><td class="is-bad">Autores reales con un título que nadie ha escrito</td></tr>
+              <tr class="reveal" data-rev="a-2"><td>¿Dice eso?</td><td>Abrir el resumen o el texto y buscar la cifra o la idea que se le atribuye</td><td class="is-bad">El artículo existe pero habla de otra cosa, de otro país o de otro año</td></tr>
+              <tr class="reveal" data-rev="a-3"><td>¿Está revisada por pares?</td><td>Revista indexada (Scopus, Web of Science, DOAJ en acceso abierto); no un preprint ni un blog</td><td class="is-bad">Revista depredadora: publica cualquier cosa si se paga</td></tr>
+              <tr class="reveal" data-rev="a-4"><td>¿Sigue en pie?</td><td>Aviso de retractación en la web de la revista o en la base de Retraction Watch</td><td class="is-bad">Artículo retractado que se sigue citando</td></tr>
+              <tr class="reveal" data-rev="a-5"><td>¿Primaria o secundaria?</td><td>¿Hizo el estudio o cita a quien lo hizo? Si cita, id al original</td><td class="is-bad">Una cifra que pasa de informe en informe y nadie sabe de dónde sale</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="src-note">La plantilla de auditoría, con estas cinco preguntas en columnas, está en el compañero, ejercicio 3.</p>
+        <div class="chrome-bottom"><span>25 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>3 min · auditar una referencia</em></p>
+          <p>Hacerlo en directo con una referencia de la investigación de referencia: copiar el título en Google Scholar, abrir el DOI, buscar la cifra. Con práctica, treinta segundos por referencia, y es lo que separa un estado de la cuestión defendible de uno que se cae en la primera pregunta del tribunal.</p>
+          <p>La fila que más sorprende: la cita que existe pero no dice eso. Es el fallo más frecuente de la investigación profunda y el más difícil de ver, porque el enlace funciona.</p>
+          <p>Retraction Watch: su base de datos de retractaciones es de acceso abierto desde que Crossref la adquirió en 2023 (TODO: verificar la forma actual de consultarla). Revistas depredadoras: no hay una lista oficial; la señal práctica es si la revista está indexada en Scopus o Web of Science, o en DOAJ si es de acceso abierto.</p>
+          <p>Esto no es lo mismo que comprobar un dato estadístico concreto, que ya trabajaron en otra sesión de la asignatura: aquí se audita la referencia académica entera.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 26 · ejercicio 3 -->
+      <section class="slide" data-slide="26" data-section="agentes" data-title="Ejercicio 3 · El estado de la cuestión, auditado">
+        <span class="practice-badge">práctica · ejercicio 3</span>
+        <div class="label">agentes · el estado de la cuestión</div>
+        <h2 class="section-title">El estado de la cuestión con investigación profunda, auditado</h2>
+        <p class="body-text">El encargo: <strong>el estado de la cuestión de vuestra pregunta de investigación</strong> (la del ejercicio 1), o el de Envoltia. Mientras el agente trabaja, auditamos juntos la de referencia.</p>
+        <div class="idea-grid cols-2">
+          <div class="idea-card reveal" data-rev="e3-1"><div class="idea-name">1 · Lanzadla</div><div class="idea-desc">Con el prompt del compañero: responded a sus preguntas o aprobad su plan. 5&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e3-2"><div class="idea-name">2 · Mientras trabaja</div><div class="idea-desc">En pantalla, la de referencia: dos referencias auditadas entre todos. 7&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e3-3"><div class="idea-name">3 · La vuestra</div><div class="idea-desc">Cinco referencias en la tabla: existe, dice eso, revisada por pares, año, primaria o secundaria. 10&nbsp;min.</div></div>
+          <div class="idea-card reveal" data-rev="e3-4"><div class="idea-name">4 · Puesta en común</div><div class="idea-desc">Cuántas han aguantado, y qué fallo de la slide 24 habéis visto. 3&nbsp;min.</div></div>
+        </div>
+        <p class="src-note">25 minutos, en parejas (15 en la versión corta). El prompt, las alternativas sin investigación profunda y la plantilla de auditoría están en el compañero, ejercicio 3.</p>
+        <div class="chrome-bottom"><span>26 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Ejercicio 3 · 25 min, puesta en común incluida</em></p>
+          <p>Minuto 0: lanzar. Minuto 5: todos en la de referencia; abrir dos referencias en directo con la tabla de la slide 25. Minuto 12 o cuando acaben: la suya, cinco referencias con <code>plantilla-auditoria-referencias.md</code>. Minuto 22: puesta en común con la slide 27.</p>
+          <p>Versión de 15 min, la de partida para cuadrar la sesión: lanzar (5), una referencia de la de referencia entre todos (4), dos referencias propias en la tabla (4) y una puesta en común rápida (2); las otras tres, en casa. Si una investigación tarda más de 15 minutos, la pareja audita referencias de la de referencia. Referencias comprobadas, fallos típicos y plan B: ficheros-practica/ejercicio-3-estado-de-la-cuestion/README.md.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 27 · ejercicio 3 · puesta en común -->
+      <section class="slide" data-slide="27" data-section="agentes" data-title="Ejercicio 3 · Qué hemos visto">
+        <span class="practice-badge">práctica · ejercicio 3</span>
+        <div class="label">agentes · puesta en común</div>
+        <h2 class="section-title">Qué hemos visto</h2>
+        <ul class="read-list" data-reveal-focus="soft">
+          <li class="reveal" data-rev="q3-1">¿Cuántas de vuestras cinco referencias han pasado las cinco preguntas?</li>
+          <li class="reveal" data-rev="q3-2">¿Qué fallo habéis encontrado: no existe, no dice eso, no está revisada, es vieja, es secundaria?</li>
+          <li class="reveal" data-rev="q3-3">¿Qué referencias citaríais en el TFM, y cuáles solo os sirven para encontrar el original?</li>
+          <li class="reveal" data-rev="q3-4">¿Qué parte del informe escribiríais vosotros, y no la IA?</li>
+        </ul>
+        <div class="chrome-bottom"><span>27 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>Puesta en común · 3 min</em></p>
+          <p>Lo esperable: casi todas las parejas encuentran al menos una referencia que existe pero no dice eso, o un informe de consultora citado como si fuera un estudio. Las referencias académicas inventadas son menos frecuentes con investigación profunda que con un chat sin búsqueda, pero aparecen: si una pareja encuentra una, enseñarla a toda la sala.</p>
+          <p>La cuarta pregunta prepara el cierre de la sesión: la IA encuentra y ordena; la síntesis, la discusión y las conclusiones son del autor del TFM.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 28 · con qué se conecta -->
+      <section class="slide" data-slide="28" data-section="agentes" data-title="Con qué se conecta un agente">
+        <div class="label">agentes · las manos del agente</div>
+        <h2 class="section-title">Con qué se conecta un agente</h2>
+        <p class="body-text">Un agente vale lo que valen las herramientas a las que llega. Para investigar mercados, cuatro familias.</p>
+        <div class="pill-grid cols-4">
+          <div class="pill reveal" data-rev="k-1">
+            <div class="pill-sub">la web</div>
+            <div class="pill-name">Buscar y leer</div>
+            <div class="pill-desc">Lo que hace la investigación profunda. La base de casi todo.</div>
+          </div>
+          <div class="pill reveal" data-rev="k-2">
+            <div class="pill-sub">vuestras aplicaciones</div>
+            <div class="pill-name">Conectores</div>
+            <div class="pill-desc">Correo, calendario, carpetas en la nube. Con los permisos que dais vosotros, y que se pueden quitar.</div>
+          </div>
+          <div class="pill reveal" data-rev="k-3">
+            <div class="pill-sub">audio, vídeo y datos</div>
+            <div class="pill-name">Transcribir y extraer</div>
+            <div class="pill-desc">Entrevistas a expertos y vídeos a texto; datos de webs y bases públicas, respetando sus condiciones de uso y el RGPD.</div>
+          </div>
+          <div class="pill reveal" data-rev="k-4">
+            <div class="pill-sub">otros agentes</div>
+            <div class="pill-name">Estándares abiertos</div>
+            <div class="pill-desc">MCP (Anthropic, 2024) conecta un agente con herramientas; A2A (Google, 2025), agentes entre sí.</div>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>28 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · conexiones</em></p>
+          <p>Sin hacer publicidad de ningún servicio. Los conectores y MCP vuelven en la segunda parte, dentro de Claude. Recorte: pasa a casa.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 29 · tres niveles -->
+      <section class="slide" data-slide="29" data-section="agentes" data-title="Tres niveles de herramientas">
+        <div class="label">agentes · quién lo construye</div>
+        <h2 class="section-title">Tres niveles para construir un agente</h2>
+        <p class="body-text">Para un TFM o un equipo de investigación de mercados, el primer nivel da para mucho. Conocer los otros dos sirve para hablar con quien los construye sin que os vendan humo.</p>
+        <div class="levels-row cols-3">
+          <div class="level-card is-target reveal" data-rev="l-1">
+            <div class="level-target-tag">vuestro terreno</div>
+            <div class="level-num">N1</div>
+            <div class="level-name">Sin código</div>
+            <div class="level-desc">GPTs, proyectos, cuadernos, skills, Make o Zapier con IA. Lo configura quien tiene el problema.</div>
+          </div>
+          <div class="level-card reveal" data-rev="l-2">
+            <div class="level-num">N2</div>
+            <div class="level-name">Técnico medio</div>
+            <div class="level-desc">Plataformas de flujos y agentes como Copilot Studio, n8n o Flowise. Conectan con los sistemas de la empresa.</div>
+          </div>
+          <div class="level-card reveal" data-rev="l-3">
+            <div class="level-num">N3</div>
+            <div class="level-name">Desarrollo</div>
+            <div class="level-desc">Frameworks como LangGraph y los kits de agentes de los grandes proveedores. Para equipos de ingeniería.</div>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>29 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · tres niveles</em></p>
+          <p>Categorías, no marcas: los nombres de producto cambian cada pocos meses. Si alguien del máster programa, el N3 es una salida para un TFM con prototipo; si no, el N1 basta. Recorte: pasa a casa.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 30 · cuándo no -->
+      <section class="slide" data-slide="30" data-section="agentes" data-title="Cuándo no delegar en un agente">
+        <div class="label">agentes · con criterio</div>
+        <h2 class="section-title">Cuándo no delegar en un agente</h2>
+        <p class="body-text">La pregunta no es "¿puedo automatizarlo?". Es "¿qué pasa la primera vez que se equivoque y nadie lo vea?".</p>
+        <div class="gov-grid">
+          <div class="gov-col reveal" data-rev="w-1">
+            <h3>cuándo sí</h3>
+            <div class="gov-list">
+              <div class="gov-item">
+                <div class="gov-name">Encontrar y ordenar fuentes</div>
+                <div class="gov-desc">Tarea larga, error barato, y una persona audita cada referencia antes de usarla.</div>
+              </div>
+              <div class="gov-item">
+                <div class="gov-name">Un primer borrador con fuentes</div>
+                <div class="gov-desc">Un estado de la cuestión que después se audita, referencia a referencia.</div>
+              </div>
+            </div>
+          </div>
+          <div class="gov-col reveal" data-rev="w-2">
+            <h3>cuándo no</h3>
+            <div class="gov-list">
+              <div class="gov-item">
+                <div class="gov-name">Lo que firmáis vosotros</div>
+                <div class="gov-desc">El análisis, la discusión y las conclusiones del TFM son del autor, y se declara cómo se ha usado la IA.</div>
+              </div>
+              <div class="gov-item">
+                <div class="gov-name">Datos de personas</div>
+                <div class="gov-desc">Respuestas de vuestro trabajo de campo con nombres, correos de contactos: ni al agente ni al chat.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>30 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · cuándo no</em></p>
+          <p>Retoma el human in the loop del módulo 0 con casos del TFM. Lo que se permite y cómo se declara siguen las normas habituales de integridad académica: la autoría es vuestra, lo que hace la IA se declara y nada se inventa (deck 00, slides 12 y 13). Decirlo antes de que lo piense la sala: hay casos en que la respuesta es no. Recorte: pasa a casa.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 31 · multimodal -->
+      <section class="slide" data-slide="31" data-section="agentes" data-title="Más allá del texto">
+        <div class="label">agentes · multimodalidad</div>
+        <h2 class="section-title">Ya no es solo texto: imagen, audio y vídeo</h2>
+        <p class="body-text">Casi todos los modelos actuales son multimodales: convierten texto, imagen, audio y vídeo en vectores y trabajan con todo a la vez. La frontera entre un LLM y un modelo multimodal se está borrando.</p>
+        <div class="idea-grid cols-4">
+          <div class="idea-card reveal" data-rev="mm-1">
+            <div class="idea-name">Leer imágenes</div>
+            <p class="idea-desc">Un gráfico de un informe en PDF: qué datos muestra, de qué año y con qué unidad.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="mm-1">
+            <div class="idea-name">Escuchar</div>
+            <p class="idea-desc">Transcribir una entrevista a un experto, con su permiso, y sacar los temas.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="mm-1">
+            <div class="idea-name">Ver vídeo</div>
+            <p class="idea-desc">Un webinar o una conferencia del sector: ideas principales y el minuto de cada una.</p>
+          </div>
+          <div class="idea-card reveal" data-rev="mm-2">
+            <div class="idea-name">Generar</div>
+            <p class="idea-desc">Diagramas e imágenes para la defensa del TFM, declarando que son generados con IA.</p>
+          </div>
+        </div>
+        <div class="chrome-bottom"><span>31 · agentes</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>1 a 2 min · multimodalidad</em></p>
+          <p>Una slide, con usos de un TFM. La transcripción de entrevistas es la que más tiempo les va a ahorrar: recordar el consentimiento y que la transcripción se revisa con el audio delante.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 32 · lo que ya tenéis -->
+      <section class="slide dark" data-slide="32" data-section="cierre" data-title="Lo que ya tenéis para el TFM">
+        <div class="label">cierre · primera parte</div>
+        <h2 class="section-title">Lo que ya tenéis para el TFM</h2>
+        <div class="next-list">
+          <div class="next-item reveal" data-rev="n-1"><div class="next-num">01</div><div class="next-text">Una pregunta de investigación con objetivos, hipótesis y método, revisada.</div></div>
+          <div class="next-item reveal" data-rev="n-2"><div class="next-num">02</div><div class="next-text">Un mapa de vuestras fuentes, con la cita de cada afirmación y sus huecos.</div></div>
+          <div class="next-item reveal" data-rev="n-3"><div class="next-num">03</div><div class="next-text">Un estado de la cuestión con las referencias auditadas.</div></div>
+          <div class="next-item reveal" data-rev="n-4"><div class="next-num">04</div><div class="next-text">Ahora, lo mismo dentro de Claude: un proyecto para el TFM, artefactos y Cowork.</div></div>
+        </div>
+        <div class="chrome-bottom"><span>32 · cierre</span><span>muibal · sesión de IA · 2026</span></div>
+        <aside class="notes" hidden>
+          <p><em>2 min · cierre de la primera parte</em></p>
+          <p>Las tres piezas son el arranque de cualquier TFM: si las tienen escritas antes de la primera tutoría, la tutoría rinde el doble. Que guarden los enlaces de las conversaciones: sirven para la declaración de uso de IA.</p>
+          <p>Puente: la segunda parte enseña lo mismo con Claude, donde la pregunta del ejercicio 1 pasa a ser las instrucciones de un proyecto y las fuentes del ejercicio 2, su base de conocimiento.</p>
+        </aside>
+      </section>
+
+      <!-- ================================================================ 33 · gracias -->
+      <section class="slide dark" data-slide="33" data-section="cierre" data-title="Gracias">
+        <div class="close">
+          <p class="cover-eyebrow reveal-fade" data-rev="cl-eye">sesión de IA · muibal</p>
+          <h1 class="close-claim reveal" data-rev="cl-claim">Pedir bien, preguntar a vuestras fuentes, <em>auditar siempre</em>.</h1>
+          <p class="close-sub reveal-fade" data-rev="cl-sub">Los ejercicios, los ficheros, los prompts y el flujo del TFM con IA están en el compañero de la sesión.</p>
+          <p class="close-thanks reveal-fade" data-rev="cl-th">Gracias</p>
+          <div class="bsm-cobrand reveal-fade" data-rev="cl-logo">
+            <img src="assets/zenital-logo-foam.svg" alt="zenital">
+            <span class="cb-sep"></span>
+            <img src="assets/bsm-logo-footer.svg" alt="UPF Barcelona School of Management">
+          </div>
+        </div>
+        <aside class="notes" hidden>
+          <p><em>Fin de la primera parte</em></p>
+          <p>Lo que no se haya hecho en clase está en el compañero como "En casa, para aprender": el prompt en los dos modos, el mapa con las fuentes propias y la auditoría de las cinco referencias.</p>
+        </aside>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="hud">
+    <div class="hud-sub">índice · pulsa ESC o M para volver</div>
+    <h2>Saltos rápidos</h2>
+    <div class="hud-list" id="hud-list"></div>
+  </div>
+  <div id="help-hint">
+    <kbd>←</kbd> <kbd>→</kbd> avanzar &nbsp;·&nbsp; <kbd>M</kbd> / <kbd>ESC</kbd> índice &nbsp;·&nbsp; <kbd>F</kbd> pantalla completa &nbsp;·&nbsp; <kbd>N</kbd> presentador
+  </div>
+
+  <script src="js/deck-runtime.js"></script>
+  <script src="js/deck-presenter.js"></script>
+</body>
+
+</html>

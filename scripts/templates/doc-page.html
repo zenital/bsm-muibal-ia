@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}} · zenital</title>
+<link rel="stylesheet" href="_shared.css">
+</head>
+<body>
+<div class="shell">
+
+  <header class="site">
+    <div class="left">
+      <img class="logo" src="logo.svg" alt="zenital">
+      <span class="doctype">docs</span>
+      <!-- Co-branding BSM: capa de este repo (curso BSM), el kit no se toca. -->
+      <span style="display:inline-block; width:1px; height:22px; background:var(--navy); opacity:0.2;"></span>
+      <img src="bsm-logo.svg" alt="UPF Barcelona School of Management" style="height:24px; width:auto; flex-shrink:0; display:block;">
+    </div>
+    <div class="meta">
+      <strong>{{SECTION_NAME}}</strong><br>
+      Máster Universitario en Negocios Internacionales · 2026<br>
+      {{SECTION_META}}
+    </div>
+  </header>
+
+  <nav class="toc">
+    <p class="label">En esta sección</p>
+    <ul>
+      {{NAV_LINKS}}
+    </ul>
+  </nav>
+
+  <main class="doc">
+    <div class="sheet">
+
+      <header class="doc-header">
+        <div class="left">
+          <p class="eyebrow">{{EYEBROW}}</p>
+          <h1 class="doc-title">{{DOC_TITLE_HTML}}</h1>
+        </div>
+        <div class="meta">
+          <strong>Para</strong> · {{AUDIENCE}}<br>
+          <strong>Actualizado</strong> · {{UPDATED}}
+        </div>
+      </header>
+
+      {{MINITOC}}
+
+      {{CONTENT}}
+
+      <footer class="doc-footer">
+        <span>{{FOOTER_LEFT}}</span>
+        <span>{{FOOTER_RIGHT}}</span>
+      </footer>
+    </div>
+  </main>
+</div>
+<button class="dl-pdf" type="button" onclick="window.print()" aria-label="Imprimir esta página en PDF">Imprimir · PDF</button>
+{{MERMAID_SCRIPT}}
+</body>
+</html>

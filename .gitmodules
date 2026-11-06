@@ -1,0 +1,6 @@
+[submodule "brand"]
+	path = brand
+	url = https://github.com/zenital/zenital-brand.git
+[submodule "common"]
+	path = common
+	url = https://github.com/zenital/zenital-training-common.git

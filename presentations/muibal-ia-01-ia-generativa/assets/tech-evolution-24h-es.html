@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolución exponencial</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Literata:wght@400;500;600;700;800;900&family=PT+Mono&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --ocean-100: #00117D;
+            --ocean-80: #344097;
+            --ocean-64: #5b66ab;
+            --ocean-40: #999ecc;
+            --ocean-24: #C2C6E0;
+            --ocean-16: #d7d9e9;
+            --ocean-08: #EBEBF4;
+            --rojo: #9A1B1B;
+            --coral: #F25C5C;
+            --menta: #7cae98;
+            --oliva: #77B28C;
+            --mostaza: #FFC857;
+            --salmon: #D98A6A;
+            --lavanda: #A96BB0;
+            --celeste: #7caed6;
+            --foam: #FEFDF7;
+            --text-body: #1A1F52;
+            --text-muted: #7A82BB;
+            --gris: #666666;
+            --gris-oscuro: #444444;
+            --blanco: #FFFFFF;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--ocean-100);
+            font-family: 'PT Mono', monospace;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--foam);
+            cursor: pointer;
+        }
+
+        .font-mono {
+            font-family: 'PT Mono', monospace !important;
+        }
+
+        #slide-container {
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            background: var(--ocean-100);
+            position: relative;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* Faint concentric ornament inspired by zenital section master */
+        #slide-container::after {
+            content: "";
+            position: absolute;
+            right: -8%;
+            bottom: -25%;
+            width: 70%;
+            height: 120%;
+            background-image: radial-gradient(circle, transparent 38%, rgba(91, 102, 171, 0.08) 38.4%, transparent 39%),
+                radial-gradient(circle, transparent 48%, rgba(91, 102, 171, 0.07) 48.4%, transparent 49%),
+                radial-gradient(circle, transparent 58%, rgba(91, 102, 171, 0.06) 58.4%, transparent 59%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(91, 102, 171, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(91, 102, 171, 0.07) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .axis-label-y {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: left center;
+            font-family: 'PT Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ocean-40);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.55;
+            z-index: 5;
+            white-space: nowrap;
+        }
+
+        .axis-label-x {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            text-align: center;
+            font-family: 'PT Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--ocean-40);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            opacity: 0.55;
+            z-index: 5;
+        }
+
+        .overlay-ui {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            z-index: 10;
+        }
+
+        .clock-container {
+            margin-top: 18px;
+            border-left: 3px solid var(--mostaza);
+            background: rgba(52, 64, 151, 0.18);
+            backdrop-filter: blur(4px);
+            padding: 12px 22px;
+            border-radius: 0 4px 4px 0;
+            transition: opacity 0.5s;
+        }
+
+        #headlines-container {
+            position: absolute;
+            top: 60%;
+            left: 60px;
+            transform: translateY(-50%);
+            width: 65%;
+            text-align: left;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .headline {
+            font-family: 'Literata', Georgia, serif;
+            font-size: 3.6rem;
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.5px;
+            color: var(--foam);
+            text-shadow: 0 10px 40px rgba(0, 0, 0, 0.85);
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-out;
+            transform: translateY(20px);
+            display: none;
+        }
+
+        .headline.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .headline-sub {
+            font-family: 'PT Mono', monospace;
+            font-size: 1.05rem;
+            color: var(--mostaza);
+            margin-top: 18px;
+            display: block;
+            border-left: 3px solid var(--mostaza);
+            padding: 6px 14px 6px 14px;
+            background: rgba(52, 64, 151, 0.25);
+            width: fit-content;
+            backdrop-filter: blur(2px);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-weight: 400;
+        }
+
+        .event-label {
+            position: absolute;
+            background: rgba(0, 17, 125, 0.92);
+            border: 1px solid rgba(91, 102, 171, 0.6);
+            border-left: 3px solid var(--celeste);
+            padding: 8px 14px;
+            border-radius: 2px;
+            font-size: 0.82rem;
+            font-family: 'PT Mono', monospace;
+            color: var(--foam);
+            letter-spacing: 0.3px;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.2s ease-out;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            white-space: nowrap;
+            z-index: 100;
+        }
+
+        .event-label .event-title {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .event-label .event-year {
+            color: var(--ocean-40);
+            font-size: 0.72rem;
+            margin-top: 2px;
+        }
+
+        .event-label.frozen {
+            border-left-color: var(--mostaza);
+            box-shadow: 0 0 24px rgba(255, 200, 87, 0.3);
+            z-index: 200;
+        }
+
+        #console-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 38px;
+            background: rgba(0, 8, 60, 0.96);
+            border-top: 1px solid rgba(91, 102, 171, 0.4);
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'PT Mono', monospace;
+            font-size: 0.78rem;
+            letter-spacing: 0.5px;
+            z-index: 30;
+            padding: 0 24px;
+            box-shadow: 0 -4px 18px rgba(0, 0, 0, 0.4);
+            transition: opacity 0.5s;
+        }
+
+        #console-content {
+            display: flex;
+            gap: 25px;
+            color: var(--ocean-16);
+            white-space: nowrap;
+            align-items: center;
+        }
+
+        .console-entry {
+            opacity: 0;
+            animation: fadeIn 0.3s forwards;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .console-time {
+            color: var(--mostaza);
+            font-weight: bold;
+        }
+
+        .console-sep {
+            color: var(--ocean-40);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        #final-screen {
+            position: absolute;
+            inset: 0;
+            background: var(--ocean-100);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 8%;
+            z-index: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 1.4s ease;
+        }
+
+        #final-screen.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .final-eyebrow {
+            font-family: 'PT Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--mostaza);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 48px;
+            opacity: 0;
+            transform: translateY(12px);
+            transition: opacity 0.8s ease 0.2s, transform 0.8s ease 0.2s;
+        }
+
+        #final-screen.visible .final-eyebrow {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .final-statement {
+            font-family: 'Literata', Georgia, serif;
+            font-size: clamp(2.4rem, 5.4vw, 5rem);
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            color: var(--foam);
+            text-align: center;
+            max-width: 18ch;
+            margin: 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease 0.6s, transform 1s ease 0.6s;
+        }
+
+        #final-screen.visible .final-statement {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .final-emphasis {
+            color: var(--mostaza);
+            font-style: italic;
+        }
+
+        .final-stat {
+            margin-top: 56px;
+            font-family: 'PT Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--ocean-40);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding-top: 24px;
+            border-top: 1px solid rgba(91, 102, 171, 0.35);
+            min-width: 320px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.9s ease 1.4s;
+        }
+
+        #final-screen.visible .final-stat {
+            opacity: 1;
+        }
+
+        .controls {
+            position: absolute;
+            bottom: 60px;
+            right: 110px;
+            z-index: 20;
+            display: flex;
+            gap: 15px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        #slide-container:hover .controls {
+            opacity: 1;
+        }
+
+        #btn-fullscreen {
+            position: absolute;
+            bottom: 60px;
+            right: 40px;
+            opacity: 0.6;
+            z-index: 50;
+        }
+
+        .zoom-warning {
+            position: absolute;
+            bottom: 130px;
+            right: 40px;
+            text-align: right;
+            opacity: 0;
+            transition: opacity 0.5s;
+            z-index: 10;
+        }
+
+        .zoom-warning .box {
+            background: var(--mostaza);
+            color: var(--ocean-100);
+            padding: 5px 12px;
+            font-family: 'PT Mono', monospace;
+            font-size: 0.75rem;
+            border-radius: 2px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* TABLET / SMALL LAPTOP RESPONSIVE STYLES */
+        @media (min-width: 769px) and (max-width: 1260px) {
+            .headline {
+                font-size: 2.2rem;
+                /* Reduced from 3.5rem */
+            }
+
+            .headline-sub {
+                font-size: 1rem;
+            }
+
+            #headlines-container {
+                width: 80%;
+            }
+        }
+
+        /* MOBILE RESPONSIVE STYLES */
+        @media (max-width: 768px) {
+            #slide-container {
+                height: 100vh;
+                /* Full height on mobile */
+                max-width: 100%;
+                border-radius: 0;
+            }
+
+            .overlay-ui {
+                top: 20px;
+                left: 20px;
+            }
+
+            .headline {
+                font-size: 1.8rem;
+            }
+
+            .headline-sub {
+                font-size: 0.9rem;
+            }
+
+            #headlines-container {
+                width: 90%;
+                left: 20px;
+            }
+
+            .clock-container {
+                padding: 5px 10px;
+            }
+
+            #humanity-clock {
+                font-size: 1.5rem;
+            }
+
+            #year-counter {
+                font-size: 1rem;
+            }
+
+            /* Final Screen */
+            #final-screen {
+                padding: 30px 24px;
+            }
+
+            .final-eyebrow {
+                font-size: 0.7rem;
+                letter-spacing: 2.5px;
+                margin-bottom: 28px;
+            }
+
+            .final-stat {
+                font-size: 0.75rem;
+                letter-spacing: 2px;
+                margin-top: 32px;
+                min-width: auto;
+                width: 80%;
+            }
+
+            /* Controls */
+            .controls {
+                right: 90px;
+                bottom: 60px;
+            }
+
+            #btn-fullscreen {
+                bottom: 60px;
+                right: 20px;
+            }
+
+            /* Console */
+            #console-bar {
+                height: 30px;
+                font-size: 0.7rem;
+            }
+
+            /* Adjustment for labels */
+            .event-label {
+                font-size: 0.7rem;
+                padding: 4px 8px;
+            }
+
+            .axis-label-x,
+            .axis-label-y {
+                font-size: 0.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body onclick="handleUserInteraction()">
+
+    <div id="slide-container">
+        <div class="grid-bg"></div>
+
+        <div class="axis-label-y">CAPACIDAD TECNOLÓGICA (COMPLEJIDAD)</div>
+        <div class="axis-label-x">LÍNEA TEMPORAL (300.000 AÑOS)</div>
+
+        <canvas id="timelineCanvas"></canvas>
+
+        <div class="overlay-ui">
+            <h1 class="text-4xl md:text-5xl font-black tracking-tight"
+                style="color: var(--foam); font-family: 'Literata', Georgia, serif; letter-spacing: -1px;">
+                LA ACELERACIÓN
+            </h1>
+            <div class="flex items-end gap-3 mt-2">
+                <div id="year-counter" class="text-xl font-mono font-bold" style="color: var(--mostaza)">-300,000</div>
+                <div class="text-sm mb-1 font-mono" style="color: var(--ocean-40); letter-spacing: 2px;">AÑOS</div>
+            </div>
+            <div class="clock-container" id="top-clock-container">
+                <div class="text-xs font-bold tracking-widest uppercase mb-1 font-mono" style="color: var(--mostaza); letter-spacing: 3px;">DÍA DE LA
+                    HUMANIDAD</div>
+                <div id="humanity-clock" class="text-4xl font-mono font-bold"
+                    style="color: var(--foam); letter-spacing: 1px;">
+                    00:00:00:00
+                </div>
+            </div>
+        </div>
+
+        <div id="headlines-container"></div>
+
+        <div id="final-screen">
+            <div class="final-eyebrow">Día completado · 24:00:00:00</div>
+            <h2 class="final-statement">
+                Todo el progreso tecnológico<br>
+                ha ocurrido en el <span class="final-emphasis">último minuto</span>.
+            </h2>
+            <div class="final-stat">300.000 años · 1 minuto</div>
+        </div>
+
+        <div id="console-bar">
+            <div class="mr-4 font-bold select-none" style="color: var(--mostaza); letter-spacing: 2px;">>_ LOG ·</div>
+            <div id="console-content"></div>
+        </div>
+
+        <div id="labels-container"></div>
+
+        <div class="controls" style="display:none">
+            <button id="btn-iniciar" onclick="startAnim(event)" style="display:none">INICIAR</button>
+            <button id="btn-continue" onclick="resumeAnimation(event)" style="display:none">CONTINUAR</button>
+        </div>
+
+        <button id="btn-fullscreen" onclick="toggleFullscreen(event)" style="display:none"></button>
+
+        <div id="zoom-indicator" class="zoom-warning">
+            <div class="box">ZOOM x5000</div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('timelineCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('slide-container');
+        const labelsContainer = document.getElementById('labels-container');
+        const yearCounter = document.getElementById('year-counter');
+        const humanityClock = document.getElementById('humanity-clock');
+        const zoomInd = document.getElementById('zoom-indicator');
+        const consoleContent = document.getElementById('console-content');
+        const consoleBar = document.getElementById('console-bar');
+
+        const finalScreen = document.getElementById('final-screen');
+        const topClockContainer = document.getElementById('top-clock-container');
+        const headlinesContainer = document.getElementById('headlines-container');
+        const overlayUI = document.querySelector('.overlay-ui');
+
+        const controls = document.querySelector('.controls');
+
+        const btnIniciar = document.getElementById('btn-iniciar');
+        const btnContinue = document.getElementById('btn-continue');
+        const btnFullscreen = document.getElementById('btn-fullscreen');
+
+        const axesX = document.querySelector('.axis-label-x');
+        const axesY = document.querySelector('.axis-label-y');
+
+        let width, height;
+        let animationId;
+        let isRunning = false;
+        const TOTAL_YEARS = 300000;
+        let currentYear = -TOTAL_YEARS;
+        let viewScaleX = 1;
+        let viewOffsetX = 0;
+        let speed = 800;
+        let isPaused = false;
+        let currentHeadlineElement = null;
+        let activeFrozenLabels = [];
+        let lastDrawnIndex = -1;
+        let eventHistory = [];
+
+        const labelSlots = [-180, -140, -100, -60, -20, 20];
+        let slotLastUsed = [0, 0, 0, 0, 0, 0];
+
+        const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+        const colors = {
+            bg: cssVar('--ocean-100'),
+            line: cssVar('--celeste'),
+            lineShadow: cssVar('--ocean-80'),
+            highlight: cssVar('--mostaza'),
+            alert: cssVar('--coral'),
+            grid: cssVar('--gris-oscuro'),
+            white: cssVar('--blanco')
+        };
+
+        const headlineHTML = `
+            <div id="hl-desert" class="headline">LOS PRIMEROS<br>290.000 AÑOS<span class="headline-sub">Supervivencia nómada</span></div>
+            <div id="hl-tools" class="headline" style="color: var(--oliva)">DESIERTO EVOLUTIVO<span class="headline-sub">Herramientas de piedra y fuego</span></div>
+            <div id="hl-agri" class="headline" style="color: var(--mostaza)">LA CHISPA DE LA<br>CIVILIZACIÓN<span class="headline-sub">Agricultura, ciudades, imperios...</span></div>
+            <div id="hl-steam" class="headline" style="color: var(--coral)">LA MÁQUINA LO<br>CAMBIA TODO<span class="headline-sub">Revolución Industrial (-1 min)</span></div>
+            <div id="hl-war" class="headline" style="color: var(--coral)">CONFLICTO GLOBAL<span class="headline-sub">La tecnología se acelera por la guerra</span></div>
+            <div id="hl-medicine" class="headline" style="color: var(--menta)">LA MEDICINA<br>SE TRANSFORMA<span class="headline-sub">Penicilina · La era de los antibióticos (-28 s)</span></div>
+            <div id="hl-ai-birth" class="headline" style="color: var(--celeste)">LA MENTE NO SE<br>LIMITA AL CEREBRO<span class="headline-sub">OpenAI y la explosión generativa (-3 s)</span></div>
+            <div id="hl-smartphone" class="headline" style="color: var(--lavanda)">TODO EL MUNDO<br>EN EL BOLSILLO<span class="headline-sub">Conectividad total (-5 s)</span></div>
+            <div id="hl-www" class="headline" style="color: var(--ocean-16)">LA RED GLOBAL<span class="headline-sub">El inicio de la revolución digital (-10 s)</span></div>
+            <div id="hl-data" class="headline" style="color: var(--celeste)">DATOS:<br>EL NUEVO PETRÓLEO<span class="headline-sub">Aprendizaje profundo (-4 s)</span></div>
+            <div id="hl-scale" class="headline" style="color: var(--ocean-16)">LA INTELIGENCIA<br>ESCALA<span class="headline-sub">Transformers y arquitectura moderna (-2 s)</span></div>
+            <div id="hl-chatgpt" class="headline" style="color: var(--mostaza)">IA GENERATIVA<br>AL ALCANCE<span class="headline-sub">ChatGPT y la democratización de la IA (-1 s)</span></div>
+            <div id="hl-agents" class="headline" style="color: var(--menta)">AGENTES AUTÓNOMOS<span class="headline-sub">La IA actúa sola (-0,1 s)</span></div>
+        `;
+        document.getElementById('headlines-container').innerHTML = headlineHTML;
+
+        const events = [
+            { t: -300000, name: "HOMO SAPIENS", sub: "(ORIGEN)", yLevel: 0.05, isHeadlineEvent: true },
+            { t: -70000, name: "LENGUAJE", sub: "Revolución cognitiva", yLevel: 0.08, isHeadlineEvent: true },
+            { t: -10000, name: "AGRICULTURA", sub: "Asentamientos", yLevel: 0.12, isHeadlineEvent: true },
+            { t: -5000, name: "ESCRITURA", sub: "Historia", yLevel: 0.16, isHeadlineEvent: true },
+            { t: -580, name: "IMPRENTA", sub: "Conocimiento", yLevel: 0.22, isHeadlineEvent: true },
+            { t: -255, name: "MÁQUINA DE VAPOR", sub: "Rev. Industrial", yLevel: 0.35, isHeadlineEvent: true },
+            { t: -235, name: "REVOLUCIÓN FRANCESA", sub: "Derechos modernos", yLevel: 0.40, isHeadlineEvent: true },
+            { t: -140, name: "ELECTRICIDAD", sub: "Energía y luz", yLevel: 0.50, isHeadlineEvent: true },
+            { t: -110, name: "GUERRAS MUNDIALES", sub: "Conflicto global", yLevel: 0.54, isHeadlineEvent: true },
+            { t: -97, name: "PENICILINA", sub: "Medicina moderna (1928)", yLevel: 0.57, isHeadlineEvent: true },
+            { t: -69, name: "IA TRADICIONAL", sub: "Dartmouth (1956)", yLevel: 0.58 },
+            { t: -50, name: "INTERNET", sub: "ARPANET", yLevel: 0.65 },
+            { t: -40, name: "PC", sub: "Informática", yLevel: 0.70 },
+            { t: -30, name: "WWW", sub: "Web global", yLevel: 0.75, isHeadlineEvent: true },
+            { t: -27, name: "GOOGLE", sub: "Buscadores", yLevel: 0.80 },
+            { t: -21, name: "DECODIFICACIÓN ADN", sub: "Proyecto Genoma", yLevel: 0.82 },
+            { t: -20.8, name: "FACEBOOK", sub: "Redes sociales", yLevel: 0.84 },
+            { t: -19, name: "CLOUD COMPUTING", sub: "La nube (AWS)", yLevel: 0.87 },
+            { t: -17, name: "SMARTPHONE", sub: "Movilidad", yLevel: 0.90, isHeadlineEvent: true },
+            { t: -13, name: "BIG DATA", sub: "Datos masivos", yLevel: 0.92, isHeadlineEvent: true },
+            { t: -12, name: "BOSÓN DE HIGGS", sub: "Física de partículas", yLevel: 0.93, isHeadlineEvent: false },
+            { t: -10, name: "OPENAI", sub: "Fundación", yLevel: 0.95, isHeadlineEvent: true },
+            { t: -7, name: "TRANSFORMERS", sub: "Arquitectura IA (2017)", yLevel: 0.96, isHeadlineEvent: true },
+            { t: -4, name: "ALPHAFOLD", sub: "Proteínas IA", yLevel: 0.97 },
+            { t: -3, name: "CHATGPT", sub: "IA generativa", yLevel: 0.98, isHeadlineEvent: true },
+            { t: -0.5, name: "AGENTES IA", sub: "Hoy", yLevel: 1.0, isHeadlineEvent: true }
+        ];
+
+        const headlinesCorrected = [
+            { t: -300000, id: 'hl-desert', pauseDuration: 0 },
+            { t: -15000, id: 'hl-tools', pauseDuration: 1 },
+            { t: -10000, id: 'hl-agri', pauseDuration: 1 },
+            { t: -250, id: 'hl-steam', pauseDuration: 1 },
+            { t: -110, id: 'hl-war', pauseDuration: 1 },
+            { t: -95, id: 'hl-medicine', pauseDuration: 1 },
+            { t: -30, id: 'hl-www', pauseDuration: 1 },
+            { t: -16, id: 'hl-smartphone', pauseDuration: 1 },
+            { t: -13, id: 'hl-data', pauseDuration: 1 },
+            { t: -9, id: 'hl-ai-birth', pauseDuration: 1 },
+            { t: -6, id: 'hl-scale', pauseDuration: 1 },
+            { t: -3, id: 'hl-chatgpt', pauseDuration: 1 },
+            { t: -0.5, id: 'hl-agents', pauseDuration: 1 },
+        ];
+
+        function freezeLabel(labelEl) {
+            clearTimeout(labelEl.fadeTimer);
+            labelEl.classList.add('frozen');
+            labelEl.style.opacity = 1;
+            activeFrozenLabels.push(labelEl);
+        }
+
+        function releaseFrozenLabels() {
+            activeFrozenLabels.forEach(el => {
+                const text = el.textContent;
+                if (text.includes("AGENTES IA")) {
+                    // Keep frozen
+                } else {
+                    el.classList.remove('frozen');
+                    el.style.opacity = 0;
+                }
+            });
+            activeFrozenLabels = activeFrozenLabels.filter(el => {
+                const text = el.textContent;
+                return text.includes("AGENTES IA");
+            });
+        }
+
+        function handleUserInteraction() {
+            if (isPaused) {
+                resumeAnimation();
+            } else if (!isRunning && currentYear === -TOTAL_YEARS) {
+                startAnim();
+            } else if (finalScreen.classList.contains('visible')) {
+                // Animation done: a click advances the deck, as it does on any
+                // other slide. Without this the iframe swallowed every click and
+                // the presenter had to leave the slide through the index.
+                advanceDeck();
+            }
+        }
+
+        // Ask the deck for the next slide and hand the keyboard back to it: after
+        // a click the focus stays in this iframe, and once the deck clears its
+        // src the arrow keys would land in an empty frame.
+        function advanceDeck() {
+            try { window.parent && window.parent.focus(); } catch (err) {}
+            try {
+                window.parent && window.parent.postMessage({ type: 'embed-key', key: 'ArrowRight', code: 'ArrowRight' }, '*');
+            } catch (err) {}
+        }
+
+        // Forward navigation keys to parent deck unless we need them for the animation
+        const FORWARD_KEYS = ['ArrowLeft','PageUp','Escape','Home','End','f','F'];
+        function forwardKey(e) {
+            try {
+                window.parent && window.parent.postMessage({ type: 'embed-key', key: e.key, code: e.code }, '*');
+            } catch (err) {}
+        }
+        window.addEventListener('keydown', (e) => {
+            if (FORWARD_KEYS.includes(e.key)) {
+                forwardKey(e);
+                return;
+            }
+            // Advance keys: if waiting (paused / not started), consume locally; otherwise forward (so deck advances slide)
+            if (e.code === 'Space' || e.code === 'ArrowRight' || e.code === 'Enter' || e.code === 'PageDown' || e.code === 'ArrowDown') {
+                if (isPaused) {
+                    resumeAnimation();
+                } else if (!isRunning && currentYear === -TOTAL_YEARS) {
+                    startAnim();
+                } else if (finalScreen.classList.contains('visible')) {
+                    // Animation is done: let the deck advance
+                    forwardKey(e);
+                } else {
+                    skipToNextStop();
+                }
+            }
+        });
+
+        // Listen for parent-driven controls (advance / start) when iframe doesn't have focus
+        window.addEventListener('message', (e) => {
+            const msg = e.data || {};
+            if (msg.type === 'embed-advance') {
+                if (isPaused) { resumeAnimation(); return; }
+                if (!isRunning && currentYear === -TOTAL_YEARS) { startAnim(); return; }
+                // in the middle of running: jump to the next milestone
+                skipToNextStop();
+            }
+            if (msg.type === 'embed-reset') {
+                location.reload();
+            }
+        });
+
+        // Auto-start as soon as the iframe becomes visible (no INICIAR button)
+        function autoStart() {
+            if (!isRunning && currentYear === -TOTAL_YEARS) startAnim();
+        }
+        // Defer one frame so layout settles
+        window.addEventListener('load', () => setTimeout(autoStart, 60));
+
+        function toggleFullscreen(e) {
+            if (e) e.stopPropagation();
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function updateButtonsState() {
+            if (isPaused) {
+                btnIniciar.style.display = 'none';
+                btnContinue.style.display = 'block';
+            } else if (isRunning) {
+                // Durante la ejecución normal, ocultamos los botones
+                btnIniciar.style.display = 'none';
+                btnContinue.style.display = 'none';
+            } else {
+                // Estado inicial
+                btnIniciar.style.display = 'block';
+                btnContinue.style.display = 'none';
+            }
+        }
+
+        function resumeAnimation(e) {
+            if (e) e.stopPropagation();
+            isPaused = false;
+            updateButtonsState();
+
+            if (currentYear < -1) {
+                releaseFrozenLabels();
+            }
+
+            if (currentHeadlineElement) {
+                currentHeadlineElement.classList.remove('active');
+                const elToHide = currentHeadlineElement;
+                setTimeout(() => {
+                    elToHide.style.display = 'none';
+                }, 800);
+            }
+
+            // FIX: Jump to end if close to 0 (after Agents)
+            if (currentYear > -0.6 && !finalScreen.classList.contains('visible')) {
+                currentYear = 0;
+                cleanForFinal();
+                showFinalScreen();
+            }
+
+            // Ocultar controles al reanudar
+            controls.style.opacity = '0';
+        }
+
+        function resize() {
+            width = container.clientWidth;
+            height = container.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+            drawStatic();
+        }
+        window.addEventListener('resize', resize);
+
+        function mapX(year) {
+            const normalized = (year + TOTAL_YEARS) / TOTAL_YEARS;
+            return (normalized * width * viewScaleX) - viewOffsetX;
+        }
+
+        function mapY(yLevel) {
+            const padding = 100;
+            const usableHeight = height - padding;
+            return height - 50 - (yLevel * usableHeight);
+        }
+
+        function drawStatic() {
+            if (isRunning) ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = colors.grid;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(0, height - 50);
+            ctx.lineTo(width, height - 50);
+            ctx.stroke();
+        }
+
+        function getHumanTime(year) {
+            const progress = (year + TOTAL_YEARS) / TOTAL_YEARS;
+            const clampedProgress = Math.max(0, Math.min(1, progress));
+            const totalSeconds = clampedProgress * 86400;
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = Math.floor(totalSeconds % 60);
+            const cs = Math.floor((totalSeconds % 1) * 100);
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}:${String(cs).padStart(2, '0')}`;
+        }
+
+        function updateClock(currentY) {
+            const timeStr = getHumanTime(currentY);
+            humanityClock.innerText = timeStr;
+            const progress = (currentY + TOTAL_YEARS) / TOTAL_YEARS;
+            if (progress * 86400 > 86340) {
+                humanityClock.style.color = colors.alert;
+            } else {
+                humanityClock.style.color = colors.white;
+            }
+        }
+
+        function addToConsole(evt) {
+            const time = getHumanTime(evt.t);
+            const shortTime = time.split(':').slice(0, 3).join(':');
+            const entry = document.createElement('div');
+            entry.className = 'console-entry';
+            entry.innerHTML = `<span class="console-time">[${shortTime}]</span> <span>${evt.name}</span> <span class="console-sep">|</span>`;
+            consoleContent.appendChild(entry);
+            consoleBar.scrollLeft = consoleBar.scrollWidth;
+        }
+
+        // Función auxiliar para verificar si dos rectángulos se solapan
+        function checkOverlap(rect1, rect2) {
+            return !(rect1.right < rect2.left ||
+                rect1.left > rect2.right ||
+                rect1.bottom < rect2.top ||
+                rect1.top > rect2.bottom);
+        }
+
+        // Función para buscar espacio libre cuando todos los slots están ocupados
+        function findFreeSpace(x, baseY, labelWidth, labelHeight, existingLabels, minTop, maxTop) {
+            const step = 20; // Incremento de búsqueda en píxeles
+            const padding = 10;
+
+            // Buscar hacia arriba y hacia abajo alternativamente
+            for (let distance = 0; distance < 300; distance += step) {
+                for (let direction of [-1, 1]) {
+                    let candidateY = baseY + (distance * direction);
+
+                    if (candidateY < minTop || candidateY > maxTop) continue;
+
+                    const candidateRect = {
+                        left: x,
+                        top: candidateY,
+                        right: x + labelWidth,
+                        bottom: candidateY + labelHeight
+                    };
+
+                    let hasCollision = false;
+                    for (let existing of existingLabels) {
+                        const existingRect = {
+                            left: existing.left - padding,
+                            top: existing.top - padding,
+                            right: existing.left + existing.width + padding,
+                            bottom: existing.top + existing.height + padding
+                        };
+
+                        if (checkOverlap(candidateRect, existingRect)) {
+                            hasCollision = true;
+                            break;
+                        }
+                    }
+
+                    if (!hasCollision) {
+                        return candidateY - baseY; // Retornar el offset
+                    }
+                }
+            }
+
+            // Si no se encuentra espacio, retornar offset que minimice solapamiento
+            return 0;
+        }
+
+        // Función mejorada con detección de colisiones
+        function getBestYOffset(x, baseY, labelWidth, labelHeight) {
+            const isMobile = width < 768;
+            const minTop = isMobile ? 100 : 130;
+            const maxTop = height - (isMobile ? 60 : 100);
+            const padding = 10; // Espacio adicional entre etiquetas
+
+            // Obtener todas las etiquetas visibles actualmente
+            const existingLabels = Array.from(labelsContainer.querySelectorAll('.event-label'))
+                .filter(el => parseFloat(el.style.opacity) > 0)
+                .map(el => ({
+                    left: parseFloat(el.style.left),
+                    top: parseFloat(el.style.top),
+                    width: el.offsetWidth,
+                    height: el.offsetHeight
+                }));
+
+            // Probar cada slot en orden de preferencia
+            const slotsToTry = [...labelSlots].sort((a, b) => {
+                // Ordenar por proximidad a la posición base (preferir slots cercanos a 0)
+                return Math.abs(a) - Math.abs(b);
+            });
+
+            for (let offset of slotsToTry) {
+                let candidateY = baseY + offset;
+
+                // Verificar límites
+                if (candidateY < minTop) candidateY = minTop;
+                if (candidateY > maxTop) candidateY = maxTop;
+
+                const candidateRect = {
+                    left: x,
+                    top: candidateY,
+                    right: x + labelWidth,
+                    bottom: candidateY + labelHeight
+                };
+
+                // Verificar colisión con etiquetas existentes
+                let hasCollision = false;
+                for (let existing of existingLabels) {
+                    const existingRect = {
+                        left: existing.left - padding,
+                        top: existing.top - padding,
+                        right: existing.left + existing.width + padding,
+                        bottom: existing.top + existing.height + padding
+                    };
+
+                    if (checkOverlap(candidateRect, existingRect)) {
+                        hasCollision = true;
+                        break;
+                    }
+                }
+
+                if (!hasCollision) {
+                    return offset;
+                }
+            }
+
+            // Si todos los slots están ocupados, buscar espacio libre
+            return findFreeSpace(x, baseY, labelWidth, labelHeight, existingLabels, minTop, maxTop);
+        }
+
+        function spawnLabel(evt, x, y) {
+            const el = document.createElement('div');
+            el.className = 'event-label';
+            el.innerHTML = `<div class="event-title">${evt.name}</div><div class="event-year">${evt.sub}</div>`;
+
+            // Añadir temporalmente al DOM para obtener dimensiones
+            el.style.opacity = 0;
+            el.style.visibility = 'hidden';
+            labelsContainer.appendChild(el);
+
+            const labelWidth = el.offsetWidth;
+            const labelHeight = el.offsetHeight;
+
+            let finalX = x + 20;
+            if (evt.name === "LENGUAJE" || evt.name === "AGRICULTURA") {
+                finalX = Math.max(x + 20, width * 0.4);
+            }
+
+            // Boundary check: prevent overflow on the right
+            if (finalX + labelWidth > width - 20) {
+                finalX = width - labelWidth - 20;
+            }
+
+            el.style.left = finalX + 'px';
+
+            // Usar la nueva función con detección de colisiones
+            let offset = getBestYOffset(finalX, y, labelWidth, labelHeight);
+
+            // Mantener ajustes manuales específicos si es necesario
+            if (evt.name === "BIG DATA") offset = -160;
+            if (evt.name === "BOSÓN DE HIGGS") offset = -60;
+            if (evt.name === "AGENTES IA") offset = -220;
+
+            let finalY = y + offset;
+
+            // Dynamic top limit based on screen size
+            const isMobile = width < 768;
+            const minTop = isMobile ? 100 : 130;
+            const maxTop = height - (isMobile ? 60 : 100);
+
+            if (finalY < minTop) finalY = minTop;
+            if (finalY > maxTop) finalY = maxTop;
+            el.style.top = finalY + 'px';
+
+            // Restaurar visibilidad
+            el.style.visibility = 'visible';
+            requestAnimationFrame(() => {
+                el.style.opacity = 1;
+                el.style.transform = 'translateY(-10px)';
+            });
+
+            eventHistory.push({
+                time: getHumanTime(evt.t),
+                name: evt.name,
+                sub: evt.sub
+            });
+
+            addToConsole(evt);
+
+            if (evt.isHeadlineEvent) {
+                freezeLabel(el);
+            } else {
+                let timeout = 1500;
+                el.fadeTimer = setTimeout(() => {
+                    if (!el.classList.contains('frozen')) el.style.opacity = 0;
+                }, timeout);
+            }
+        }
+
+        function checkHeadlines(currentY) {
+            headlinesCorrected.forEach(hl => {
+                if (currentY >= hl.t && !hl.triggered) {
+                    hl.triggered = true;
+
+                    if (hl.id === 'hl-steam') {
+                        const labels = document.querySelectorAll('.event-label');
+                        labels.forEach(l => {
+                            if (l.innerHTML.includes('IMPRENTA')) l.style.opacity = 0;
+                        });
+                    }
+
+                    if (hl.pauseDuration > 0) {
+                        isPaused = true;
+                        updateButtonsState();
+                        controls.style.opacity = '1'; // Mostrar controles automáticamente al pausar
+                    }
+
+                    const el = document.getElementById(hl.id);
+                    currentHeadlineElement = el;
+
+                    document.querySelectorAll('.headline').forEach(h => {
+                        h.classList.remove('active');
+                        h.style.display = 'none';
+                    });
+
+                    el.style.display = 'block';
+                    setTimeout(() => el.classList.add('active'), 10);
+
+                    if (hl.pauseDuration === 0) {
+                        setTimeout(() => {
+                            if (!isPaused && currentHeadlineElement === el) {
+                                el.classList.remove('active');
+                                setTimeout(() => el.style.display = 'none', 800);
+                            }
+                        }, 2500);
+                    }
+                }
+            });
+        }
+
+        function cleanForFinal() {
+            headlinesContainer.style.opacity = 0;
+            overlayUI.style.opacity = 0;
+            consoleBar.style.opacity = 0;
+            const z = document.getElementById('zoom-indicator');
+            if (z) z.style.opacity = 0;
+            labelsContainer.innerHTML = '';
+            axesX.style.opacity = 0;
+            axesY.style.opacity = 0;
+            controls.style.opacity = 0;
+        }
+
+        // A press while the clock is running between two milestones used to be
+        // ignored, so the presenter could press several times and see nothing
+        // happen. Now it jumps to the next milestone that pauses (or to the end
+        // after the last one): every press does something.
+        function skipToNextStop() {
+            if (!isRunning || isPaused || finalScreen.classList.contains('visible')) return false;
+            const next = headlinesCorrected
+                .filter(hl => !hl.triggered && hl.pauseDuration > 0 && hl.t > currentYear)
+                .sort((a, b) => a.t - b.t)[0];
+            if (next) {
+                currentYear = next.t;
+            } else {
+                currentYear = 0;
+                cleanForFinal();
+                showFinalScreen();
+            }
+            return true;
+        }
+
+        function showFinalScreen() {
+            finalScreen.classList.add('visible');
+            // Notify parent deck that animation finished
+            try {
+                window.parent && window.parent.postMessage({ type: 'embed-finished', source: 'tech-evolution-24h' }, '*');
+            } catch (e) {}
+        }
+
+        function update() {
+            if (!isRunning) return;
+
+            if (isPaused) {
+                drawCurrentState();
+                requestAnimationFrame(update);
+                return;
+            }
+
+            let distToZero = Math.abs(currentYear);
+
+            if (distToZero > 6000) speed = 2500;
+            else if (distToZero > 4800) speed = 20; // SLOW Escriptura
+            else if (distToZero > 700) speed = 200;
+            else if (distToZero > 90) speed = 1.5; // SLOW Modern
+            else if (distToZero > 70) speed = 0.3;
+            else if (distToZero > 20) speed = 0.2;
+            else speed = 0.02;
+
+            currentYear += speed;
+
+            if (currentYear >= 0) {
+                currentYear = 0;
+            }
+
+            updateClock(currentYear);
+            checkHeadlines(currentYear);
+
+            drawCurrentState();
+
+            if (isRunning) {
+                requestAnimationFrame(update);
+            }
+        }
+
+        function drawCurrentState() {
+            let desiredX = width * 0.70;
+
+            if (currentYear > -18000 && currentYear < -8000) {
+                desiredX = width * 0.40;
+            }
+
+            if (currentYear > -300) {
+                const targetScale = 140;
+                viewScaleX = viewScaleX + (targetScale - viewScaleX) * 0.05;
+                const normalized = (currentYear + TOTAL_YEARS) / TOTAL_YEARS;
+                const targetOffset = (normalized * width * viewScaleX) - desiredX;
+                viewOffsetX = targetOffset;
+                zoomInd.style.opacity = 1;
+            } else if (currentYear > -18000 && currentYear < -8000) {
+                const normalized = (currentYear + TOTAL_YEARS) / TOTAL_YEARS;
+                const targetOffset = (normalized * width * viewScaleX) - desiredX;
+                viewOffsetX = viewOffsetX + (targetOffset - viewOffsetX) * 0.05;
+            } else {
+                viewScaleX = 1;
+                const normalized = (currentYear + TOTAL_YEARS) / TOTAL_YEARS;
+                const standardTarget = (normalized * width) - (width * 0.7);
+                viewOffsetX = viewOffsetX + (standardTarget - viewOffsetX) * 0.1;
+            }
+
+            drawStatic();
+
+            ctx.beginPath();
+            ctx.lineWidth = 4;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = colors.lineShadow;
+            ctx.strokeStyle = colors.line;
+
+            const activeEvents = events.filter(e => e.t <= currentYear);
+            let startX = mapX(-TOTAL_YEARS);
+            let startY = mapY(events[0].yLevel);
+            ctx.moveTo(startX, startY);
+
+            for (let i = 0; i < activeEvents.length; i++) {
+                const e = activeEvents[i];
+                const x = mapX(e.t);
+                const y = mapY(e.yLevel);
+                if (i > 0) {
+                    const prev = activeEvents[i - 1];
+                    const prevX = mapX(prev.t);
+                    const prevY = mapY(prev.yLevel);
+                    const cp1x = prevX + (x - prevX) * 0.8;
+                    const cp1y = prevY;
+                    ctx.lineTo(x, y);
+                }
+            }
+
+            let headX = mapX(currentYear);
+            let headY = height - 50;
+            const lastEvt = activeEvents[activeEvents.length - 1];
+            const nextEvt = events[activeEvents.length];
+
+            if (lastEvt) {
+                headY = mapY(lastEvt.yLevel);
+                if (nextEvt) {
+                    const range = nextEvt.t - lastEvt.t;
+                    if (range > 0.0001) {
+                        const progress = (currentYear - lastEvt.t) / range;
+                        const yRange = mapY(nextEvt.yLevel) - mapY(lastEvt.yLevel);
+                        headY = mapY(lastEvt.yLevel) + (yRange * progress);
+                    } else {
+                        headY = mapY(lastEvt.yLevel);
+                    }
+                }
+            }
+
+            if (isFinite(headX) && isFinite(headY)) {
+                ctx.lineTo(headX, headY);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+
+                ctx.fillStyle = colors.white;
+                ctx.beginPath();
+                ctx.arc(headX, headY, 6, 0, Math.PI * 2);
+                ctx.fill();
+
+                const glow = ctx.createRadialGradient(headX, headY, 5, headX, headY, 30);
+                glow.addColorStop(0, colors.highlight);
+                glow.addColorStop(1, 'rgba(255, 200, 87, 0)');
+                ctx.fillStyle = glow;
+                ctx.beginPath();
+                ctx.arc(headX, headY, 30, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            yearCounter.innerText = Math.floor(currentYear);
+
+            if (activeEvents.length > lastDrawnIndex + 1) {
+                const newIndex = activeEvents.length - 1;
+                const evt = activeEvents[newIndex];
+                const x = mapX(evt.t);
+                const y = mapY(evt.yLevel);
+                spawnLabel(evt, x, y);
+                lastDrawnIndex = newIndex;
+            }
+
+            const labels = labelsContainer.children;
+            for (let i = 0; i < labels.length; i++) {
+                const evt = activeEvents[i];
+                if (evt) {
+                    const realX = mapX(evt.t);
+                    labels[i].style.left = (realX + 20) + 'px';
+                    if (realX < -200) labels[i].style.opacity = 0;
+                }
+            }
+        }
+
+        function startAnim(e) {
+            if (e) e.stopPropagation();
+            if (isRunning) return;
+            isRunning = true;
+            resize();
+            updateButtonsState();
+            update();
+            document.querySelector('.controls').style.opacity = '0';
+        }
+
+        resize();
+
+        // Show initial headline and state
+        const initialHl = document.getElementById('hl-desert');
+        if (initialHl) {
+            initialHl.style.display = 'block';
+            setTimeout(() => initialHl.classList.add('active'), 100);
+        }
+        ctx.clearRect(0, 0, width, height);
+        drawCurrentState();
+
+    </script>
+</body>
+
+</html>

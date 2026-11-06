@@ -1,0 +1,23 @@
+{
+  "name": "bsm-muibal-ia",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/sync-theme-common.mjs && node common/tools/sync.mjs && node scripts/sync-demos-claude.mjs && node scripts/notas-slides.mjs && node scripts/zips-practica.mjs && node scripts/companion.mjs",
+    "check": "node scripts/sync-theme-common.mjs --check && node common/tools/sync.mjs --check && node scripts/sync-demos-claude.mjs --check && node scripts/notas-slides.mjs --check && node scripts/zips-practica.mjs --check && node scripts/companion.mjs --check",
+    "qa": "node brand/presentation/tools/qa-deck.mjs presentations/muibal-ia-00-sesion presentations/muibal-ia-01-ia-generativa presentations/muibal-ia-02-ia-para-investigar",
+    "smoke": "node brand/presentation/tools/smoke-deck.mjs presentations/muibal-ia-00-sesion presentations/muibal-ia-01-ia-generativa presentations/muibal-ia-02-ia-para-investigar",
+    "material": "node scripts/material-completo.mjs",
+    "material-luis": "node scripts/material-luis.mjs"
+  },
+  "dependencies": {
+    "jszip": "^3.10.1",
+    "marked": "^14.1.4"
+  },
+  "devDependencies": {
+    "exceljs": "^4.4.0",
+    "puppeteer-core": "^25.9.0",
+    "qrcode": "^1.5.4"
+  }
+}

@@ -1,0 +1,33 @@
+/* ============================================================================
+   bsm-docs.css — capa de adaptación BSM para los documentos del curso.
+   ----------------------------------------------------------------------------
+   Se carga DESPUÉS de _shared.css (el CSS canónico del kit, que se copia tal
+   cual desde brand/) y ANTES de doc-overrides.css (los ajustes propios de cada
+   documento). Los ficheros canónicos del sistema de marca zenital NO se tocan
+   nunca: regla del repo, ver CLAUDE.md. Es el mismo patrón que css/bsm-theme.css
+   en los decks.
+
+   Color BSM: crimson #C8102E (variante oscura #9A0C23). Sustituye al acento
+   ámbar de zenital. A diferencia de los decks, aquí el acento vive sobre fondo
+   claro, así que el reparto se invierte: el crimson puro hace de acento
+   principal (barras, bordes, marcadores) y la variante oscura queda para el
+   texto pequeño de acento, donde gana contraste.
+
+   --red no se toca: en los documentos es semántico (el bloque .err), no de
+   marca.
+   ========================================================================== */
+
+:root {
+  --amber: #C8102E;        /* acento principal: crimson BSM */
+  --amber-soft: #9A0C23;   /* acento de texto: crimson profundo, más legible en pequeño */
+}
+
+/* Los tintes de fondo del CSS canónico son rgba fijos del ámbar y no siguen a
+   la variable, así que hay que repetir sus cinco selectores uno a uno. El
+   crimson pesa más que el ámbar, así que van un punto más suaves. Candidato a
+   subir al kit como color-mix sobre el acento. */
+.minitoc a:hover        { background: rgba(200, 16, 46, 0.05); }
+main.doc .pick-box      { background: rgba(200, 16, 46, 0.07); }
+main.doc blockquote     { background: rgba(200, 16, 46, 0.05); }
+main.doc .card.is-key   { background: rgba(200, 16, 46, 0.05); }
+main.doc .fase          { background: rgba(200, 16, 46, 0.07); }

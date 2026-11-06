@@ -1,0 +1,65 @@
+{
+  "edition": "edición 2026",
+  "lastUpdated": "06/11/2026",
+  "courseTitle": "La IA aplicada a investigar mercados",
+  "programme": "Máster Universitario en Negocios Internacionales",
+  "school": "UPF Barcelona School of Management",
+  "portalBase": "https://presentation.zenital.io",
+  "decks": [
+    { "slug": "bsm-muibal-ia-00-sesion", "kicker": "apertura y cierre", "title": "La sesión y el TFM con IA" },
+    { "slug": "bsm-muibal-ia-01-ia-generativa", "kicker": "presentación 01", "title": "Qué es la IA generativa" },
+    { "slug": "bsm-muibal-ia-02-ia-para-investigar", "kicker": "presentación 02 · ejercicios 1 a 3", "title": "La IA para investigar: prompts, documentos y agentes" },
+    { "slug": "bsm-muibal-ia-03-claude-plataforma", "kicker": "claude · demo 1", "title": "Claude.ai: la plataforma" },
+    { "slug": "bsm-muibal-ia-04-proyectos-artefactos", "kicker": "claude · demos 2 a 4", "title": "Proyectos, workflows y artefactos" },
+    { "slug": "bsm-muibal-ia-05-cowork", "kicker": "claude · demo 5", "title": "Claude Cowork" },
+    { "slug": "bsm-muibal-ia-06-conectores-skills", "kicker": "claude · demo 6", "title": "Conectores, MCP y skills" }
+  ],
+  "docs": [],
+  "practiceFiles": [
+    { "path": "ficheros-practica/caso-envoltia.md", "title": "El caso Envoltia en una página (ficticio)", "forWhat": "si no tenéis tema de TFM" },
+    { "path": "ficheros-practica/plantilla-pregunta-investigacion.md", "title": "Plantilla de la pregunta de investigación", "forWhat": "ejercicio 1" },
+    { "path": "ficheros-practica/envoltia-fuentes.zip", "title": "Las seis fuentes de Envoltia", "forWhat": "ejercicio 2" },
+    { "path": "ficheros-practica/plantilla-auditoria-referencias.md", "title": "Plantilla de la auditoría de referencias", "forWhat": "ejercicio 3" },
+    { "path": "ficheros-practica/demo-1-informe-sectorial.zip", "title": "Un informe sectorial largo (ficticio)", "forWhat": "demo 1" },
+    { "path": "ficheros-practica/demo-2-proyecto-mi-tfm.zip", "title": "El proyecto Mi TFM: instrucciones, guía de ejemplo y propuesta", "forWhat": "demos 2 y 3" },
+    { "path": "ficheros-practica/demo-4-diapositivas-defensa.zip", "title": "El resumen de un TFM terminado (ficticio)", "forWhat": "demo 4" },
+    { "path": "ficheros-practica/demo-5-bibliografia.zip", "title": "Una carpeta desordenada de fuentes", "forWhat": "demo 5" },
+    { "path": "ficheros-practica/demo-6-revisor-capitulos.zip", "title": "Un capítulo de metodología en borrador", "forWhat": "demo 6" },
+    { "path": "ficheros-practica/skill-revisor-capitulos-tfm.zip", "title": "Skill: el revisor de capítulos del TFM", "forWhat": "demo 6" }
+  ],
+  "sourceMarkdown": "documents/guia-prompts/README.md",
+  "shareMapPath": "scripts/portal-share-map.json",
+  "fontsDir": "scripts/fonts",
+  "trainerScriptsDir": "ficheros-practica",
+  "outDir": "documents/companion",
+  "outDirTrainer": "documents/companion-formador",
+  "zipName": "ficheros-practica-muibal-ia.zip",
+  "zipDate": "2026-11-16T10:00:00Z",
+  "metaLabels": ["Funciona en", "Qué necesitas", "Entorno", "En la sesión", "Modelo"],
+  "brand": {
+    "logo": "brand/documents/examples/zenital-docs-site/logo.svg",
+    "coBrandLogo": "assets/bsm/bsm-logo-navy.svg",
+    "favicon": "brand/brand-kit/logos/zenital-icon-blue.svg"
+  },
+  "sections": {
+    "antes-de-empezar-la-sesión-los-ficheros-y-la-ia": { "tag": "léelo primero", "nav": "Antes de empezar" },
+    "la-ia-para-investigar-ejercicios-1-a-3": { "tag": "en parejas · cualquier IA", "nav": "Ejercicios" },
+    "claude-para-el-tfm-seis-demos": { "tag": "claude · 3 en clase", "nav": "Demos de Claude" },
+    "el-tfm-con-ia-siete-pasos": { "tag": "para el TFM", "nav": "El TFM con IA" }
+  },
+  "strings": {
+    "firstSteps": "En esta sesión podéis usar la IA en el aula y en casa: los tres ejercicios valen en ChatGPT, Claude, Gemini o Copilot, también en plan gratuito, y cada demo de Claude dice qué plan necesita. Usadla para que critique y ordene vuestro trabajo, no para que lo haga; abrid cada referencia que os dé y no le paséis nunca datos que identifiquen a una persona ni información interna de una empresa.<br><br><b>Guardad una copia de todo.</b> Los enlaces al portal dejan de funcionar el 31/01/2027. Este zip trae las presentaciones en PDF, los ficheros de práctica y esta misma página: <a class=\"dl\" href=\"material-muibal-ia-2026.zip\" download>descargar todo el material · zip</a>",
+    "zipAll": "descargar todos los ficheros de práctica",
+    "pageDescription": "Una sola página con las presentaciones, los ejercicios, las demos de Claude, los ficheros de práctica, los prompts y el flujo del TFM con IA. Funciona sin conexión.",
+    "lede": "Todo el material de la sesión de IA en una página: las presentaciones, los tres ejercicios con sus prompts listos para copiar, las seis demos de Claude con sus ficheros y el TFM con IA en siete pasos.",
+    "title": "Compañero de la sesión de IA",
+    "titleTrainer": "Compañero de la sesión de IA · formador",
+    "metaKicker": "material de la sesión",
+    "decksCount": "presentaciones en el portal",
+    "docsCount": "documentos en el portal",
+    "ledeSoft": "El caso es vuestro TFM; Envoltia, el de reserva, y todos sus datos son ficticios.",
+    "variantBody": "Lleva los mismos enlaces compartidos que la del alumnado y, además, los guiones de cada ejercicio y de cada demo.",
+    "scriptsWarnBody": "Los guiones llevan los resultados de referencia, los errores frecuentes y el plan B de cada ejercicio y de cada demo."
+  },
+  "expect": { "sections": 4, "cards": 13, "prompts": 38, "files": 10 }
+}

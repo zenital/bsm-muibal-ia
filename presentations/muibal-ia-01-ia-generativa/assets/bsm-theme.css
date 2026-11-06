@@ -1,0 +1,99 @@
+/* GENERADO por scripts/sync-theme-common.mjs desde
+   assets/bsm/bsm-theme.css. No se edita a mano: cambia la
+   maestra y ejecuta npm run build. */
+/* ============================================================================
+   bsm-theme.css · capa de adaptación BSM para los decks de la sesión de IA de MUIBAL.
+   ----------------------------------------------------------------------------
+   Se carga DESPUÉS de deck-shell.css y deck-components.css y solo
+   sobreescribe variables y añade bloques propios. Los ficheros canónicos de
+   zenital no se tocan nunca (ver CLAUDE.md).
+
+   Fuente maestra: assets/bsm/bsm-theme.css. Cada deck lleva su copia en
+   css/bsm-theme.css; los bloques propios de un deck van al final de su copia,
+   bajo el comentario "BLOQUES DE ESTE DECK".
+
+   Color BSM: crimson #C8102E (variante oscura #9A0C23). Sustituye al ámbar
+   zenital. Para tinta de acento sobre navy se usa una versión aclarada
+   (#E8556A), legible; el crimson puro queda para rellenos y bordes.
+   ========================================================================== */
+
+:root {
+  --amber: #E8556A;        /* acento: rojo BSM aclarado, legible sobre navy */
+  --amber-soft: #C8102E;   /* crimson BSM puro, para rellenos */
+  --red: #9A0C23;          /* rojo profundo BSM */
+}
+
+/* ===== BSM-COBRAND ===== */
+/* Portada y cierre: logo zenital + separador + logo BSM, en blanco sobre navy. */
+.bsm-cobrand {
+  display: flex; align-items: center; gap: 1.4vw;
+  margin-top: 2.2vh;
+}
+.bsm-cobrand img { display: block; height: clamp(20px, 2.6vh, 30px); width: auto; }
+.bsm-cobrand .cb-sep {
+  width: 1px; height: clamp(18px, 2.4vh, 28px);
+  background: var(--foam); opacity: 0.35;
+}
+
+/* ===== BSM-PROGRAM ===== */
+/* Línea del programa arriba a la izquierda, simétrica al logo BSM. */
+.slide:not(.black):not(:has(.bsm-cobrand))::before {
+  content: "Máster en Negocios Internacionales · La IA aplicada a investigar mercados";
+  position: absolute; top: 5%; left: 7%;
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.85vw, 13px);
+  letter-spacing: 0.08em; line-height: 1.4;
+  color: var(--muted);
+  opacity: 0.9; pointer-events: none;
+}
+.slide.dark:not(:has(.bsm-cobrand))::before {
+  color: var(--navy-40); opacity: 0.85;
+}
+
+/* ===== BSM-MARK ===== */
+/* Logo BSM discreto arriba a la derecha. Navy en claras, blanco en oscuras. */
+.slide:not(.black):not(:has(.bsm-cobrand))::after {
+  content: "";
+  position: absolute; top: 5%; right: 7%;
+  width: clamp(78px, 8vw, 122px); height: clamp(20px, 2.1vw, 32px);
+  background: url("bsm-logo-navy.svg") no-repeat right top / contain;
+  opacity: 0.9; pointer-events: none;
+}
+.slide.dark:not(:has(.bsm-cobrand))::after {
+  background-image: url("bsm-logo-footer.svg");
+  opacity: 0.85;
+}
+
+/* ===== PRACTICE-BADGE ===== */
+/* Marca las slides donde la sala trabaja con el portátil: chip crimson
+   encima del label. Remite al ejercicio del compañero. */
+.practice-badge {
+  display: inline-flex; align-items: center; gap: 0.55em;
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(9px, 0.8vw, 12px);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--foam); background: var(--amber-soft);
+  padding: 0.45em 0.9em; border-radius: 2px;
+  align-self: flex-start; margin-top: 1vh;
+}
+.practice-badge::before {
+  content: ""; width: 0.5em; height: 0.5em; border-radius: 50%;
+  background: var(--foam); opacity: 0.9;
+}
+.practice-badge + .label { margin-top: 1.1vh; }
+
+/* ===== IMG-PLATE (ajuste de esta capa) ===== */
+/* Capturas verticales o casi cuadradas: se acota la altura sin tocar el canónico. */
+.img-plate-frame img { max-height: 52vh; }
+
+/* ===== LEVEL-DESC y STEPWAY (ajustes de esta capa) ===== */
+/* Cuerpos un punto más grandes para leerse proyectados en el aula. */
+.level-desc { font-size: clamp(14px, 1.25vw, 20px); }
+.stepway-col:nth-child(2)::before,
+.stepway-col:nth-child(4)::before { display: none; }
+.stepway-title { font-size: clamp(18px, 1.7vw, 26px); }
+.stepway-bullets li { font-size: clamp(14px, 1.25vw, 20px); }
+
+/* ========================================================================
+   BLOQUES DE ESTE DECK
+   ===================================================================== */

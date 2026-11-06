@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qué es la IA generativa · muibal · zenital</title>
+  <link rel="icon" type="image/svg+xml" href="assets/zenital-icon-foam.svg" media="(prefers-color-scheme: dark)">
+  <link rel="icon" type="image/svg+xml" href="assets/zenital-icon-blue.svg" media="(prefers-color-scheme: light)">
+  <link rel="stylesheet" href="fonts/fonts.css">
+  <!-- fuentes autoalojadas en fonts/ y capa BSM en assets/: las pone common-overrides/01-ia-generativa -->
+  
+  <link rel="stylesheet" href="css/deck-shell.css">
+  <link rel="stylesheet" href="css/deck-components.css">
+  <link rel="stylesheet" href="assets/bsm-theme.css">
+  <style>
+  /* ===== LEAD-STAGE (slide 03): vela a luz inteligente =====
+     Reutilizado del deck Lumen y ampliado con la fase "luz inteligente".
+     Solo tokens de marca, triada de fuentes, animaciones suaves. */
+  .lead {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    position: relative;
+  }
+  .lead-stage {
+    position: relative;
+    height: 42cqh; width: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .lead-icon-wrap {
+    position: absolute;
+    width: clamp(180px, 22cqw, 380px);
+    height: clamp(180px, 22cqw, 380px);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.2,.7,.2,1);
+  }
+  .lead-icon-wrap svg { width: 100%; height: 100%; }
+
+  /* phases of the candle/bulb/smart-light morph (lead-stage data-phase)
+     0: vela 1: la era manual
+     1: vela 2
+     2: vela 3
+     3: vela 4
+     4: bulb off: el salto, todavia apagado
+     5: bulb on: se enciende la luz
+     6: luz inteligente: hoy, conectada */
+  .lead-stage[data-phase="0"] .candle-1 { opacity: 1; }
+  .lead-stage[data-phase="0"] .candle-2,
+  .lead-stage[data-phase="0"] .candle-3,
+  .lead-stage[data-phase="0"] .candle-4,
+  .lead-stage[data-phase="0"] .bulb-on,
+  .lead-stage[data-phase="0"] .bulb-off,
+  .lead-stage[data-phase="0"] .smart-light { opacity: 0; }
+
+  .lead-stage[data-phase="1"] .candle-2 { opacity: 1; }
+  .lead-stage[data-phase="1"] .candle-1,
+  .lead-stage[data-phase="1"] .candle-3,
+  .lead-stage[data-phase="1"] .candle-4,
+  .lead-stage[data-phase="1"] .bulb-on,
+  .lead-stage[data-phase="1"] .bulb-off,
+  .lead-stage[data-phase="1"] .smart-light { opacity: 0; }
+
+  .lead-stage[data-phase="2"] .candle-3 { opacity: 1; }
+  .lead-stage[data-phase="2"] .candle-1,
+  .lead-stage[data-phase="2"] .candle-2,
+  .lead-stage[data-phase="2"] .candle-4,
+  .lead-stage[data-phase="2"] .bulb-on,
+  .lead-stage[data-phase="2"] .bulb-off,
+  .lead-stage[data-phase="2"] .smart-light { opacity: 0; }
+
+  .lead-stage[data-phase="3"] .candle-4 { opacity: 1; }
+  .lead-stage[data-phase="3"] .candle-1,
+  .lead-stage[data-phase="3"] .candle-2,
+  .lead-stage[data-phase="3"] .candle-3,
+  .lead-stage[data-phase="3"] .bulb-on,
+  .lead-stage[data-phase="3"] .bulb-off,
+  .lead-stage[data-phase="3"] .smart-light { opacity: 0; }
+
+  .lead-stage[data-phase="4"] .bulb-off { opacity: 1; }
+  .lead-stage[data-phase="4"] .candle-1,
+  .lead-stage[data-phase="4"] .candle-2,
+  .lead-stage[data-phase="4"] .candle-3,
+  .lead-stage[data-phase="4"] .candle-4,
+  .lead-stage[data-phase="4"] .bulb-on,
+  .lead-stage[data-phase="4"] .smart-light { opacity: 0; }
+
+  .lead-stage[data-phase="5"] .bulb-on { opacity: 1; }
+  .lead-stage[data-phase="5"] .candle-1,
+  .lead-stage[data-phase="5"] .candle-2,
+  .lead-stage[data-phase="5"] .candle-3,
+  .lead-stage[data-phase="5"] .candle-4,
+  .lead-stage[data-phase="5"] .bulb-off,
+  .lead-stage[data-phase="5"] .smart-light { opacity: 0; }
+
+  /* phase 6: smart light: bombilla conectada con arcos y nodos */
+  .lead-stage[data-phase="6"] .smart-light { opacity: 1; }
+  .lead-stage[data-phase="6"] .candle-1,
+  .lead-stage[data-phase="6"] .candle-2,
+  .lead-stage[data-phase="6"] .candle-3,
+  .lead-stage[data-phase="6"] .candle-4,
+  .lead-stage[data-phase="6"] .bulb-off,
+  .lead-stage[data-phase="6"] .bulb-on { opacity: 0; }
+
+  .lead-icon-wrap { opacity: 0; }
+
+  /* ---- Frases por fase (debajo de la animacion) ---- */
+  .lead-phrases {
+    position: relative;
+    width: 100%;
+    height: clamp(80px, 11cqh, 140px);
+    margin-top: 2cqh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .lead-phrase {
+    position: absolute;
+    inset: 0;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.7s ease, transform 0.7s cubic-bezier(.2,.7,.2,1);
+    pointer-events: none;
+  }
+  .lead-stage[data-phase="0"] ~ .lead-phrases .lead-phrase[data-phrase="0"],
+  .lead-stage[data-phase="1"] ~ .lead-phrases .lead-phrase[data-phrase="1"],
+  .lead-stage[data-phase="2"] ~ .lead-phrases .lead-phrase[data-phrase="2"],
+  .lead-stage[data-phase="3"] ~ .lead-phrases .lead-phrase[data-phrase="3"],
+  .lead-stage[data-phase="4"] ~ .lead-phrases .lead-phrase[data-phrase="4"],
+  .lead-stage[data-phase="5"] ~ .lead-phrases .lead-phrase[data-phrase="5"],
+  .lead-stage[data-phase="6"] ~ .lead-phrases .lead-phrase[data-phrase="6"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .lead-date {
+    display: block;
+    font-family: 'PT Mono', monospace;
+    font-size: clamp(11px, 1cqw, 15px);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--amber);
+    opacity: 0.85;
+    margin-bottom: 0.6em;
+  }
+  .lead-line {
+    font-family: 'Literata', serif;
+    font-weight: 600;
+    font-style: italic;
+    font-size: clamp(20px, 2.4cqw, 38px);
+    line-height: 1.2;
+    color: var(--foam);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .lead-sub {
+    font-family: 'PT Mono', monospace;
+    font-size: clamp(11px, 0.95cqw, 15px);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin: 0.8em 0 0 0;
+  }
+  /* When the final lead-quote appears, fade the phase phrases out so they don't compete. */
+  .lead.quote-on .lead-phrases {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+  }
+
+  /* Background glow that grows with phases */
+  .lead-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at center, rgba(255,200,87,0) 0%, rgba(255,200,87,0) 60%, transparent 100%);
+    transition: background 1.4s ease;
+    pointer-events: none;
+  }
+  .slide.black[data-glow="1"] .lead-glow { background: radial-gradient(circle at center, rgba(255,200,87,0.05) 0%, rgba(255,200,87,0) 50%, transparent 100%); }
+  .slide.black[data-glow="2"] .lead-glow { background: radial-gradient(circle at center, rgba(255,200,87,0.08) 0%, rgba(255,200,87,0.02) 55%, transparent 100%); }
+  .slide.black[data-glow="3"] .lead-glow { background: radial-gradient(circle at center, rgba(255,200,87,0.11) 0%, rgba(255,200,87,0.03) 58%, transparent 100%); }
+  .slide.black[data-glow="4"] .lead-glow { background: radial-gradient(circle at center, rgba(255,200,87,0.14) 0%, rgba(255,200,87,0.04) 60%, transparent 100%); }
+  /* phase 5: la bombilla inunda la sala de luz */
+  .slide.black[data-glow="5"] .lead-glow { background: radial-gradient(circle at center, rgba(255,200,87,0.85) 0%, rgba(255,200,87,0.55) 25%, rgba(255,200,87,0.25) 55%, rgba(255,200,87,0.08) 80%, transparent 100%); }
+  /* phase 6: luz inteligente, glow vivo pero algo mas frio en los bordes */
+  .slide.black[data-glow="6"] .lead-glow { background: radial-gradient(circle at center, rgba(255,200,87,0.75) 0%, rgba(255,200,87,0.40) 28%, rgba(91,102,171,0.18) 62%, transparent 100%); }
+  .slide.black[data-glow="5"] .lead-quote,
+  .slide.black[data-glow="6"] .lead-quote { color: var(--foam); text-shadow: 0 0 30px rgba(255,200,87,0.4); }
+  .slide.black[data-glow="5"] .lead-tagline,
+  .slide.black[data-glow="6"] .lead-tagline { color: rgba(255,255,255,0.55); }
+
+  .candle-flame {
+    transform-origin: 50% 92%;
+    animation: candle-flicker 1.4s ease-in-out infinite alternate;
+  }
+  @keyframes candle-flicker {
+    0%   { transform: scaleY(1)    scaleX(1)    rotate(-1deg); opacity: 1;   }
+    50%  { transform: scaleY(1.05) scaleX(0.95) rotate(0deg);  opacity: .92; }
+    100% { transform: scaleY(0.95) scaleX(1.04) rotate(1.5deg); opacity: 1;   }
+  }
+
+  .bulb-glow-halo {
+    animation: bulb-pulse 3s ease-in-out infinite alternate;
+    transform-origin: center;
+  }
+  @keyframes bulb-pulse {
+    0%   { opacity: .35; transform: scale(1); }
+    100% { opacity: .55; transform: scale(1.08); }
+  }
+
+  /* smart-light: arcos de conectividad que laten y nodos que parpadean */
+  .smart-arc {
+    transform-origin: 100px 92px;
+    animation: smart-arc-pulse 3.2s ease-in-out infinite alternate;
+  }
+  .smart-arc.arc-2 { animation-delay: .5s; }
+  .smart-arc.arc-3 { animation-delay: 1s; }
+  @keyframes smart-arc-pulse {
+    0%   { opacity: .25; transform: scale(0.98); }
+    100% { opacity: .7;  transform: scale(1.03); }
+  }
+  .smart-node {
+    transform-origin: center;
+    animation: smart-node-blink 2.4s ease-in-out infinite alternate;
+  }
+  .smart-node.node-2 { animation-delay: .4s; }
+  .smart-node.node-3 { animation-delay: .8s; }
+  .smart-node.node-4 { animation-delay: 1.2s; }
+  @keyframes smart-node-blink {
+    0%   { opacity: .35; }
+    100% { opacity: 1;   }
+  }
+
+  .lead-quote {
+    font-family: 'Literata', serif; font-weight: 700;
+    font-size: clamp(28px, 3.6cqw, 64px); line-height: 1.1;
+    letter-spacing: -0.015em; color: var(--foam);
+    text-align: center; max-width: 80%;
+    margin-top: 2.5cqh;
+  }
+  .lead-quote em {
+    font-style: italic; color: var(--amber); font-weight: 500;
+  }
+  .lead-tagline {
+    font-family: 'PT Mono', monospace; font-size: clamp(11px, 1cqw, 16px);
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--navy-40);
+    margin-top: 1.8em;
+  }
+
+  /* ===== TOKEN-STRIP (slide 08): frase troceada en tokens =====
+     Visual bespoke: una frase partida en piezas (tokens) que se iluminan. */
+  .token-strip {
+    flex: 1; display: flex; flex-direction: column;
+    justify-content: center; gap: clamp(20px, 4cqh, 48px);
+    margin-top: 2cqh;
+  }
+  .token-line {
+    display: flex; flex-wrap: wrap; gap: clamp(6px, 0.7cqw, 12px);
+    align-items: center; justify-content: center;
+  }
+  .token-line .tk-label {
+    width: 100%; text-align: center;
+    font-family: 'PT Mono', monospace;
+    font-size: clamp(10px, 0.9cqw, 14px); letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 0.4em;
+  }
+  .tok {
+    font-family: 'PT Mono', monospace;
+    font-size: clamp(15px, 1.7cqw, 28px);
+    padding: 0.3em 0.55em; border-radius: 3px;
+    background: var(--navy-08); color: var(--navy);
+    border: 1px solid var(--navy-16);
+    line-height: 1;
+  }
+  .tok.is-accent { background: rgba(255,200,87,0.16); border-color: var(--amber); color: var(--navy); }
+  .tok.is-num { background: var(--navy); color: var(--amber); border-color: var(--navy); letter-spacing: 0.04em; }
+  .token-foot {
+    text-align: center;
+    font-family: 'Libre Franklin', sans-serif;
+    font-size: clamp(14px, 1.25cqw, 20px); color: var(--text);
+    max-width: 80%; margin: 0 auto; line-height: 1.5;
+  }
+  .token-foot strong { color: var(--navy); font-weight: 700; }
+
+  /* ===== IMG-PLATE (slide 10): rinoceronte de Durero a media pagina ===== */
+  .img-plate {
+    flex: 1; display: grid; grid-template-columns: 1.25fr 1fr;
+    gap: clamp(24px, 3.5cqw, 64px); margin-top: 2.5cqh; align-items: center;
+  }
+  .img-plate-frame {
+    position: relative; height: 100%;
+    display: flex; flex-direction: column;
+    border: 1px solid var(--navy-16); background: var(--navy-08);
+    padding: clamp(10px, 1cqw, 18px);
+  }
+  .img-plate-frame img {
+    width: 100%; height: 100%; object-fit: contain; display: block;
+    background: var(--foam);
+  }
+  .img-plate-frame figcaption {
+    font-family: 'PT Mono', monospace;
+    font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted);
+    margin-top: 0.8em; line-height: 1.4;
+  }
+  .img-plate-body { display: flex; flex-direction: column; justify-content: center; gap: clamp(0.5em, 1cqw, 0.9em); }
+  .img-plate-tag {
+    font-family: 'PT Mono', monospace;
+    font-size: clamp(10px, 0.9cqw, 14px); letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .img-plate-title { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(22px, 2.3cqw, 38px); color: var(--navy); line-height: 1.12; }
+  .img-plate-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.3cqw, 21px); color: var(--text); line-height: 1.55; }
+  .img-plate-text strong { color: var(--navy); font-weight: 700; }
+
+  /* ===== VIDEO-STAGE (slide 07): clip de prediccion como pieza central ===== */
+  .video-stage {
+    display: flex; flex-direction: column; align-items: center;
+    margin-top: 2.5cqh;
+  }
+  .video-frame {
+    width: 100%; max-width: 62%;
+    border: 1px solid var(--navy-16); background: var(--black);
+    border-radius: 4px; overflow: hidden;
+    box-shadow: 0 18px 50px rgba(0,17,125,0.14);
+  }
+  .video-frame video { width: 100%; height: auto; display: block; aspect-ratio: 16/9; background: var(--black); }
+  .video-note {
+    font-family: 'PT Mono', monospace;
+    font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--muted);
+    margin-top: 0.9em; text-align: center;
+  }
+
+  /* ===== LLM-SPLIT (slide 07): cajas a la izquierda, video a la derecha ===== */
+  .llm-split {
+    flex: 1; display: grid; grid-template-columns: 38% 1fr;
+    gap: clamp(24px, 3cqw, 56px); align-items: center; margin-top: 2.5cqh;
+  }
+  .llm-boxes { display: flex; flex-direction: column; gap: clamp(14px, 1.6cqw, 26px); }
+  .llm-split .video-stage { margin-top: 0; }
+  .llm-split .video-frame { max-width: 100%; }
+
+  /* ===== EMBED-FLOW (slide 08): de token a vector ===== */
+  .embed-flow { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(16px, 3.2cqh, 40px); margin-top: 2cqh; }
+  .embed-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: clamp(6px, 0.7cqw, 12px); }
+  .embed-arrow { font-family: 'PT Mono', monospace; color: var(--navy); font-size: clamp(16px, 1.6cqw, 26px); margin: 0 0.2em; }
+  .embed-hint { width: 100%; text-align: center; font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-top: 0.3em; }
+  /* slide 08: vectores a la izquierda, imagen a la derecha */
+  .embed-split { flex: 1; display: grid; grid-template-columns: 1fr 34%; gap: clamp(24px, 3cqw, 52px); align-items: center; margin-top: 1.5cqh; }
+  .embed-split .embed-flow { flex: none; margin-top: 0; }
+  .embed-split .embed-row { justify-content: flex-start; }
+  .embed-stat { text-align: center; font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.9cqw, 14px); line-height: 1.5; color: var(--muted); max-width: 90%; margin: 0.7em auto 0; }
+  .embed-stat strong { color: var(--navy); }
+
+  /* ===== ALUCINACIÓN (slide 11): texto + imagen ===== */
+  .halluc-split { flex: 1; display: grid; grid-template-columns: 1fr 36%; gap: clamp(24px, 3cqw, 56px); align-items: center; margin-top: 1.6cqh; }
+  .halluc-body { display: flex; flex-direction: column; gap: clamp(0.7em, 1.6cqh, 1.2em); }
+  .halluc-body .body-text { max-width: 100%; margin: 0; }
+  .halluc-body mark { background: var(--navy-08); color: var(--navy); font-weight: 700; padding: 0.04em 0.28em; border-radius: 2px; }
+  .halluc-causes-title { font-family: 'Libre Franklin', sans-serif; font-weight: 700; color: var(--navy); font-size: clamp(14px, 1.25cqw, 20px); }
+  .halluc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: clamp(0.6em, 1.3cqh, 1em); }
+  .halluc-list li { position: relative; padding-left: 1.2em; font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.15cqw, 19px); color: var(--text); line-height: 1.5; }
+  .halluc-list li::before { content: '·'; position: absolute; left: 0.25em; color: var(--navy); font-weight: 700; }
+  .halluc-note { font-style: italic; color: var(--muted); }
+  .halluc-note.is-good { color: var(--navy); font-weight: 600; }
+
+  /* ===== DEF-CALLOUT (slide 13, sesgos): definición destacada ===== */
+  .def-callout { background: var(--navy-08); border-left: 4px solid var(--navy); border-radius: 4px; padding: clamp(18px, 2.4cqh, 32px) clamp(20px, 2.4cqw, 38px); margin-top: 1.8cqh; max-width: 92%; }
+  .def-callout .def-word { display: block; font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.6em; }
+  .def-callout p { margin: 0; font-family: 'Literata', serif; font-size: clamp(17px, 1.7cqw, 27px); color: var(--navy); line-height: 1.4; }
+
+  /* ===== PROMPT-BADGE (slide 16) ===== */
+  .prompt-badge { display: inline-block; margin-top: 0.5em; font-family: 'PT Mono', monospace; font-weight: 700; font-size: clamp(18px, 2.2cqw, 38px); letter-spacing: 0.3em; text-transform: uppercase; color: var(--navy); background: var(--amber); padding: 0.14em 0.4em 0.14em 0.55em; border-radius: 3px; }
+
+  /* ===== PROMPT POBRE / BUENO (slide 17) ===== */
+  .pp-poor { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0.7em; margin-top: 1.4cqh; }
+  .pp-poor-text { font-family: 'PT Mono', monospace; font-size: clamp(13px, 1.2cqw, 19px); color: var(--muted); }
+  .pp-tag { font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.78cqw, 12px); letter-spacing: 0.2em; text-transform: uppercase; padding: 0.28em 0.6em; border-radius: 3px; white-space: nowrap; }
+  .pp-tag.is-poor { background: var(--navy-08); color: var(--muted); }
+  .pp-tag.is-good { background: var(--amber); color: var(--navy); font-weight: 700; }
+  .pp-good { flex: 1; display: flex; flex-direction: column; margin-top: 1.2cqh; }
+  .pp-good .pp-tag { align-self: flex-start; margin-bottom: 0.7em; }
+  .prompt-good-block { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(0.8em, 2cqh, 1.4em); background: var(--navy-08); border-left: 4px solid var(--navy); border-radius: 4px; padding: clamp(18px, 2.4cqh, 34px) clamp(20px, 2.6cqw, 40px); }
+  .pg-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3.5cqw, 64px); }
+  .pg-col { display: flex; flex-direction: column; gap: clamp(0.5em, 1.2cqh, 0.9em); }
+  .pg-line { font-family: 'Libre Franklin', sans-serif; font-size: clamp(12px, 1.2cqw, 19px); line-height: 1.45; color: var(--text); margin: 0; }
+  .pg-tpl { white-space: pre-line; font-family: 'PT Mono', monospace; font-size: clamp(12px, 1.15cqw, 18px); line-height: 1.5; color: var(--navy); font-weight: 600; padding-left: 0.9em; border-left: 2px solid var(--navy-16); margin: 0; }
+  .pg-quote { font-family: 'Libre Franklin', sans-serif; font-style: italic; font-size: clamp(12px, 1.15cqw, 18px); line-height: 1.45; color: var(--text); margin: 0; }
+  .pg-final { margin: 0; padding-top: clamp(0.7em, 1.6cqh, 1.1em); border-top: 1px dashed var(--navy-16); font-family: 'Libre Franklin', sans-serif; font-weight: 600; font-size: clamp(13px, 1.25cqw, 20px); line-height: 1.45; color: var(--navy); }
+  .pg-ph { font-family: 'PT Mono', monospace; color: var(--muted); font-weight: 400; }
+
+  /* ===== SHOT-COUNT (slide 18) ===== */
+
+  /* ===== AUTO-DEMO (slide 19): paso + captura ===== */
+  .auto-demo { flex: 1; display: grid; grid-template-columns: 40% 1fr; gap: clamp(24px, 3cqw, 52px); align-items: center; margin-top: 2cqh; min-height: 0; }
+  /* la captura manda su propio tamaño, acotada en alto. Fijar la caja con
+     aspect-ratio la hacía más alta que su fila del grid: al estar centrada,
+     sobresalía por arriba (encima del callout) y por abajo (sobre el chrome). */
+  .auto-demo .auto-shot { min-height: 0; width: fit-content; max-width: 100%; justify-self: center; }
+  .auto-step { background: var(--navy-08); border-left: 4px solid var(--navy); border-radius: 4px; padding: clamp(18px, 2cqw, 32px); }
+  .auto-step-tag { font-family: 'PT Mono', monospace; font-weight: 700; font-size: clamp(12px, 1cqw, 16px); letter-spacing: 0.16em; text-transform: uppercase; color: var(--navy); }
+  .auto-step-title { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(17px, 1.7cqw, 26px); color: var(--navy); line-height: 1.2; margin-top: 0.5em; }
+  .auto-step-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.15cqw, 18px); color: var(--text); line-height: 1.5; margin-top: 0.8em; }
+  .auto-shot { display: flex; flex-direction: column; border: 1px solid var(--navy-16); border-radius: 4px; overflow: hidden; }
+  .auto-shot .shot-frame { background: var(--navy-08); }
+  .auto-shot .shot-frame img { display: block; max-width: 100%; max-height: 46cqh; width: auto; height: auto; }
+  /* el pie no debe ensanchar la placa: la anchura la manda la captura, y el
+     texto se parte si hace falta. */
+  .auto-shot figcaption { width: 0; min-width: 100%; font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.8cqw, 13px); letter-spacing: 0.04em; color: var(--muted); padding: clamp(8px, 0.8cqw, 12px) clamp(10px, 1cqw, 16px); background: var(--navy-08); border-top: 1px solid var(--navy-16); }
+
+  /* ===== BOMBILLA (slide 21): 95 % + demo vs producción ===== */
+  .bombilla-wrap { flex: 1; display: grid; grid-template-columns: 42% 1fr; gap: clamp(24px, 3.5cqw, 64px); align-items: center; margin-top: 2cqh; }
+  .bstat-num { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(64px, 10cqw, 160px); line-height: 0.9; color: var(--amber); }
+  .bstat-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.3cqw, 20px); color: var(--foam); line-height: 1.5; margin-top: 0.5em; max-width: 92%; }
+  .bombilla-cols { display: flex; flex-direction: column; gap: clamp(14px, 2cqh, 26px); }
+  .bcol { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12); border-left: 4px solid rgba(255,255,255,0.3); border-radius: 3px; padding: clamp(14px, 1.6cqw, 24px); }
+  .bcol.is-prod { border-left-color: var(--amber); }
+  .bcol-tag { font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 12px); letter-spacing: 0.2em; text-transform: uppercase; color: rgba(255,255,255,0.55); }
+  .bcol-title { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(16px, 1.6cqw, 24px); color: var(--foam); margin-top: 0.3em; line-height: 1.15; }
+  .bcol-line { font-family: 'Libre Franklin', sans-serif; font-size: clamp(12px, 1.1cqw, 17px); color: rgba(255,255,255,0.7); line-height: 1.45; margin-top: 0.4em; }
+
+  /* ===== PROD-LIST (slide 22): productos ===== */
+  .prod-list { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(8px, 1.4cqh, 18px); margin-top: 1.8cqh; }
+  .prod-row { display: grid; grid-template-columns: 36% 1fr; gap: clamp(16px, 2cqw, 36px); align-items: baseline; padding-bottom: clamp(8px, 1.2cqh, 14px); border-bottom: 1px solid var(--navy-16); }
+  .prod-name { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(17px, 1.8cqw, 28px); color: var(--navy); line-height: 1.15; }
+  .prod-desc { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.15cqw, 18px); color: var(--text); line-height: 1.4; }
+
+  /* ===== REPO-SPLIT (slide 23): texto + imagen ===== */
+  .repo-split { flex: 1; display: grid; grid-template-columns: 1fr 40%; gap: clamp(24px, 3cqw, 56px); align-items: center; margin-top: 2cqh; }
+  .repo-body { display: flex; flex-direction: column; gap: clamp(0.8em, 1.8cqh, 1.4em); }
+  .repo-body .body-text { max-width: 100%; margin: 0; }
+
+  /* ===== BLACK BOX (slides 11-13) ===== */
+  .bb-split { flex: 1; display: grid; grid-template-columns: 1fr 40%; gap: clamp(24px, 3cqw, 52px); align-items: center; margin-top: 1.4cqh; }
+  .bb-body { display: flex; flex-direction: column; gap: clamp(0.7em, 1.6cqh, 1.2em); }
+  .bb-callout { align-self: flex-start; background: var(--navy-08); border-left: 4px solid var(--navy); border-radius: 4px; padding: clamp(10px, 1.2cqw, 18px) clamp(14px, 1.6cqw, 24px); font-family: 'PT Mono', monospace; font-size: clamp(14px, 1.3cqw, 21px); color: var(--navy); }
+  .bb-yesno { align-self: flex-start; font-family: 'PT Mono', monospace; font-weight: 700; font-size: clamp(16px, 1.5cqw, 24px); color: var(--navy); background: var(--navy-08); padding: 0.1em 0.4em; border-radius: 2px; }
+  .bb-heading { font-family: 'Libre Franklin', sans-serif; font-weight: 700; color: var(--navy); font-size: clamp(15px, 1.35cqw, 22px); }
+  .bb-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: clamp(0.6em, 1.3cqh, 1em); }
+  .bb-list li { position: relative; padding-left: 1.2em; font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.15cqw, 19px); color: var(--text); line-height: 1.5; }
+  .bb-list li::before { content: '·'; position: absolute; left: 0.25em; color: var(--navy); font-weight: 700; }
+  .bb-list li em { color: var(--muted); font-style: italic; }
+  .bb-resumen { margin: 0; font-family: 'PT Mono', monospace; font-size: clamp(22px, 2.8cqw, 44px); line-height: 1.3; color: var(--navy); }
+  .bb-resumen mark { background: var(--navy-08); color: var(--navy); font-weight: 700; padding: 0.02em 0.2em; border-radius: 2px; }
+  .bb-img { background: var(--black); }
+  .bb-img figcaption { word-break: break-word; }
+
+  /* ===== QUOTES (slide 02) ===== */
+  .quotes-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(24px, 5cqh, 72px); }
+  .quote-row { display: grid; grid-template-columns: 1fr clamp(110px, 14cqw, 190px); gap: clamp(24px, 3.5cqw, 60px); align-items: center; margin: 0; }
+  .quote-mark { display: block; font-family: 'Literata', serif; font-weight: 700; font-size: clamp(40px, 5cqw, 84px); line-height: 0.5; color: var(--navy-16); margin-bottom: 0.15em; }
+  .quote-text { margin: 0; font-family: 'Libre Franklin', sans-serif; font-style: italic; font-size: clamp(16px, 1.9cqw, 30px); line-height: 1.4; color: var(--navy); }
+  .quote-cite { margin-top: clamp(0.7em, 1.6cqh, 1.2em); padding-left: 0.9em; border-left: 2px solid var(--amber); font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.9cqw, 14px); line-height: 1.45; color: var(--muted); }
+  .quote-photo { aspect-ratio: 1 / 1; border-radius: 4px; overflow: hidden; background: var(--navy-08); }
+  .quote-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* ===== CHAT-STACK (slides 14-17): dos capturas lado a lado, 50/50 ===== */
+  .chat-stack { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2cqw, 40px); align-items: center; justify-items: center; margin-top: 1cqh; min-height: 0; }
+  .chat-shot { margin: 0; max-width: 100%; border: 1px solid var(--navy-16); border-radius: 6px; overflow: hidden; background: var(--foam); box-shadow: 0 8px 24px rgba(0,17,125,0.10); }
+  .chat-shot img { display: block; max-width: 100%; max-height: 56cqh; width: auto; height: auto; }
+
+  /* ===== CHAT-MOCK (slides 14-17): la conversación transcrita, sin la interfaz
+     de ningún producto. Un curso que quiera sus capturas sustituye las
+     diapositivas 16-17 (slots) y puede usar .chat-shot de arriba. ===== */
+  .chat-mock { margin: 0; width: 100%; align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: clamp(8px, 1.2cqh, 14px); }
+  .chat-who { font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); }
+  .chat-ask { margin: 0; background: var(--navy-08); border: 1px solid var(--navy-16); border-radius: 12px; padding: clamp(12px, 1.4cqw, 22px); font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.25cqw, 20px); line-height: 1.5; color: var(--text); }
+  .chat-answer { display: flex; flex-direction: column; gap: 0.6em; border-left: 3px solid var(--navy-16); padding-left: clamp(12px, 1.4cqw, 22px); font-family: 'Libre Franklin', sans-serif; font-size: clamp(12px, 1.1cqw, 17px); line-height: 1.5; color: var(--text); }
+  .chat-answer p { margin: 0; }
+  .chat-answer ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 0.4em; }
+  .chat-answer strong { color: var(--navy); font-weight: 700; }
+
+  /* ===== AUTO-MOCK (slides 30-31): esquema neutro en lugar de la captura de un
+     producto. Cada curso pone sus capturas sustituyendo los dos slots. ===== */
+  .auto-mock { list-style: none; margin: 0; padding: clamp(16px, 1.8cqw, 28px) clamp(18px, 2cqw, 32px); display: flex; flex-direction: column; gap: clamp(8px, 1.2cqh, 14px); counter-reset: paso; min-width: clamp(240px, 28cqw, 400px); }
+  .auto-mock li { counter-increment: paso; font-family: 'PT Mono', monospace; font-size: clamp(12px, 1.1cqw, 17px); line-height: 1.4; color: var(--navy); }
+  .auto-mock li::before { content: counter(paso) ". "; color: var(--muted); }
+  .auto-mock.is-flow li { background: var(--foam); border: 1px solid var(--navy-16); border-radius: 4px; padding: 0.5em 0.8em; }
+
+  /* ===== PLATE-LIST: lista de puntos dentro de un img-plate ===== */
+  .plate-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: clamp(0.6em, 1.4cqh, 1em); }
+  .plate-list li { position: relative; padding-left: 1.2em; font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.25cqw, 20px); color: var(--text); line-height: 1.5; }
+  .plate-list li::before { content: '·'; position: absolute; left: 0.25em; color: var(--navy); font-weight: 700; }
+  .plate-list li strong { color: var(--navy); font-weight: 700; }
+  .plate-list li em { color: var(--muted); font-style: italic; }
+  /* Amber is a fill on light slides, never ink: navy italic over the highlighter, as .manifesto-quote em. */
+  .img-plate-title em { color: var(--navy); font-style: italic;
+    text-decoration-line: underline; text-decoration-color: var(--amber); text-decoration-thickness: 0.36em; text-underline-offset: -0.26em; text-decoration-skip-ink: none; }
+
+  /* ===== PAPER-SWAP (slide 30): una captura sustituye a la otra en el mismo marco ===== */
+  .paper-swap { position: relative; flex: 1; min-height: 0; }
+  .paper-swap img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: var(--foam); }
+  .paper-swap img.reveal-fade { z-index: 2; }
+
+  /* ===== CLOSE (slide 42): cierre estilo Lumen ===== */
+  .close { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+  .close-claim {
+    font-family: 'Literata', serif; font-weight: 700;
+    font-size: clamp(36px, 4.4cqw, 76px); line-height: 1.05;
+    color: var(--foam); letter-spacing: -0.02em; max-width: 80%;
+  }
+  .close-claim em { color: var(--amber); font-style: italic; font-weight: 500; }
+  .close-sub {
+    font-family: 'Literata', serif; font-style: italic;
+    font-size: clamp(20px, 1.8cqw, 30px); color: var(--navy-40);
+    margin-top: 1.5em;
+  }
+  .close-thanks {
+    margin-top: 4cqh;
+    font-family: 'PT Mono', monospace; font-size: clamp(12px, 1.1cqw, 18px);
+    letter-spacing: 0.4em; text-transform: uppercase; color: var(--amber);
+  }
+  .close-partners {
+    margin-top: clamp(20px, 3cqh, 40px);
+    font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.9cqw, 13px);
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--navy-40);
+  }
+  .close-partners strong { color: var(--foam); font-weight: 700; margin: 0 0.4em; }
+  .close-logo { height: clamp(28px, 2.8cqw, 48px); margin-top: 2em; opacity: 0.85; }
+
+  /* HUD · documentos adicionales: bloque propio de este deck, no existe en el
+     deck-shell.css canónico (candidato a PR en zenital-brand si otro deck lo
+     necesita). */
+  .hud-docs { margin-top: 2.5em; padding-top: 1.5em;
+              border-top: 1px solid rgba(255,255,255,0.1); }
+  .hud-docs-title { font-family: 'PT Mono', monospace; font-size: 11px;
+                    letter-spacing: 0.12em; text-transform: uppercase;
+                    color: var(--navy-40); margin-bottom: 0.8em; }
+  .hud-doc {
+    display: grid;
+    grid-template-columns: 50px 1fr max-content;
+    gap: 24px; padding: 12px 18px;
+    cursor: pointer; border-radius: 3px;
+    align-items: center; transition: background .15s;
+    text-decoration: none;
+  }
+  .hud-doc:hover { background: rgba(255,255,255,0.05); }
+  .hud-doc .hn   { font-family: 'PT Mono', monospace; font-weight: 700;
+                   color: var(--amber); font-size: 16px; }
+  .hud-doc .ht   { font-family: 'Literata', serif; font-size: 18px; color: var(--foam); }
+  .hud-doc .hsec { font-family: 'PT Mono', monospace; font-size: 11px;
+                   letter-spacing: 0.04em; color: var(--navy-40); }
+  </style>
+</head>
+<body>
+<div id="stage">
+<div id="deck">
+
+  <!-- ============================================================
+       SLIDE 01 · COVER
+       ============================================================ -->
+  <section class="slide dark active" data-slide="01" data-section="apertura" data-title="Portada">
+    <div class="cover-logo">
+      <img src="assets/zenital-logo-foam.svg" alt="zenital">
+    </div>
+    <svg class="cover-lines" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <g fill="none" stroke-width="1" opacity="0.7" style="stroke: var(--navy-64)">
+        <path d="M0,720 Q400,540 800,640 T1600,580" />
+        <path d="M0,780 Q500,600 1000,680 T1600,640" />
+        <path d="M0,840 Q600,660 1200,720 T1600,700" />
+        <path d="M0,900 Q400,840 800,860 T1600,820" />
+      </g>
+      <g fill="none" stroke-width="1" opacity="0.3" style="stroke: var(--amber)">
+        <circle cx="1320" cy="220" r="180" />
+        <circle cx="1320" cy="220" r="240" />
+        <circle cx="1320" cy="220" r="300" />
+      </g>
+    </svg>
+    <div class="cover-content">
+      <div class="cover-eyebrow">sesión de ia · muibal · 2026</div>
+      <h1 class="cover-title">Qué es la IA generativa</h1>
+      <p class="cover-subtitle">La IA aplicada a investigar mercados · Máster Universitario en Negocios Internacionales</p>
+      <div class="bsm-cobrand">
+        <img src="assets/zenital-logo-foam.svg" alt="zenital">
+        <span class="cb-sep"></span>
+        <img src="assets/bsm-logo-footer.svg" alt="UPF Barcelona School of Management">
+      </div>
+    </div>
+    <div class="cover-meta">
+      <span><strong>Luis Esteve Elfau</strong></span>
+      <span>UPF Barcelona School of Management · lunes 16/11/2026</span>
+    </div>
+    <aside class="notes" hidden>
+      <p><em>Bloque 1 · 45 min (40 si va justo)</em></p>
+      <p>El módulo 0 común, para que todo el grupo parta del mismo sitio. Tiempos orientativos: 01 a 03, apertura y dos visiones (3 min); 04 a 08, la vela, la aceleración y el zumo de limón (6 min, la historia en un minuto: el grupo ya la vio con Manel); 09 a 13, qué es, tokens, embeddings y predicción (10 min); 14 a 18, la misma conversación (5 min, con la 16 sola si va justo); 19 a 25, caja negra, alucinaciones, sesgos y human in the loop (12 min); 26, de responder a actuar (2 min); 27 a 29, prompting básico (4 min, el deck 02 lo retoma); 30 a 33, automatización, el 95 % y cierre (3 min).</p>
+      <p>Lo que no hay que repetir: en las sesiones de Manel ya vieron la historia de GPT-4 y la regla de comprobar cada dato. Aquí el foco es cómo funciona por dentro y por qué eso cambia cómo se usa en un TFM.</p>
+      <p>Sin conexión, las slides 05 y 06 no cargan (las animaciones usan Tailwind y fuentes de internet): se salta de la 04 a la 07.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 02 · AGENDA
+       ============================================================ -->
+  <section class="slide" data-slide="02" data-section="apertura" data-title="Contenido">
+    <div class="label" style="margin-top:1cqh">sesión de ia · módulo 0</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">Contenido</h2>
+    <div class="program-wrap">
+      <div class="program-grid" id="program-grid">
+        <div class="program-row is-mine" data-row="0"><div class="pcell program-time">concepto</div><div class="pcell pmark"></div><div class="pcell program-block"><div class="ptitle">Qué es (y qué no es) la IA generativa</div><div class="pwho">crear, no solo clasificar</div></div></div>
+        <div class="program-row is-mine" data-row="1"><div class="pcell program-time">funcionamiento</div><div class="pcell pmark"></div><div class="pcell program-block"><div class="ptitle">Cómo funciona un LLM por dentro</div><div class="pwho">tokens, significado y predicción; sin fórmulas</div></div></div>
+        <div class="program-row is-mine" data-row="2"><div class="pcell program-time">límites</div><div class="pcell pmark"></div><div class="pcell program-block"><div class="ptitle">Dónde se equivoca y por qué</div><div class="pwho">alucinaciones, sesgos y la caja negra</div></div></div>
+        <div class="program-row is-mine" data-row="3"><div class="pcell program-time">criterio</div><div class="pcell pmark"></div><div class="pcell program-block"><div class="ptitle">La responsabilidad no se delega</div><div class="pwho">human in the loop, siempre</div></div></div>
+        <div class="program-row is-mine" data-row="4"><div class="pcell program-time">evolución</div><div class="pcell pmark"></div><div class="pcell program-block"><div class="ptitle">De responder a actuar</div><div class="pwho">chat, copiloto, agente: el puente a la IA para investigar</div></div></div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>02 · apertura</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 03 · DOS VISIONES (quotes)
+       ============================================================ -->
+  <section class="slide" data-slide="03" data-section="apertura" data-title="Dos visiones de la IA">
+    <div class="quotes-wrap">
+      <figure class="quote-row reveal" data-rev="q-1">
+        <div class="quote-main">
+          <span class="quote-mark">&ldquo;</span>
+          <blockquote class="quote-text">La llegada de esta inteligencia, la IA general y después la superinteligencia, es lo más importante que va a pasar en la sociedad humana en unos 500 años, quizá en 1.000.</blockquote>
+          <figcaption class="quote-cite">TED2025, "The AI Revolution Is Underhyped" (abril de 2025). Eric Schmidt, ex consejero delegado y expresidente ejecutivo de Google.</figcaption>
+        </div>
+        <div class="quote-photo">
+          <img src="assets/img/eric-schmidt.jpg" alt="Eric Schmidt">
+        </div>
+      </figure>
+      <figure class="quote-row reveal" data-rev="q-2">
+        <div class="quote-main">
+          <span class="quote-mark">&ldquo;</span>
+          <blockquote class="quote-text">La IA está muy lejos de ser tan inteligente como los humanos, difícilmente llega a la inteligencia de un gato.</blockquote>
+          <figcaption class="quote-cite">"AI Needs PHYSICS to EVOLVE", This Is The World (YouTube), marzo de 2025. Yann LeCun, profesor de la Universidad de Nueva York; entonces científico jefe de IA en Meta.</figcaption>
+        </div>
+        <div class="quote-photo">
+          <img src="assets/img/Picture2yann-lecun.jpg" alt="Yann LeCun">
+        </div>
+      </figure>
+    </div>
+    <div class="chrome-bottom">
+      <span>03 · apertura</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+    <aside class="notes" hidden>
+      <p><em>2 min</em></p>
+      <p>Dos personas que saben mucho de IA y dicen cosas opuestas. La pregunta a la sala: ¿con cuál os quedáis? No hace falta resolverlo; el módulo da criterio para decidir.</p>
+      <p>La frase de Schmidt es su charla de TED2025, entrevistado por Bilawal Sidhu (traducción propia). La comparación de la IA con el fuego o la electricidad, que circula atribuida a él, es de Sundar Pichai (2018); no usarla aquí.</p>
+      <p>LeCun dejó Meta en noviembre de 2025 para fundar AMI Labs. Su idea de que la IA aún no llega al nivel de un gato la repite desde 2018 (Quote Investigator la documenta). TODO: verificar que la frase exacta sale en el vídeo citado; si no, citarla como idea recurrente de LeCun.</p>
+      <p>TODO: verificar la fuente y la licencia de las dos fotos y ponerla en el pie.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 04 · MOTIVO CONDUCTOR: de la vela a la luz (1.0)
+       ============================================================ -->
+  <section class="slide black" data-slide="04" data-section="ia generativa" data-title="No se inventó la bombilla..." data-glow="0">
+    <div class="lead">
+      <div class="lead-stage" id="lead-stage" data-phase="-1">
+        <div class="lead-glow"></div>
+
+        <!-- CANDLE 1 -->
+        <div class="lead-icon-wrap candle-1">
+          <svg viewBox="0 0 200 200">
+            <g class="candle-flame">
+              <path d="M100 55 Q92 70 95 85 Q98 95 100 98 Q102 95 105 85 Q108 70 100 55 Z" opacity="0.5" style="fill: var(--amber)"/>
+              <path d="M100 55 Q92 70 95 85 Q98 95 100 98 Q102 95 105 85 Q108 70 100 55 Z" fill="none" stroke-width="2.5" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            </g>
+            <line x1="100" y1="95" x2="100" y2="105" stroke-width="2" style="stroke: var(--amber)"/>
+            <path d="M88 100 L86 105 Q84 107 84 110 L84 165 Q84 168 86 170 L114 170 Q116 168 116 165 L116 110 Q116 107 114 105 L112 100 Z"
+                  fill="none" stroke-width="2.5" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            <path d="M76 170 Q76 178 84 180 L116 180 Q124 178 124 170" fill="none" stroke-width="2.5" stroke-linejoin="round" style="stroke: var(--amber)"/>
+          </svg>
+        </div>
+
+        <!-- CANDLE 2 -->
+        <div class="lead-icon-wrap candle-2">
+          <svg viewBox="0 0 200 200">
+            <g class="candle-flame">
+              <path d="M100 30 Q86 55 90 80 Q96 95 100 100 Q104 95 110 80 Q114 55 100 30 Z" opacity="0.6" style="fill: var(--amber)"/>
+              <path d="M100 30 Q86 55 90 80 Q96 95 100 100 Q104 95 110 80 Q114 55 100 30 Z" fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            </g>
+            <line x1="100" y1="95" x2="100" y2="108" stroke-width="2.5" style="stroke: var(--amber)"/>
+            <path d="M82 102 L78 108 Q76 110 76 113 L76 170 Q76 173 78 175 L122 175 Q124 173 124 170 L124 113 Q124 110 122 108 L118 102 Z"
+                  fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            <path d="M118 113 Q120 125 119 135 Q117 142 115 140 Q113 138 114 132 Q115 125 116 118"
+                  fill="none" stroke-width="2.5" stroke-linecap="round" style="stroke: var(--amber)"/>
+            <path d="M68 175 Q68 184 78 186 L122 186 Q132 184 132 175" fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+          </svg>
+        </div>
+
+        <!-- CANDLE 3 -->
+        <div class="lead-icon-wrap candle-3">
+          <svg viewBox="0 0 200 200">
+            <g class="candle-flame">
+              <path d="M100 18 Q80 50 88 80 Q94 95 100 102 Q106 95 112 80 Q120 50 100 18 Z" opacity="0.7" style="fill: var(--amber)"/>
+              <path d="M100 18 Q80 50 88 80 Q94 95 100 102 Q106 95 112 80 Q120 50 100 18 Z" fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            </g>
+            <line x1="100" y1="98" x2="100" y2="110" stroke-width="2.5" style="stroke: var(--amber)"/>
+            <path d="M76 105 L72 110 Q70 112 70 115 L70 130 L78 130 L78 175 Q78 178 80 180 L120 180 Q122 178 122 175 L122 130 L130 130 L130 115 Q130 112 128 110 L124 105 Z"
+                  fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            <path d="M70 130 L130 130" stroke-width="2" style="stroke: var(--amber)"/>
+            <path d="M124 115 Q126 128 124 138 Q122 144 119 142" fill="none" stroke-width="2.5" stroke-linecap="round" style="stroke: var(--amber)"/>
+            <path d="M76 132 Q78 144 76 154" fill="none" stroke-width="2.5" stroke-linecap="round" style="stroke: var(--amber)"/>
+            <path d="M62 180 Q62 190 76 192 L124 192 Q138 190 138 180" fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            <ellipse cx="100" cy="180" rx="38" ry="3" fill="none" stroke-width="1.5" opacity="0.5" style="stroke: var(--amber)"/>
+          </svg>
+        </div>
+
+        <!-- CANDLE 4 -->
+        <div class="lead-icon-wrap candle-4">
+          <svg viewBox="0 0 200 200">
+            <g class="candle-flame">
+              <path d="M100 12 Q76 50 86 82 Q92 96 100 104 Q108 96 114 82 Q124 50 100 12 Z" opacity="0.75" style="fill: var(--amber)"/>
+              <path d="M100 12 Q76 50 86 82 Q92 96 100 104 Q108 96 114 82 Q124 50 100 12 Z" fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            </g>
+            <line x1="100" y1="100" x2="100" y2="112" stroke-width="2.5" style="stroke: var(--amber)"/>
+            <path d="M84 108 L82 114 Q80 116 80 119 L80 178 Q80 181 82 183 L118 183 Q120 181 120 178 L120 119 Q120 116 118 114 L116 108 Z"
+                  fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+            <line x1="80" y1="135" x2="120" y2="135" stroke-width="1.5" opacity="0.6" style="stroke: var(--amber)"/>
+            <path d="M72 183 Q72 192 82 194 L118 194 Q128 192 128 183" fill="none" stroke-width="3" stroke-linejoin="round" style="stroke: var(--amber)"/>
+          </svg>
+        </div>
+
+        <!-- BULB OFF -->
+        <div class="lead-icon-wrap bulb-off">
+          <svg viewBox="0 0 200 200">
+            <path d="M100 35 Q66 35 60 78 Q57 102 75 122 Q80 132 80 142 L120 142 Q120 132 125 122 Q143 102 140 78 Q134 35 100 35 Z"
+                  fill="none" stroke-width="2.5" stroke-linejoin="round" style="stroke: var(--navy-64)"/>
+            <path d="M80 142 L80 154 Q80 158 84 158 L116 158 Q120 158 120 154 L120 142 Z"
+                  fill="none" stroke-width="2.5" style="stroke: var(--navy-64)"/>
+            <path d="M84 162 L116 162 M86 168 L114 168 M88 174 L112 174"
+                  stroke-width="2" stroke-linecap="round" style="stroke: var(--navy-64)"/>
+            <path d="M86 88 Q92 105 100 105 Q108 105 114 88 Q108 82 100 84 Q92 82 86 88 Z"
+                  fill="none" stroke-width="2" style="stroke: var(--navy-64)"/>
+            <line x1="86" y1="88" x2="86" y2="142" stroke-width="2" style="stroke: var(--navy-64)"/>
+            <line x1="114" y1="88" x2="114" y2="142" stroke-width="2" style="stroke: var(--navy-64)"/>
+          </svg>
+        </div>
+
+        <!-- BULB ON -->
+        <div class="lead-icon-wrap bulb-on">
+          <svg viewBox="0 0 200 200">
+            <g stroke-width="3" stroke-linecap="round" fill="none" style="stroke: var(--amber)">
+              <line x1="100" y1="6" x2="100" y2="22"/>
+              <line x1="32" y1="42" x2="46" y2="54"/>
+              <line x1="168" y1="42" x2="154" y2="54"/>
+              <line x1="14" y1="100" x2="32" y2="100"/>
+              <line x1="186" y1="100" x2="168" y2="100"/>
+              <line x1="32" y1="158" x2="46" y2="146"/>
+              <line x1="168" y1="158" x2="154" y2="146"/>
+            </g>
+            <circle class="bulb-glow-halo" cx="100" cy="92" r="56" style="fill: var(--amber)"/>
+            <path d="M100 35 Q66 35 60 78 Q57 102 75 122 Q80 132 80 142 L120 142 Q120 132 125 122 Q143 102 140 78 Q134 35 100 35 Z"
+                  opacity="0.95" style="fill: var(--amber)"/>
+            <path d="M80 142 L80 154 Q80 158 84 158 L116 158 Q120 158 120 154 L120 142 Z" style="fill: var(--navy-64)"/>
+            <path d="M84 162 L116 162 M86 168 L114 168 M88 174 L112 174"
+                  stroke-width="2" stroke-linecap="round" style="stroke: var(--navy-64)"/>
+            <path d="M86 88 Q92 105 100 105 Q108 105 114 88 Q108 82 100 84 Q92 82 86 88 Z"
+                  fill="none" stroke-width="2.5" style="stroke: var(--red)"/>
+            <line x1="86" y1="88" x2="86" y2="142" stroke-width="2.5" style="stroke: var(--red)"/>
+            <line x1="114" y1="88" x2="114" y2="142" stroke-width="2.5" style="stroke: var(--red)"/>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- Frases por fase: cada una visible en su fase, ocultas en las demas -->
+      <div class="lead-phrases">
+        <div class="lead-phrase" data-phrase="0">
+          <span class="lead-date">3000 a.C.</span>
+          <p class="lead-line">Una mecha. Grasa animal. Humo.</p>
+        </div>
+        <div class="lead-phrase" data-phrase="1">
+          <span class="lead-date">Siglo V</span>
+          <p class="lead-line">Cae Roma. Arde lo que sobra de la cocina.</p>
+        </div>
+        <div class="lead-phrase" data-phrase="2">
+          <span class="lead-date">Edad Media</span>
+          <p class="lead-line">Luz limpia, aroma noble. Solo para reyes y altares.</p>
+        </div>
+        <div class="lead-phrase" data-phrase="3">
+          <span class="lead-date">Siglo XIX</span>
+          <p class="lead-line">La química democratiza la luz.</p>
+        </div>
+        <div class="lead-phrase" data-phrase="4">
+          <span class="lead-date">27 de enero de 1880</span>
+          <p class="lead-line">Edison patenta otra cosa.</p>
+        </div>
+        <div class="lead-phrase" data-phrase="5">
+          <span class="lead-date">Siglo XX → hoy</span>
+          <p class="lead-line">Se le encendió la bombilla.</p>
+          <p class="lead-sub">La vela no desaparece: cambia de oficio.</p>
+        </div>
+      </div>
+
+      <p class="lead-quote reveal-fade" data-rev="quote">No se inventó la bombilla<br><em>iterando una vela.</em></p>
+      <p class="lead-tagline reveal-fade" data-rev="tagline">El hilo conductor del módulo</p>
+    </div>
+    <div class="chrome-bottom">
+      <span>04 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 05 · ACELERACIÓN: animación 24h (slide entera = iframe)
+       ============================================================ -->
+  <section class="slide black" data-slide="05" data-section="ia generativa" data-title="24h de historia humana" data-iframe="assets/tech-evolution-24h-es.html">
+    <iframe class="embed-fullslide" data-iframe-target="" title="Evolución 24h"></iframe>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 06 · ACELERACIÓN: vista estática (slide entera = iframe)
+       ============================================================ -->
+  <section class="slide black" data-slide="06" data-section="ia generativa" data-title="La aceleración, en un vistazo" data-iframe="assets/tech-evolution-static-es.html">
+    <iframe class="embed-fullslide" data-iframe-target="" title="Evolución, vista estática"></iframe>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 07 · ZUMO DE LIMÓN: Dunning-Kruger (reveal con bolita)
+       ============================================================ -->
+  <section class="slide" data-slide="07" data-section="ia generativa" data-title="El zumo de limón">
+    <div class="curve-wrap">
+      <div class="curve-text">
+        <div class="label reveal" style="margin-bottom:1em" data-rev="curve-label">El zumo de limón</div>
+        <h2 class="section-title reveal" data-rev="curve-title">Cuidado con<br>el pico de la confianza.</h2>
+        <p class="lede reveal" data-rev="curve-lede">En <strong>1995</strong>, McArthur Wheeler atracó dos bancos a cara descubierta, convencido de que el zumo de limón en la cara lo hacía invisible a las cámaras.</p>
+        <p class="body-text reveal" data-rev="curve-1">No era estúpido. Era algo peor: <strong>no sabía lo que no sabía.</strong></p>
+        <p class="body-text reveal" data-rev="curve-2">En <strong>1999</strong>, Dunning y Kruger publican <em>«Unskilled and Unaware of It: How Difficulties in Recognizing One's Own Incompetence Lead to Inflated Self-Assessments»</em> y le ponen nombre al efecto.</p>
+      </div>
+      <div class="curve-chart">
+        <svg viewBox="0 0 600 420" id="curve-chart-svg">
+          <!-- título del gráfico -->
+          <g class="curve-axes" data-rev="curve-axes">
+            <text x="565" y="22" text-anchor="end" font-family="PT Mono" font-size="11" letter-spacing="3" font-weight="700" style="fill: var(--muted)">CURVA POPULAR DEL EFECTO</text>
+            <text x="565" y="40" text-anchor="end" font-family="Literata" font-size="18" font-weight="700" letter-spacing="-0.3" style="fill: var(--navy)">Dunning-Kruger</text>
+          </g>
+          <!-- ejes (revealed) -->
+          <g class="curve-axes" data-rev="curve-axes">
+            <line x1="60" y1="370" x2="570" y2="370" stroke-width="1.5" style="stroke: var(--navy-40)"/>
+            <line x1="60" y1="40" x2="60" y2="370" stroke-width="1.5" style="stroke: var(--navy-40)"/>
+            <text x="315" y="405" text-anchor="middle" font-family="PT Mono" font-size="12" letter-spacing="2" style="fill: var(--muted)">CONOCIMIENTO →</text>
+            <text x="30" y="200" text-anchor="middle" font-family="PT Mono" font-size="12" letter-spacing="2" transform="rotate(-90 30 200)" style="fill: var(--muted)">CONFIANZA →</text>
+          </g>
+
+          <!-- curva -->
+          <path id="curve-line" class="curve-line"
+                d="M 80 280 C 100 280, 110 60, 180 60 C 260 60, 270 360, 320 360 C 360 360, 370 200, 480 140 C 530 110, 555 95, 565 90"
+                fill="none" stroke-width="3.5" stroke-linecap="round" style="stroke: var(--navy)"/>
+
+          <!-- IMPOSTOR SYNDROME OVERLAY: espejo de Dunning-Kruger.
+               Alta confianza con baja competencia (arriba-izquierda), baja confianza
+               con alta competencia (abajo-derecha). Curva S descendente. -->
+          <path id="curve-overlay" class="curve-overlay"
+                d="M 80 70 C 180 75, 240 110, 300 200 C 360 290, 430 340, 565 350"
+                fill="none" stroke-width="2.8" stroke-linecap="round" stroke-dasharray="6 5" style="stroke: var(--red)"/>
+          <g id="curve-overlay-label" class="curve-overlay-label" data-rev="curve-overlay-label">
+            <text x="565" y="240" text-anchor="end" font-family="PT Mono" font-size="11" letter-spacing="2" font-weight="700" style="fill: var(--red)">SÍNDROME</text>
+            <text x="565" y="258" text-anchor="end" font-family="Literata" font-size="14" font-weight="700" font-style="italic" style="fill: var(--red)">del impostor</text>
+            <line x1="478" y1="265" x2="528" y2="305" stroke-width="1.5" stroke-linecap="round" opacity="0.6" style="stroke: var(--red)"/>
+          </g>
+
+          <!-- bolita amarilla grande (empieza grande y visible) -->
+          <circle id="curve-dot" class="curve-dot" cx="80" cy="280" r="14" stroke-width="3" style="fill: var(--amber); stroke: var(--navy)"/>
+
+          <g class="curve-marker" data-rev="curve-m1">
+            <circle cx="180" cy="60" r="5" style="fill: var(--amber)"/>
+            <text x="180" y="44" text-anchor="middle" font-family="Literata" font-size="13" font-weight="700" style="fill: var(--navy)">Pico de la estupidez</text>
+          </g>
+          <g class="curve-marker" data-rev="curve-m2">
+            <circle cx="320" cy="360" r="5" style="fill: var(--red)"/>
+            <text x="320" y="382" text-anchor="middle" font-family="Literata" font-size="13" font-weight="700" style="fill: var(--navy)">Valle de la humildad</text>
+          </g>
+          <g class="curve-marker" data-rev="curve-m3">
+            <circle cx="555" cy="95" r="5" style="fill: var(--green)"/>
+            <text x="540" y="80" text-anchor="end" font-family="Literata" font-size="13" font-weight="700" style="fill: var(--navy)">Meseta de la maestría</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>07 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 08 · EL PICO, EN VERSIÓN IA (chimpancé)
+       ============================================================ -->
+  <section class="slide" data-slide="08" data-section="ia generativa" data-title="Así empezamos casi todos">
+    <div class="label" style="margin-top:1cqh">la curva, en versión IA</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">Así empezamos casi todos</h2>
+    <div class="llm-split">
+      <div class="media-body">
+        <div class="media-tag">el pico de la estupidez</div>
+        <div class="media-title">Nos creemos expertos</div>
+        <div class="media-text">Así estamos muchos al principio: en el pico de la confianza. Un par de prompts y ya nos creemos expertos.</div>
+        <div class="media-text reveal" data-rev="chimp-txt">Pero <strong>así es como nos ve alguien con años de oficio</strong>.</div>
+      </div>
+      <div class="video-stage reveal" data-rev="chimp">
+        <div class="video-frame">
+          <video data-play-on-reveal playsinline src="assets/img/chimpance-martillo.mp4"></video>
+        </div>
+        <div class="video-note">visto desde el otro lado de la curva · vídeo: BBC</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>08 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 09 · 1.1 Qué es la IA generativa
+       ============================================================ -->
+  <section class="slide" data-slide="09" data-section="ia generativa" data-title="Crear, no solo clasificar" data-slot="crear-no-solo-clasificar">
+    <div class="label" style="margin-top:1cqh">definición</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">Crear, no solo clasificar</h2>
+    <p class="body-text" style="max-width:82%;">La IA lleva décadas entre nosotros: detecta fraude, recomienda películas, lee matrículas. Lo nuevo de la generativa es que crea contenido (texto, imágenes, código) en vez de solo ordenar o predecir sobre lo que ya existe. Y, sobre todo, que ahora cualquiera la puede usar como si hablara con una persona.</p>
+    <div class="compare-wrap">
+      <div class="compare-col is-them reveal" data-rev="compare-them">
+        <div class="compare-tag">IA de siempre</div>
+        <div class="compare-name">Clasifica, predice, detecta</div>
+        <div class="compare-line">"Esta transacción parece un fraude." Lleva décadas dentro de productos que ya usáis, ordenando y puntuando lo que ya existe.</div>
+      </div>
+      <div class="compare-col is-us reveal" data-rev="compare-us">
+        <div class="compare-tag">IA generativa</div>
+        <div class="compare-name">Genera contenido nuevo</div>
+        <div class="compare-line">"Redáctame el resumen ejecutivo de este informe sectorial." Crea a partir de una instrucción y es <strong>accesible a cualquiera desde 2022</strong>.</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>09 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 10 · Tokenización
+       ============================================================ -->
+  <section class="slide" data-slide="10" data-section="ia generativa" data-title="Lo trocea todo en tokens">
+    <div class="label" style="margin-top:1cqh">cómo lee</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">Lo trocea todo en tokens</h2>
+    <p class="body-text" style="max-width:82%;">Antes de predecir nada, el modelo trocea lo que le das en piezas pequeñas, los tokens, y convierte cada una en una lista de números. Trabaja con esos números, no con las palabras.</p>
+    <div class="token-strip">
+      <div class="token-line reveal" data-rev="token-1">
+        <span class="tk-label">el texto se trocea en piezas, los tokens</span>
+        <span class="tok">la</span><span class="tok">no</span><span class="tok">ta</span><span class="tok">de</span><span class="tok">pren</span><span class="tok">sa</span><span class="tok">de</span><span class="tok">la</span><span class="tok">mar</span><span class="tok">ca</span>
+      </div>
+      <div class="token-line reveal" data-rev="token-2">
+        <span class="tk-label">y cada token es, por dentro, números</span>
+        <span class="tok is-num">0.81</span><span class="tok is-num">-0.20</span><span class="tok is-num">0.47</span><span class="tok is-num">0.05</span><span class="tok is-num">-0.93</span><span class="tok is-num">0.62</span>
+      </div>
+    </div>
+    <p class="token-foot reveal" data-rev="token-foot">Y ya no es solo texto: los modelos de hoy son <strong>multimodales</strong> (texto, imagen, audio, vídeo), con enfoques distintos por dentro, como los modelos de difusión para imagen. No veis lo que pasa dentro, pero el comportamiento <strong>siempre es probabilístico</strong>.</p>
+    <div class="chrome-bottom">
+      <span>10 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 11 · Embeddings
+       ============================================================ -->
+  <section class="slide" data-slide="11" data-section="ia generativa" data-title="De token a significado: los embeddings">
+    <div class="label" style="margin-top:1cqh">cómo guarda el significado</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">De token a significado: los embeddings</h2>
+    <p class="body-text" style="max-width:82%;">Cada token no se queda en un número suelto: se convierte en un embedding, una lista larga de números (un vector) que lo sitúa en un mapa de significado.</p>
+    <div class="embed-split">
+      <div class="embed-flow">
+        <div class="embed-row reveal" data-rev="emb-1">
+          <span class="tok">marca</span><span class="embed-arrow">→</span>
+          <span class="tok is-num">0.81</span><span class="tok is-num">-0.20</span><span class="tok is-num">0.47</span><span class="tok is-num">0.05</span><span class="tok is-num">-0.93</span><span class="tok is-num">…</span>
+        </div>
+        <div class="embed-row reveal" data-rev="emb-2">
+          <span class="tok">enseña</span><span class="embed-arrow">→</span>
+          <span class="tok is-num">0.78</span><span class="tok is-num">-0.15</span><span class="tok is-num">0.50</span><span class="tok is-num">0.02</span><span class="tok is-num">-0.90</span><span class="tok is-num">…</span>
+          <span class="embed-hint">casi el mismo vector: significan casi lo mismo</span>
+        </div>
+      </div>
+      <div class="media-img" style="aspect-ratio: 468 / 254;">
+        <img src="assets/img/embeddings-sala-cuarto.png" alt="los tokens de una frase, convertidos cada uno en una columna de números (un vector)">
+        <figcaption>cada token, convertido en un vector · figura: 3Blue1Brown, «But what is a GPT?»</figcaption>
+      </div>
+    </div>
+    <p class="token-foot reveal" data-rev="emb-3">Palabras con significado parecido caen cerca en ese mapa. Así el modelo <strong>captura el sentido con pura geometría</strong>, sin entender nada como nosotros.</p>
+    <p class="embed-stat reveal" data-rev="emb-4">Para hacerse una idea del tamaño: en GPT-3, cada token es un vector de <strong>12.288</strong> números y maneja <strong>2.048</strong> tokens de contexto. Hoy los vectores son aún mayores (hasta unas 16.000 dimensiones) y el contexto ha pasado a cientos de miles, incluso millones, de tokens.</p>
+    <div class="chrome-bottom">
+      <span>11 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 12 · Ejemplo (embeddings, media)
+       ============================================================ -->
+  <section class="slide" data-slide="12" data-section="ia generativa" data-title="Significado hecho geometría">
+    <div class="label" style="margin-top:1cqh">un ejemplo que se ve</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">Significado hecho geometría</h2>
+    <div class="media-wrap">
+      <div class="media-img" style="aspect-ratio: 818 / 628;">
+        <img src="assets/img/Picture3embeddings-word-vectors.png" alt="mapa de vectores de palabras: hombre, mujer, rey, reina">
+        <figcaption>proyección de embeddings (t-SNE) · hombre, mujer, rey, reina</figcaption>
+      </div>
+      <div class="media-body">
+        <div class="media-tag">rey menos hombre más mujer se acerca a reina</div>
+        <div class="media-title">El modelo no sabe qué es un rey</div>
+        <div class="media-text">Sabe que su vector se relaciona con los de hombre, mujer y reina de forma medible. En el espacio original del modelo, la misma resta que lleva de hombre a mujer lleva de rey a reina; esta proyección en 3D solo da una idea aproximada. Puro cálculo sobre números y, aun así, <strong>captura el significado</strong>.</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>12 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 13 · Predice la siguiente palabra
+       ============================================================ -->
+  <section class="slide" data-slide="13" data-section="ia generativa" data-title="Una máquina de predecir la siguiente palabra">
+    <div class="label" style="margin-top:1cqh">cómo decide</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">Una máquina de predecir la siguiente palabra</h2>
+    <p class="body-text" style="max-width:82%;">Detrás de ChatGPT, Claude, Gemini o Copilot hay un LLM, un modelo entrenado leyendo cantidades enormes de texto. Cuando le escribís, no consulta una base de datos: predice, palabra a palabra, qué es lo más probable que venga después. Esa es toda la magia, y también todos los límites.</p>
+    <div class="llm-split">
+      <div class="llm-boxes">
+        <div class="pill reveal" data-rev="pill-1">
+          <div class="pill-name">Probabilístico</div>
+          <div class="pill-desc">Elige lo más probable, no lo verdadero. Por eso suena seguro hasta cuando se equivoca.</div>
+        </div>
+        <div class="pill reveal" data-rev="pill-2">
+          <div class="pill-name">No determinista</div>
+          <div class="pill-desc">La misma pregunta puede dar respuestas distintas. Bien para redactar o proponer ideas, peligroso si esperáis un dato exacto siempre igual.</div>
+        </div>
+      </div>
+      <div class="video-stage reveal" data-rev="video">
+        <div class="video-frame">
+          <video data-play-on-reveal muted playsinline poster="assets/img/prediccion-siguiente-palabra-poster.png" src="assets/img/prediccion-siguiente-palabra.mp4"></video>
+        </div>
+        <div class="video-note">cómo el modelo elige la siguiente palabra entre varias opciones probables · clip: 3Blue1Brown, «But what is a GPT?»</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>13 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 14 · LA MISMA CONVERSACIÓN: antes (1 de 2)
+       ============================================================ -->
+  <section class="slide" data-slide="14" data-section="ia generativa" data-title="La misma conversación, hace unos meses">
+    <div class="label" style="margin-top:1cqh">la prueba</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">La misma conversación, hace unos meses</h2>
+    <p class="body-text" style="max-width:82%;">Sin embargo, os quiero mostrar algo: la misma conversación con un asistente de IA, con solo unos meses de diferencia.</p>
+    <div class="chat-stack">
+      <figure class="chat-mock">
+        <figcaption class="chat-who">la pregunta</figcaption>
+        <p class="chat-ask">Un hombre vive en un décimo piso de un edificio. Cada día coge el ascensor hasta la planta baja para dirigirse al trabajo o para ir de compras. Cuando regresa siempre sube en el ascensor hasta el séptimo piso y luego sube por la escalera los 3 pisos que quedan hasta llegar a su apartamento, el décimo. ¿Por qué lo hace?</p>
+      </figure>
+      <figure class="chat-mock reveal" data-rev="ant-2">
+        <figcaption class="chat-who">la respuesta del modelo</figcaption>
+        <div class="chat-answer">
+          <p>Hay un par de posibles razones por las que el hombre hace esto:</p>
+          <ul>
+            <li><strong>Es demasiado bajo para alcanzar el botón del décimo piso.</strong> Si es un niño o una persona de baja estatura, puede que solo llegue al botón del séptimo piso.</li>
+            <li><strong>Tiene algún tipo de discapacidad.</strong> Podría ser una discapacidad que le impida alcanzar los botones más altos, pero que aún le permita subir escaleras.</li>
+            <li><strong>Está llevando muchas cosas.</strong> Si viene de compras o del trabajo con las manos ocupadas, podría serle más fácil bajarse en el séptimo piso y subir las escaleras que intentar maniobrar dentro del ascensor con todo.</li>
+            <li><strong>Es una persona que necesita hacer ejercicio.</strong> Puede que use las escaleras para hacer un poco de ejercicio extra cada día.</li>
+          </ul>
+        </div>
+      </figure>
+    </div>
+    <div class="chrome-bottom">
+      <span>14 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 15 · LA MISMA CONVERSACIÓN: antes (2 de 2)
+       ============================================================ -->
+  <section class="slide" data-slide="15" data-section="ia generativa" data-title="La misma conversación, hace unos meses · 2">
+    <div class="label" style="margin-top:1cqh">la prueba</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">La misma conversación, hace unos meses</h2>
+    <div class="chat-stack">
+      <figure class="chat-mock">
+        <figcaption class="chat-who">la pregunta</figcaption>
+        <p class="chat-ask">Un hombre vive en un séptimo piso de un edificio. Cada día coge el ascensor hasta la planta baja para dirigirse al trabajo o para ir de compras. Cuando regresa siempre sube en el ascensor hasta el séptimo piso hasta llegar a su apartamento, el séptimo. ¿Por qué lo hace?</p>
+      </figure>
+      <figure class="chat-mock reveal" data-rev="ant-4">
+        <figcaption class="chat-who">la respuesta del modelo</figcaption>
+        <div class="chat-answer">
+          <p><strong>Es un niño.</strong> No llega a los botones del ascensor de los pisos superiores.</p>
+        </div>
+      </figure>
+    </div>
+    <div class="chrome-bottom">
+      <span>15 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 16 · LA MISMA CONVERSACIÓN: hoy (1 de 2)
+       ============================================================ -->
+  <section class="slide" data-slide="16" data-section="ia generativa" data-title="La misma conversación, hoy" data-slot="la-misma-conversacion-hoy">
+    <div class="label" style="margin-top:1cqh">la prueba</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">La misma conversación, hoy</h2>
+    <div class="chat-stack">
+      <figure class="chat-mock">
+        <figcaption class="chat-who">la pregunta</figcaption>
+        <p class="chat-ask">Un hombre vive en un décimo piso de un edificio. Cada día coge el ascensor hasta la planta baja para dirigirse al trabajo o para ir de compras. Cuando regresa siempre sube en el ascensor hasta el séptimo piso y luego sube por la escalera los 3 pisos que quedan hasta llegar a su apartamento, el décimo. ¿Por qué lo hace?</p>
+      </figure>
+      <figure class="chat-mock reveal" data-rev="hoy-2">
+        <figcaption class="chat-who">la respuesta de Claude (transcrita)</figcaption>
+        <div class="chat-answer">
+          <p>Es el clásico acertijo: el hombre es de baja estatura (una persona pequeña). Cuando baja, no tiene problema porque el botón de la planta baja está abajo del panel y lo alcanza sin dificultad. Pero cuando sube, solo llega hasta el botón del séptimo piso; los botones del 8, 9 y 10 quedan demasiado altos para él. Por eso baja en el séptimo y sube los tres pisos restantes por la escalera.</p>
+          <p>La variante habitual del acertijo añade que los días de lluvia sí sube hasta el décimo… porque lleva paraguas y con él puede pulsar el botón.</p>
+        </div>
+      </figure>
+    </div>
+    <div class="chrome-bottom">
+      <span>16 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+    <aside class="notes" hidden>
+      <p><em>16 y 17 · 3 min las dos (con 14 y 15, 6 min)</em></p>
+      <p>Las mismas dos preguntas de 14 y 15, hechas a un asistente actual. Aquí resuelve el acertijo clásico y además cuenta la variante del paraguas. Si va justo, de 14 a 17 se cuenta con esta sola slide: se lee la pregunta, se recuerda la respuesta de hace unos meses (baja estatura, una discapacidad, las bolsas, el ejercicio) y se enseña esta.</p>
+      <p>Antes del 4/11: volver a hacer las dos preguntas en un asistente gratuito (Gemini, ChatGPT o Claude) y, si la respuesta cambia, transcribirla aquí con la herramienta y la fecha.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 17 · LA MISMA CONVERSACIÓN: hoy (2 de 2)
+       ============================================================ -->
+  <section class="slide" data-slide="17" data-section="ia generativa" data-title="La misma conversación, hoy · 2" data-slot="la-misma-conversacion-hoy-2">
+    <div class="label" style="margin-top:1cqh">la prueba</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">La misma conversación, hoy</h2>
+    <div class="chat-stack">
+      <figure class="chat-mock">
+        <figcaption class="chat-who">la pregunta</figcaption>
+        <p class="chat-ask">Un hombre vive en un séptimo piso de un edificio. Cada día coge el ascensor hasta la planta baja para dirigirse al trabajo o para ir de compras. Cuando regresa siempre sube en el ascensor hasta el séptimo piso hasta llegar a su apartamento, el séptimo. ¿Por qué lo hace?</p>
+      </figure>
+      <figure class="chat-mock reveal" data-rev="hoy-4">
+        <figcaption class="chat-who">la respuesta de Claude (31/10/2026, transcrita)</figcaption>
+        <div class="chat-answer">
+          <p>Tal como lo planteas, no hay ningún misterio: sube hasta el séptimo porque vive en el séptimo.</p>
+          <p>Parece una variante del acertijo clásico. En el original, el hombre vive en el décimo, sube en ascensor solo hasta el séptimo y hace a pie los tres pisos que faltan. Allí la respuesta es que es de baja estatura y no llega a los botones más altos; los días de lluvia sí sube hasta el décimo, porque pulsa el botón con el paraguas.</p>
+          <p>En tu versión has quitado la parte rara, así que la única respuesta es la obvia.</p>
+        </div>
+      </figure>
+    </div>
+    <div class="chrome-bottom">
+      <span>17 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+    <aside class="notes" hidden>
+      <p>La trampa: en esta versión no hay acertijo. Hace unos meses el modelo contestaba "es un niño" porque reconocía la forma del acertijo, no su contenido (slide 15). Hoy detecta que falta la anomalía. Es el puente a la 18: los modelos siguen mejorando.</p>
+      <p>Respuesta generada con Claude el 31/10/2026 al preparar el deck. Antes del 4/11, repetir la pregunta en el asistente gratuito que vaya a usar la clase y, si contesta distinto, transcribir su respuesta con herramienta y fecha. Si alguna herramienta vuelve a decir "es un niño", mejor: se enseña como ejemplo de alucinación.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 18 · CONCLUSIÓN: loros estocásticos
+       ============================================================ -->
+  <section class="slide dark" data-slide="18" data-section="ia generativa" data-title="Cada vez menos verdad">
+    <div class="label" style="margin-top:1cqh">la conclusión</div>
+    <div class="manifesto-wrap">
+      <p class="manifesto-quote">Hay quien sostiene que la tecnología detrás de los LLM, los transformers, tiene techo. Y aun así <em>no deja de evolucionar</em>.<br><br>Yann LeCun tiene razón en muchas cosas. Pero la expresión de los escépticos, los «loros estocásticos» (Bender, Gebru y otras, 2021), <em>cada vez se sostiene menos</em>.</p>
+    </div>
+    <div class="chrome-bottom">
+      <span>18 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 19 · Black Box AI (sí porque)
+       ============================================================ -->
+  <section class="slide" data-slide="19" data-section="ia generativa" data-title="La caja negra" data-slot="la-caja-negra">
+    <div class="label" style="margin-top:1cqh">el riesgo que conviene entender</div>
+    <h2 class="section-title" style="margin-top: 0.3em;">La caja negra</h2>
+    <div class="img-plate">
+      <figure class="img-plate-frame">
+        <img src="assets/img/black-box.png" alt="representación de una red neuronal como caja negra">
+        <figcaption>fuente: bluetickconsultants.medium.com</figcaption>
+      </figure>
+      <div class="img-plate-body">
+        <div class="img-plate-tag">¿es una caja negra? sí y no</div>
+        <div class="img-plate-title">Sí porque:</div>
+        <ul class="plate-list">
+          <li class="reveal" data-rev="bb-1">Tiene millones o miles de millones de parámetros (pesos). <em>175.000 millones en GPT-3.</em></li>
+          <li class="reveal" data-rev="bb-2">Es difícil saber por qué tomó cierta decisión en un caso específico.</li>
+          <li class="reveal" data-rev="bb-3">No tiene una lógica simbólica explícita, como una regla o un algoritmo tradicional.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>19 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 20 · Black Box AI (no porque)
+       ============================================================ -->
+  <section class="slide" data-slide="20" data-section="ia generativa" data-title="La caja negra" data-slot="la-caja-negra-2">
+    <div class="label" style="margin-top:1cqh">el riesgo que conviene entender</div>
+    <h2 class="section-title" style="margin-top: 0.3em;">La caja negra</h2>
+    <div class="img-plate">
+      <figure class="img-plate-frame">
+        <img src="assets/img/black-box.png" alt="representación de una red neuronal como caja negra">
+        <figcaption>fuente: bluetickconsultants.medium.com</figcaption>
+      </figure>
+      <div class="img-plate-body">
+        <div class="img-plate-tag">¿es una caja negra? sí y no</div>
+        <div class="img-plate-title">No porque:</div>
+        <ul class="plate-list">
+          <li class="reveal" data-rev="bb-1">Sabemos cómo funciona cada capa (matemáticamente).</li>
+          <li class="reveal" data-rev="bb-2">Podemos visualizar pesos, activaciones y gradientes.</li>
+          <li class="reveal" data-rev="bb-3">Hay técnicas de interpretación.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>20 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 21 · Black Box AI (en resumen)
+       ============================================================ -->
+  <section class="slide" data-slide="21" data-section="ia generativa" data-title="La caja negra" data-slot="la-caja-negra-3">
+    <div class="label" style="margin-top:1cqh">el riesgo que conviene entender</div>
+    <h2 class="section-title" style="margin-top: 0.3em;">La caja negra</h2>
+    <div class="img-plate">
+      <figure class="img-plate-frame">
+        <img src="assets/img/black-box.png" alt="representación de una red neuronal como caja negra">
+        <figcaption>fuente: bluetickconsultants.medium.com</figcaption>
+      </figure>
+      <div class="img-plate-body">
+        <div class="img-plate-tag">¿es una caja negra? en resumen</div>
+        <div class="img-plate-title" style="font-size: clamp(26px, 2.8cqw, 46px); line-height: 1.25;">No es una caja negra por <em>ignorancia</em>, sino por <em>complejidad</em>.</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>21 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 22 · Alucinaciones (qué es + robot)
+       ============================================================ -->
+  <section class="slide" data-slide="22" data-section="ia generativa" data-title="¿Qué es una alucinación?">
+    <div class="label" style="margin-top:1cqh">el riesgo que conviene entender</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">¿Qué es una alucinación?</h2>
+    <div class="img-plate">
+      <figure class="img-plate-frame">
+        <img src="assets/img/robot-alucinacion.jpg" alt="robot con nariz de pinocho, alucinando con total seguridad">
+        <figcaption>cuando inventa, lo hace con total seguridad · imagen generada con IA</figcaption>
+      </figure>
+      <div class="img-plate-body">
+        <div class="img-plate-tag">respuestas plausibles, falsas</div>
+        <p class="img-plate-text">Una alucinación en IA ocurre cuando un modelo genera una respuesta que <strong>parece plausible o coherente, pero es falsa</strong>, incorrecta o no está basada en datos reales.</p>
+        <div class="img-plate-title" style="font-size: clamp(16px, 1.5cqw, 24px);">Causas comunes:</div>
+        <ul class="plate-list">
+          <li class="reveal" data-rev="causa-1">Falta de información específica en los datos de <strong>entrenamiento</strong>. <em>(no depende de vosotros)</em></li>
+          <li class="reveal" data-rev="causa-2">Predicción estadística <strong>basada en patrones comunes</strong>, no en hechos. <em>(no depende de vosotros)</em></li>
+          <li class="reveal" data-rev="causa-3"><strong>Ambigüedad en la pregunta</strong> o contexto insuficiente. <em>(esto sí depende de vosotros: un buen prompt lo minimiza)</em></li>
+        </ul>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>22 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 23 · 1.5 El rinoceronte de Durero
+       ============================================================ -->
+  <section class="slide" data-slide="23" data-section="ia generativa" data-title="El rinoceronte de Durero">
+    <div class="label" style="margin-top:1cqh">una lección de hace 500 años</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">El rinoceronte de Durero</h2>
+    <div class="img-plate">
+      <figure class="img-plate-frame">
+        <img src="assets/img/durero-rinoceronte.jpg" alt="el rinoceronte de Durero, 1515">
+        <figcaption>Alberto Durero · grabado · 1515 · dominio público</figcaption>
+      </figure>
+      <div class="img-plate-body">
+        <div class="img-plate-tag">datos malos, error con autoridad</div>
+        <div class="img-plate-title">Lo dibujó sin haber visto ninguno</div>
+        <p class="img-plate-text">En 1515 Durero grabó este rinoceronte solo a partir de una descripción y un boceto de otra persona. Le puso una placa de armadura en el lomo y escamas de más.</p>
+        <p class="img-plate-text">El grabado era precioso y convincente, y se copió como bueno durante casi 300 años. Una IA entrenada con datos malos hace lo mismo: <strong>repite el error con total autoridad</strong>.</p>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>23 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 24 · Sesgos
+       ============================================================ -->
+  <section class="slide" data-slide="24" data-section="ia generativa" data-title="Los sesgos">
+    <div class="label" style="margin-top:1cqh">otro riesgo que conviene entender</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">Los sesgos</h2>
+    <div class="def-callout">
+      <span class="def-word">sesgo</span>
+      <p>Un sesgo es una preferencia sistemática o inclinación que aparece en las predicciones del modelo, generalmente como resultado de los datos con los que fue entrenado.</p>
+    </div>
+    <div class="halluc-causes-title" style="margin-top: 2cqh;">Causas comunes:</div>
+    <div class="pill-grid cols-3" style="margin-top: 1.2cqh;">
+      <div class="pill reveal" data-rev="sesgo-1">
+        <div class="pill-name">Datos de entrenamiento</div>
+        <div class="pill-desc">El modelo hereda los desequilibrios de aquello con lo que se entrenó.</div>
+      </div>
+      <div class="pill reveal" data-rev="sesgo-2">
+        <div class="pill-name">Diseño del modelo</div>
+        <div class="pill-desc">Cómo se construye y qué se optimiza también introduce inclinaciones.</div>
+      </div>
+      <div class="pill reveal" data-rev="sesgo-3">
+        <div class="pill-name">Interacción con los usuarios</div>
+        <div class="pill-desc">Los LLM pueden amplificar un sesgo si el prompt del usuario ya lo trae. Ej.: "escribe por qué las mujeres no son buenas en matemáticas".</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>24 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 25 · Human in the loop
+       ============================================================ -->
+  <section class="slide" data-slide="25" data-section="ia generativa" data-title="Human in the loop">
+    <div class="label" style="margin-top:1cqh">cómo se controla</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">Human in the loop</h2>
+    <p class="body-text" style="max-width:88%;">Es un enfoque en el desarrollo y uso de sistemas de inteligencia artificial en el que las personas participan activamente en una o varias etapas del proceso, ya sea para entrenar, supervisar, validar o corregir las decisiones de la IA.</p>
+    <div class="pill-grid cols-4">
+      <div class="pill reveal" data-rev="hitl-1">
+        <div class="pill-name">Entrenar</div>
+        <div class="pill-desc">Las personas aportan y etiquetan los ejemplos con los que el modelo aprende.</div>
+      </div>
+      <div class="pill reveal" data-rev="hitl-2">
+        <div class="pill-name">Supervisar</div>
+        <div class="pill-desc">Alguien vigila lo que hace el sistema mientras trabaja, no lo deja suelto.</div>
+      </div>
+      <div class="pill reveal" data-rev="hitl-3">
+        <div class="pill-name">Validar</div>
+        <div class="pill-desc">Nada crítico sale sin que una persona lo revise y lo firme. La IA propone, tú validas.</div>
+      </div>
+      <div class="pill reveal" data-rev="hitl-4">
+        <div class="pill-name">Corregir</div>
+        <div class="pill-desc">Cuando se equivoca, la persona lo corrige y esa corrección mejora el sistema.</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>25 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 26 · 1.7 Evolución: chat, copiloto, agente
+       ============================================================ -->
+  <section class="slide dark" data-slide="26" data-section="ia generativa" data-title="De responder a actuar" data-slot="de-responder-a-actuar">
+    <div class="label" style="margin-top:1cqh">cómo ha evolucionado</div>
+    <h2 class="section-title" style="margin-top: 0.4em;">De responder a actuar</h2>
+    <p class="body-text" style="max-width:84%;">Aquí vuelve la metáfora del principio. La IA generativa empezó como un chat al que preguntas. Luego entró en tus herramientas como copiloto. Ahora llegan los agentes, que ejecutan tareas de varios pasos con supervisión. En 2026 ya están aquí: lo veréis en el bloque 3 de esta misma sesión, con la investigación profunda.</p>
+    <div class="levels-row">
+      <div class="level-card reveal" data-rev="nivel-1">
+        <div class="level-num">vela</div>
+        <div class="level-name">Chat</div>
+        <div class="level-desc">Preguntas y respondes tú. Ejemplo: "resúmeme este informe de tendencias".</div>
+      </div>
+      <div class="level-card reveal" data-rev="nivel-2">
+        <div class="level-num">bombilla</div>
+        <div class="level-name">Copiloto</div>
+        <div class="level-desc">Trabaja contigo dentro de tu flujo. Ejemplo: el asistente que te propone la respuesta dentro del correo.</div>
+      </div>
+      <div class="level-card is-target reveal" data-rev="nivel-3">
+        <div class="level-num">luz inteligente</div>
+        <div class="level-name">Agente</div>
+        <div class="level-desc">Percibe, decide y actúa hacia un objetivo, con supervisión. Ejemplo: buscar fuentes sobre un sector, leerlas y devolver un informe con las referencias.</div>
+        <div class="level-target-tag">aquí estamos</div>
+      </div>
+      <div class="level-card reveal" data-rev="nivel-4">
+        <div class="level-num">red</div>
+        <div class="level-name">Subagentes</div>
+        <div class="level-desc">Varios agentes coordinados para un proceso entero. Ejemplo: vigilar cada mañana lo que se publica de una marca, clasificarlo y avisar si algo cambia.</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>26 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+    <aside class="notes" hidden>
+      <p><em>3 min</em></p>
+      <p>Puente al deck 02: el agente es lo que se usa en el bloque 3 (investigación profunda, ejercicio 3) y en la demo de la tarea programada.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 27 · 1.8 Prompting: cómo hablarle bien
+       ============================================================ -->
+  <section class="slide" data-slide="27" data-section="ia generativa" data-title="No es magia, es ser claro">
+    <div class="label" style="margin-top:1cqh">la habilidad clave</div>
+    <div class="prompt-badge">Prompt</div>
+    <h2 class="section-title" style="margin-top: 0.3em;">No es magia, es ser claro</h2>
+    <p class="body-text" style="max-width:82%;">Un prompt es lo que le escribís al modelo, la instrucción. La mayor parte de la frustración con la IA viene de pedirle mal las cosas. Con cuatro o cinco hábitos, los resultados cambian de nivel. Pensad que le habláis a un compañero nuevo, muy rápido pero sin contexto.</p>
+    <div class="pill-grid cols-3">
+      <div class="pill reveal" data-rev="prompt-1">
+        <div class="pill-name">Sed específicos</div>
+        <div class="pill-desc">Decid el qué, el para quién y el formato. "Una tabla", "tres frases", "tono directo".</div>
+      </div>
+      <div class="pill reveal" data-rev="prompt-2">
+        <div class="pill-name">Dadle un rol</div>
+        <div class="pill-desc">"Actúa como analista de investigación de mercados", "como tutora de un TFM".</div>
+      </div>
+      <div class="pill reveal" data-rev="prompt-3">
+        <div class="pill-name">Dadle contexto</div>
+        <div class="pill-desc">Pegad el documento, los datos, el ejemplo. El contexto manda.</div>
+      </div>
+      <div class="pill reveal" data-rev="prompt-4">
+        <div class="pill-name">Poned ejemplos</div>
+        <div class="pill-desc">Enseñadle uno o dos del resultado que queréis y lo imita.</div>
+      </div>
+      <div class="pill reveal" data-rev="prompt-5">
+        <div class="pill-name">Pedid que vaya paso a paso</div>
+        <div class="pill-desc">Para cálculos o decisiones, "piénsalo paso a paso" mejora el acierto.</div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>27 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 28 · Prompting: un buen prompt (one-shot)
+       ============================================================ -->
+  <section class="slide" data-slide="28" data-section="ia generativa" data-title="La misma tarea, dos resultados">
+    <div class="label" style="margin-top:1cqh">ejemplo</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">La misma tarea, dos resultados</h2>
+    <div class="pp-poor reveal" data-rev="compare-them">
+      <span class="pp-tag is-poor">prompt pobre</span>
+      <span class="pp-poor-text">"sácame los datos de estas fichas de importadores"</span>
+    </div>
+    <div class="pp-good reveal" data-rev="compare-us">
+      <span class="pp-tag is-good">prompt bueno</span>
+      <div class="prompt-good-block">
+        <div class="pg-cols">
+          <div class="pg-col">
+            <p class="pg-line">Quiero que extraigas la información de cada ficha de importador y la presentes en este formato:</p>
+            <div class="pg-tpl">País: [dónde opera]
+Qué importa: [familia de producto]
+Canal: [a quién vende]</div>
+          </div>
+          <div class="pg-col">
+            <p class="pg-line">Aquí tienes un ejemplo con una ficha (ficticia):</p>
+            <div class="pg-quote">Ficha: "Distribuidora familiar con sede en Lyon. Importamos envases y menaje desechable para panaderías y obradores de la región."</div>
+            <p class="pg-line">Formato deseado:</p>
+            <div class="pg-tpl">País: Francia
+Qué importa: envases y menaje desechable
+Canal: panaderías y obradores</div>
+          </div>
+        </div>
+        <p class="pg-final">Ahora, haz lo mismo con esta otra ficha: <span class="pg-ph">[pegas otra ficha de importador]</span></p>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>28 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 29 · PALABRAS SIMPLES (paper)
+       ============================================================ -->
+  <section class="slide" data-slide="29" data-section="ia generativa" data-title="Palabras simples, mejores respuestas">
+    <div class="label" style="margin-top:1cqh">un estudio reciente</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">Palabras simples, mejores respuestas</h2>
+    <div class="img-plate">
+      <figure class="img-plate-frame">
+        <div class="paper-swap">
+          <img src="assets/img/paper-1.png" alt="cabecera del estudio sobre lenguaje simple y LLM">
+          <img class="reveal-fade" data-rev="paper-2" src="assets/img/paper-2.png" alt="resultados del estudio: mejores respuestas con palabras simples">
+        </div>
+        <figcaption>fuente: arxiv.org/abs/2604.02176</figcaption>
+      </figure>
+      <div class="img-plate-body">
+        <div class="img-plate-tag">lo que apunta un estudio</div>
+        <div class="img-plate-title">Habladle sencillo</div>
+        <p class="img-plate-text">A pesar de tantos manuales de prompting, un estudio de 2026 (preprint, sin revisión por pares) apunta a que los LLM responden mejor cuando el prompt usa <strong>formulaciones frecuentes</strong>, las que más aparecen en los textos.</p>
+        <p class="img-plate-text">¿Os acordáis de la caja negra? No sabemos bien por qué pasa. Una hipótesis: el modelo ha visto muchas más veces las formulaciones corrientes que las rebuscadas, porque es lo que más <strong>escribimos los humanos</strong>.</p>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>29 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 30 · IA + script + automatización (slot)
+       ============================================================ -->
+  <section class="slide" data-slide="30" data-section="ia generativa" data-title="IA + script + automatización" data-slot="ia-script-automatizacion">
+    <div class="label" style="margin-top:1cqh">un ejemplo del curso</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">IA + script + automatización</h2>
+    <div class="def-callout">
+      <span class="def-word">el caso</span>
+      <p>Revisar cada semana los artículos nuevos sobre el tema de vuestro TFM.</p>
+    </div>
+    <div class="auto-demo">
+      <div class="auto-step reveal" data-rev="aos-1">
+        <div class="auto-step-tag">Paso 1</div>
+        <div class="auto-step-title">Usar la IA para escribir la fórmula</div>
+        <p class="auto-step-text">Le pedimos a la IA un script que consulte OpenAlex, una base abierta de artículos científicos, y baje título, resumen, revista y año de lo publicado esa semana con vuestras palabras clave. La generación no es determinista: puede escribirlo distinto cada vez, así que se prueba con una búsqueda conocida antes de darlo por bueno.</p>
+      </div>
+      <div class="auto-shot reveal" data-rev="aos-2">
+        <div class="shot-frame">
+          <ol class="auto-mock">
+            <li>busca en OpenAlex con vuestras palabras clave</li>
+            <li>filtra por fecha: solo lo de la última semana</li>
+            <li>la IA marca cada resumen: relevante, dudoso o fuera de tema</li>
+            <li>escribe una fila por artículo en una hoja</li>
+          </ol>
+        </div>
+        <figcaption>esquema del script que escribe la IA</figcaption>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>30 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+    <aside class="notes" hidden>
+      <p><em>30 y 31 · 2 min las dos</em></p>
+      <p>La idea: la IA hace una vez la parte difícil (escribir el script) y una herramienta de automatización la repite siempre igual. El ejemplo es del TFM a propósito: la vigilancia de competidores ya la vieron con Manel.</p>
+      <p>Los falsos positivos son reales: una palabra clave amplia trae artículos de otros campos. Por eso alguien tiene que revisar lo que la máquina marca.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 31 · IA + script + automatización, paso 2 (slot)
+       ============================================================ -->
+  <section class="slide" data-slide="31" data-section="ia generativa" data-title="IA + script + automatización · 2" data-slot="ia-script-automatizacion-2">
+    <div class="label" style="margin-top:1cqh">un ejemplo del curso</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">IA + script + automatización</h2>
+    <div class="def-callout">
+      <span class="def-word">el caso</span>
+      <p>Revisar cada semana los artículos nuevos sobre el tema de vuestro TFM.</p>
+    </div>
+    <div class="auto-demo">
+      <div class="auto-step reveal" data-rev="aos-1">
+        <div class="auto-step-tag">Paso 2</div>
+        <div class="auto-step-title">Usar una automatización estándar</div>
+        <p class="auto-step-text">Una herramienta de automatización (Make, n8n o Zapier) ejecuta el script cada lunes y añade lo nuevo a la hoja. La IA hace la parte difícil una vez; el flujo hace la parte repetitiva siempre igual. Leer los artículos marcados sigue siendo cosa vuestra.</p>
+      </div>
+      <div class="auto-shot reveal" data-rev="aos-2">
+        <div class="shot-frame">
+          <ol class="auto-mock is-flow">
+            <li>cada lunes</li>
+            <li>ejecuta la búsqueda en OpenAlex</li>
+            <li>añade a la hoja los artículos nuevos: fecha, revista, título, enlace y la marca de la IA</li>
+          </ol>
+        </div>
+        <figcaption>esquema del flujo, en cualquier herramienta de automatización</figcaption>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>31 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+    <aside class="notes" hidden>
+      <p>No se monta nada ahora. El mensaje: la máquina trae, la persona decide qué entra en el estado de la cuestión. Si alguien pregunta, OpenAlex tiene una API gratuita (TODO: verificar los límites de uso actuales antes de la sesión).</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 32 · Piloto contra producción (95 %)
+       ============================================================ -->
+  <section class="slide dark" data-slide="32" data-section="ia generativa" data-title="Encender una bombilla no es iluminar el edificio">
+    <div class="label" style="margin-top:1cqh">lo que nadie cuenta</div>
+    <h2 class="section-title" style="margin-top: 0.35em;">Encender una bombilla no es iluminar el edificio</h2>
+    <div class="bombilla-wrap">
+      <div class="bombilla-stat">
+        <div class="bstat-num">95&nbsp;%</div>
+        <div class="bstat-text">de los pilotos de IA generativa en empresas no logran un retorno medible, según un informe preliminar con una muestra pequeña (MIT NANDA, «The GenAI Divide», julio de 2025). El modelo no es el problema: es el dato y el flujo.</div>
+      </div>
+      <div class="bombilla-cols">
+        <div class="bcol is-demo reveal" data-rev="demo">
+          <div class="bcol-tag">la demo</div>
+          <div class="bcol-title">Enciende la bombilla</div>
+          <div class="bcol-line">Un caso, datos preparados, alguien delante. Impresiona en cinco minutos y no vuelve a verse.</div>
+        </div>
+        <div class="bcol is-prod reveal" data-rev="produccion">
+          <div class="bcol-tag">producción</div>
+          <div class="bcol-title">Ilumina el edificio</div>
+          <div class="bcol-line">Todos los casos, datos reales y sucios, sin nadie vigilando, cada día. Ahí es donde casi todo se cae.</div>
+        </div>
+      </div>
+    </div>
+    <div class="chrome-bottom">
+      <span>32 · ia generativa</span>
+      <span>sesión de ia · ia generativa · muibal</span>
+    </div>
+    <aside class="notes" hidden>
+      <p><em>3 min, y se cierra el módulo</em></p>
+      <p>La cifra es real, pero conviene leerla con cuidado, y es un buen ejemplo para una asignatura de investigación: es un informe preliminar del proyecto NANDA del MIT, con 52 organizaciones entrevistadas y 153 directivos encuestados, y mide el retorno declarado por las propias empresas. Preguntad a la sala qué le falta a la cifra para fiarse de ella (muestra, definición de retorno, quién responde).</p>
+      <p>El mensaje no cambia: una demo impresiona, ponerla a funcionar cada día con datos reales es otro trabajo.</p>
+    </aside>
+  </section>
+
+  <!-- ============================================================
+       SLIDE 33 · CIERRE (estilo Lumen)
+       ============================================================ -->
+  <section class="slide dark" data-slide="33" data-section="cierre" data-title="Gracias" data-slot="cierre-siguiente-modulo">
+    <div class="close">
+      <p class="cover-eyebrow reveal-fade" data-rev="cl-eye" style="margin-bottom:2.5em">El mensaje que nos llevamos</p>
+      <h1 class="close-claim reveal" data-rev="cl-claim">Más luz, <em>menos</em> humo.</h1>
+      <p class="close-sub reveal-fade" data-rev="cl-sub">La vela no desaparece: cambia de oficio.</p>
+      <p class="close-thanks reveal-fade" data-rev="cl-th">Seguimos</p>
+      <p class="close-partners reveal-fade" data-rev="cl-pt">
+        Ahora · <strong>La IA para investigar: prompts, documentos y agentes</strong>
+      </p>
+      <div class="bsm-cobrand reveal-fade" data-rev="cl-logo">
+        <img src="assets/zenital-logo-foam.svg" alt="zenital">
+        <span class="cb-sep"></span>
+        <img src="assets/bsm-logo-footer.svg" alt="UPF Barcelona School of Management">
+      </div>
+    </div>
+    <aside class="notes" hidden>
+      <p><em>Sin pausa aquí</em></p>
+      <p>Se pasa directamente al deck 02, bloque 1: pedir bien. La pausa va después del ejercicio 1.</p>
+    </aside>
+  </section>
+
+</div>
+</div>
+
+<div id="hud">
+  <div class="hud-sub">índice · pulsa ESC o M para volver</div>
+  <h2>Salto rápido</h2>
+  <div class="hud-list" id="hud-list"></div>
+
+</div>
+
+<div id="help-hint">
+  <kbd>←</kbd> <kbd>→</kbd> avanzar &nbsp;·&nbsp; <kbd>M</kbd> / <kbd>ESC</kbd> índice &nbsp;·&nbsp; <kbd>F</kbd> pantalla completa &nbsp;·&nbsp; <kbd>N</kbd> presentador
+</div>
+
+<script src="js/deck-runtime.js"></script>
+<script src="js/deck-runtime-advanced.js"></script>
+<script src="assets/deck-presenter.js"></script>
+<script>
+/* ===========================================================
+   LEAD-STAGE phase driver (slide 03): ampliacion zenital
+   -----------------------------------------------------------
+   El runtime canonico (deck-runtime.js) trata cada data-rev
+   como un toggle de .on, lo cual no sirve para mover las fases
+   del motivo vela -> luz inteligente. Aqui interceptamos la
+   navegacion SOLO en la slide 03 con listeners en fase de
+   captura (corren antes que los del runtime), conducimos las
+   fases vela1..vela4, bulb-off, bulb-on, luz-inteligente y la
+   cita final, y solo cuando la secuencia se agota dejamos que
+   el evento llegue al runtime para pasar de slide. No tocamos
+   deck-runtime.js (solo LAST_SLIDE y REVEAL_SEQ alli).
+   =========================================================== */
+(function leadStageDriver() {
+  var LEAD_SLIDE = '04';
+  // secuencia de pasos del motivo: cada paso es una "fase" o un reveal
+  // p:N  -> set data-phase / data-glow ; q -> cita ; t -> tagline
+  var STEPS = [
+    { phase: 0 }, { phase: 1 }, { phase: 2 }, { phase: 3 },
+    { phase: 4 }, { phase: 5 },
+    { quote: true }, { tagline: true }
+  ];
+  var step = 0;
+
+  function slideEl() {
+    return document.querySelector('.slide[data-slide="' + LEAD_SLIDE + '"]');
+  }
+  function isActive() {
+    var s = slideEl();
+    return s && s.classList.contains('active');
+  }
+  function applyStep(s, i) {
+    var stage = s.querySelector('.lead-stage');
+    var st = STEPS[i];
+    if (!st) return;
+    if (typeof st.phase === 'number') {
+      if (stage) stage.dataset.phase = String(st.phase);
+      s.dataset.glow = String(Math.min(st.phase, 6));
+    } else if (st.quote) {
+      var q = s.querySelector('[data-rev="quote"]');
+      if (q) q.classList.add('on');
+      var lead = s.querySelector('.lead');
+      if (lead) lead.classList.add('quote-on');
+    } else if (st.tagline) {
+      var t = s.querySelector('[data-rev="tagline"]');
+      if (t) t.classList.add('on');
+    }
+  }
+  function resetLead(s) {
+    step = 0;
+    var stage = s.querySelector('.lead-stage');
+    if (stage) stage.dataset.phase = '-1';
+    s.dataset.glow = '0';
+    var lead = s.querySelector('.lead');
+    if (lead) lead.classList.remove('quote-on');
+    s.querySelectorAll('[data-rev="quote"], [data-rev="tagline"]').forEach(function (el) {
+      el.classList.remove('on');
+    });
+  }
+  function rebuildTo(s, n) {
+    // reconstruye el estado visual hasta el paso n (para retroceder)
+    resetLead(s);
+    for (var i = 0; i < n; i++) applyStep(s, i);
+    step = n;
+  }
+
+  // Reset cuando la slide 03 entra o sale (el runtime togglea .active)
+  var s0 = slideEl();
+  if (s0) {
+    var mo = new MutationObserver(function () {
+      if (isActive()) resetLead(s0);
+    });
+    mo.observe(s0, { attributes: true, attributeFilter: ['class'] });
+    if (isActive()) resetLead(s0);
+  }
+
+  function handleForward(e) {
+    if (!isActive()) return;
+    if (step < STEPS.length) {
+      applyStep(slideEl(), step);
+      step++;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+    // si la secuencia esta agotada: no hacemos nada, el runtime avanza de slide
+  }
+  function handleBack(e) {
+    if (!isActive()) return;
+    if (step > 0) {
+      rebuildTo(slideEl(), step - 1);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+    // si step == 0: dejamos que el runtime retroceda de slide
+  }
+
+  // keydown en captura: corre antes que el handler del runtime
+  document.addEventListener('keydown', function (e) {
+    var hud = document.getElementById('hud');
+    if (hud && hud.classList.contains('visible')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+      handleForward(e);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      handleBack(e);
+    }
+  }, true);
+
+  // click en captura sobre #deck: corre antes que el click del runtime
+  var deck = document.getElementById('deck');
+  if (deck) {
+    deck.addEventListener('click', function (e) {
+      var hud = document.getElementById('hud');
+      if (hud && hud.classList.contains('visible')) return;
+      if (e.target.closest && e.target.closest('iframe')) return;
+      handleForward(e);
+    }, true);
+  }
+})();
+</script>
+<script>
+/* ===========================================================
+   DUNNING-KRUGER driver (slide 05): el zumo de limon
+   -----------------------------------------------------------
+   Mismo patron que el lead-stage driver: el runtime canonico
+   solo togglea .on, pero la bolita (curve-dot) se mueve fijando
+   cx/cy, no con una clase. Por eso este driver scoped a la
+   slide 05 conduce toda la secuencia. Intercepta la navegacion
+   en fase de captura (corre antes que el runtime), reproduce
+   la logica de revelado de Lumen (toggle .on para todo menos
+   los pasos curve-dot-*, que mueven la bolita), resetea al entrar
+   en la slide via MutationObserver y solo cuando la secuencia
+   se agota deja pasar el evento para que el runtime avance de
+   slide. No tocamos deck-runtime.js (REVEAL_SEQ['05']=[]).
+   =========================================================== */
+(function curveDriver() {
+  var CURVE_SLIDE = '07';
+  // Misma secuencia que REVEAL_SEQ['06'] del deck Lumen.
+  var SEQ = ['curve-axes','curve-line', /* muibal: el label, el título y los textos llegan con la slide (el runtime los anima al entrar); si estaban aquí, sus 5 clics no cambiaban nada */
+             'curve-dot-show','curve-m1','curve-dot-pico','curve-m2','curve-dot-valle',
+             'curve-m3','curve-dot-meseta','curve-overlay','curve-overlay-label'];
+  // posiciones de la bolita por paso (los puntos clave de la curva)
+  var DOT_POS = {
+    'curve-dot-show':  { cx: '80',  cy: '280' },
+    'curve-dot-pico':  { cx: '180', cy: '60'  },
+    'curve-dot-valle': { cx: '320', cy: '360' },
+    'curve-dot-meseta':{ cx: '555', cy: '95'  }
+  };
+  var step = 0;
+
+  function slideEl() {
+    return document.querySelector('.slide[data-slide="' + CURVE_SLIDE + '"]');
+  }
+  function isActive() {
+    var s = slideEl();
+    return s && s.classList.contains('active');
+  }
+  function applyStep(s, key) {
+    if (key === 'curve-axes') {
+      s.querySelectorAll('.curve-axes').forEach(function (ax) { ax.classList.add('on'); });
+      return;
+    }
+    if (key === 'curve-line') {
+      var c = s.querySelector('#curve-line');
+      if (c) c.classList.add('on');
+      return;
+    }
+    if (key === 'curve-dot-show') {
+      var dot = s.querySelector('#curve-dot');
+      if (dot) {
+        dot.setAttribute('cx', DOT_POS[key].cx);
+        dot.setAttribute('cy', DOT_POS[key].cy);
+        dot.classList.add('on');
+      }
+      return;
+    }
+    if (key.indexOf('curve-dot-') === 0) {
+      var d = s.querySelector('#curve-dot');
+      var p = DOT_POS[key];
+      if (d && p) { d.setAttribute('cx', p.cx); d.setAttribute('cy', p.cy); }
+      return;
+    }
+    if (key === 'curve-overlay') {
+      var imp = s.querySelector('#curve-overlay');
+      if (imp) imp.classList.add('on');
+      return;
+    }
+    // resto (curve-label, curve-title, curve-lede, curve-1, curve-2, curve-m1..3, curve-overlay-label)
+    var el = s.querySelector('[data-rev="' + key + '"]');
+    if (el) el.classList.add('on');
+  }
+  function resetCurve(s) {
+    step = 0;
+    s.querySelectorAll('[data-rev]').forEach(function (el) { el.classList.remove('on'); });
+    s.querySelectorAll('.curve-axes').forEach(function (ax) { ax.classList.remove('on'); });
+    var c = s.querySelector('#curve-line');
+    if (c) c.classList.remove('on');
+    s.querySelectorAll('.curve-marker').forEach(function (m) { m.classList.remove('on'); });
+    var dot = s.querySelector('#curve-dot');
+    if (dot) { dot.classList.remove('on'); dot.setAttribute('cx', '80'); dot.setAttribute('cy', '280'); }
+    var imp = s.querySelector('#curve-overlay');
+    if (imp) imp.classList.remove('on');
+    var impL = s.querySelector('#curve-overlay-label');
+    if (impL) impL.classList.remove('on');
+  }
+  function rebuildTo(s, n) {
+    resetCurve(s);
+    for (var i = 0; i < n; i++) applyStep(s, SEQ[i]);
+    step = n;
+  }
+
+  var s0 = slideEl();
+  if (s0) {
+    var mo = new MutationObserver(function () {
+      if (isActive()) resetCurve(s0);
+    });
+    mo.observe(s0, { attributes: true, attributeFilter: ['class'] });
+    if (isActive()) resetCurve(s0);
+  }
+
+  function handleForward(e) {
+    if (!isActive()) return;
+    if (step < SEQ.length) {
+      applyStep(slideEl(), SEQ[step]);
+      step++;
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+    // secuencia agotada: el runtime avanza de slide
+  }
+  function handleBack(e) {
+    if (!isActive()) return;
+    if (step > 0) {
+      rebuildTo(slideEl(), step - 1);
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+    // step == 0: el runtime retrocede de slide
+  }
+
+  document.addEventListener('keydown', function (e) {
+    var hud = document.getElementById('hud');
+    if (hud && hud.classList.contains('visible')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
+      handleForward(e);
+    } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+      handleBack(e);
+    }
+  }, true);
+
+  var deck = document.getElementById('deck');
+  if (deck) {
+    deck.addEventListener('click', function (e) {
+      var hud = document.getElementById('hud');
+      if (hud && hud.classList.contains('visible')) return;
+      if (e.target.closest && e.target.closest('iframe')) return;
+      handleForward(e);
+    }, true);
+  }
+})();
+</script>
+
+<script>
+/* ============================================================
+   PLAY-ON-REVEAL: los <video data-play-on-reveal> se reproducen
+   una sola vez cuando su elemento .reveal recibe la clase .on
+   (el clic que revela cuenta como gesto de usuario, así que el
+   audio funciona sin controles). Al salir de la slide, el runtime
+   quita .on y el video se pausa y rebobina.
+   ============================================================ */
+(function () {
+  document.querySelectorAll('video[data-play-on-reveal]').forEach(function (v) {
+    var target = v.closest('.reveal, .reveal-fade');
+    if (!target) return;
+    new MutationObserver(function () {
+      if (target.classList.contains('on')) {
+        v.currentTime = 0;
+        v.play().catch(function () {});
+      } else {
+        v.pause();
+        v.currentTime = 0;
+      }
+    }).observe(target, { attributes: true, attributeFilter: ['class'] });
+  });
+})();
+</script>
+</body>
+</html>

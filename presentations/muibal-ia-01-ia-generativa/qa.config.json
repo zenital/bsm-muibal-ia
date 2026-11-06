@@ -1,0 +1,14 @@
+{
+  "driverSlides": [
+    "04",
+    "07"
+  ],
+  "classAllowlist": [
+    "quote-main",
+    "bombilla-stat",
+    "is-demo",
+    "bsm-cobrand",
+    "cb-sep",
+    "practice-badge"
+  ]
+}

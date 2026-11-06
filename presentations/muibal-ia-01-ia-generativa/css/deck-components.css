@@ -1,0 +1,2699 @@
+/* ==========================================================================
+   deck-components.css — canonical component library for zenital decks
+   --------------------------------------------------------------------------
+   Pair this file with deck-shell.css. Load order matters:
+     <link rel="stylesheet" href="css/deck-shell.css">
+     <link rel="stylesheet" href="css/deck-components.css">
+
+   deck-shell.css owns chrome: cover, HUD, watermark, ornament, slide layout,
+   typography utilities, reveal helpers, print.
+   deck-components.css owns the named components documented in
+   style-presentation.md: program-grid, stats-row, pill-grid, month-grid,
+   day-grid, levels-row, fitxa, gov-grid, kpi-row, cal-grid, next-list,
+   manifesto-wrap, compare-wrap, parc-wrap, dyn-wrap, scen-wrap, phase-wrap,
+   vote-wrap, six-wrap, gantt-wrap, price-row, case-wrap, logo-grid,
+   terms-wrap.
+
+   Voice: all PT Mono labels use sentence case. No text-transform: uppercase.
+   Letter-spacing is kept tight (0.04em) so sentence case reads naturally.
+   ========================================================================== */
+
+
+/* ============= PROGRAM-GRID — agenda / itinerary ============= */
+/* min-height 0 and overflow hidden bound the wrap to the slide, the same way
+   .module-card is bounded: a flex item never shrinks below its content on
+   its own, so a ten-row agenda ran past the chrome. The runtime then sets
+   --fit on the wrap when the rows still do not fit, and the grid steps down
+   with zoom so the rows re-wrap instead of being cut.
+   The bound is vertical only: overflow-y clips, overflow-x stays visible.
+   An unrevealed row waits 8px to the left of its place (translateX(-8px)
+   below) and its label column starts at the wrap's left edge, so a wrap that
+   clipped both axes cut the first letters off every label until its row was
+   revealed. visible + clip is a legal pair, unlike visible + hidden, which
+   would turn the visible axis into a scroller. */
+.program-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; margin-top: 2cqh;
+                min-height: 0; overflow-x: visible; overflow-y: clip; }
+.program-wrap > * { zoom: var(--fit, 1); }
+.program-grid {
+  display: grid;
+  grid-template-columns: max-content 6px 1fr;
+  gap: clamp(10px, 1cqw, 16px) clamp(20px, 2.5cqw, 50px);
+  align-content: start;
+}
+.program-row { display: contents; }
+.program-row .pcell { transition: opacity .5s ease, transform .5s cubic-bezier(.2,.7,.2,1); opacity: 0.18; transform: translateX(-8px); }
+.program-row.on .pcell { opacity: 1; transform: translateX(0); }
+.program-row.on.is-mine .pmark { background: var(--amber); }
+.program-time {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(15px, 1.5cqw, 24px); color: var(--navy);
+  padding-top: 0.25em; align-self: start; letter-spacing: 0.04em;
+}
+.pmark { width: 6px; min-height: 100%; align-self: stretch; background: var(--navy-16); border-radius: 1px; transition: background .5s ease; }
+.program-block { padding: 0.2em 0; }
+.program-block .ptitle {
+  font-family: 'Literata', serif; font-weight: 600;
+  font-size: clamp(17px, 1.65cqw, 28px); color: var(--navy); line-height: 1.18;
+}
+.program-block .pwho {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 0.4em;
+}
+
+
+/* ============= PROGRAM-GRID extras — breaks, mine highlight, legend ============= */
+/* is-mine rows keep a neutral mark until revealed, then turn amber (see .program-row.on.is-mine above). */
+.program-row.is-mine .pmark { background: var(--navy-16); }
+.program-row.is-mine.on .ptitle { color: var(--navy); }
+/* break rows (welcome, pause, close) read as quiet, italic interludes. */
+.program-row.break .ptitle { color: var(--muted); font-style: italic; font-weight: 500; }
+.program-legend {
+  display: flex; gap: 2em; margin-top: clamp(20px, 2.5cqh, 36px);
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.program-legend .lg-item { display: flex; align-items: center; gap: 0.6em; }
+.program-legend .lg-mark { width: 14px; height: 4px; border-radius: 1px; background: var(--navy-16); }
+.program-legend .lg-mark.amber { background: var(--amber); }
+
+
+/* ============= EMBED-FULLSLIDE — full-bleed animation iframe ============= */
+/* Pairs with deck-runtime-advanced.js: a slide whose body is one iframe.
+   The advanced runtime swaps src on enter/leave and gates next() on the
+   iframe's embed-finished postMessage. */
+.embed-fullslide {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  border: 0; display: block;
+}
+
+
+/* ============= DUNNING-KRUGER — confidence/competence curve ============= */
+/* Layout + animation only. The SVG path coordinates, the markers and all
+   Spanish copy live in the slide markup. The dot moves by setting cx/cy from
+   an inline driver (transitioned below); everything else toggles .on. */
+.curve-wrap { flex: 1; display: grid; grid-template-columns: 1.05fr 1fr; gap: 4cqw; align-items: center; margin-top: 2cqh; }
+.curve-text h2 { margin-bottom: 0.6em; }
+.curve-text .lede {
+  font-family: 'Literata', serif; font-style: italic; font-weight: 400;
+  font-size: clamp(17px, 1.5cqw, 24px); line-height: 1.45;
+  color: var(--navy-80); margin-bottom: 1.3em;
+}
+.curve-text .body-text { color: var(--text); margin-bottom: 0.9em; }
+.curve-text .body-text strong { color: var(--navy); font-weight: 600; }
+.curve-chart { position: relative; }
+.curve-chart svg { width: 100%; height: auto; display: block; }
+.curve-axes { opacity: 0; transition: opacity .6s ease; }
+.curve-axes.on { opacity: 1; }
+.curve-line { stroke-dasharray: 1400; stroke-dashoffset: 1400; transition: stroke-dashoffset 2s ease; }
+.curve-line.on { stroke-dashoffset: 0; }
+.curve-marker { opacity: 0; transition: opacity .6s ease; }
+.curve-marker.on { opacity: 1; }
+/* impostor-syndrome overlay curve — same axes, opposite pattern */
+.curve-overlay { stroke-dasharray: 1100; stroke-dashoffset: 1100; transition: stroke-dashoffset 1.8s ease; opacity: 0; }
+.curve-overlay.on { stroke-dashoffset: 0; opacity: 1; }
+.curve-overlay-label { opacity: 0; transition: opacity .6s ease; }
+.curve-overlay-label.on { opacity: 1; }
+.curve-dot {
+  opacity: 0;
+  transition: cx 1.6s cubic-bezier(.4,.1,.4,1), cy 1.6s cubic-bezier(.4,.1,.4,1), opacity .5s ease, r .5s ease;
+}
+.curve-dot.on { opacity: 1; }
+
+
+/* ============= STATS-ROW — big-number panels (3 cols) ============= */
+/* align-items: start and not center. Centred, each cell floats on its own
+   amount of copy: a panel with four lines of body sits higher than one with
+   three, so the numbers stop sharing a baseline and the captions land on
+   three different lines. Aligned to the top they read as one row. */
+.stats-row {
+  flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 3cqw, 60px); align-items: start; margin-top: 2cqh;
+}
+.stat-cell { text-align: left; }
+.stat-num {
+  font-family: 'Literata', serif; font-weight: 700; color: var(--amber);
+  font-size: clamp(64px, 8cqw, 140px); line-height: 1.06; letter-spacing: -0.03em;
+}
+.slide:not(.dark):not(.black) .stat-num { color: var(--navy); }
+.stat-cap {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(11px, 1cqw, 15px);
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 0.6em;
+}
+.slide.dark .stat-cap, .slide.black .stat-cap { color: var(--navy-40); }
+.stat-body {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(14px, 1.15cqw, 18px);
+  color: var(--text); margin-top: 0.6em; line-height: 1.45; max-width: 90%;
+}
+.slide.dark .stat-body, .slide.black .stat-body { color: var(--navy-16); }
+
+
+/* ============= PILL-GRID — categories, tools, ambits ============= */
+.pill-grid {
+  flex: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 1.8cqw, 30px); margin-top: clamp(20px, 3cqh, 36px);
+  /* centre the card block in the remaining slide height so a short grid
+     doesn't leave a bottom-heavy void */
+  align-content: center;
+}
+.pill-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.pill-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pill {
+  background: var(--navy-08); border-left: 4px solid var(--amber);
+  padding: clamp(14px, 1.6cqw, 26px) clamp(16px, 1.8cqw, 28px);
+  border-radius: 2px;
+}
+.slide.dark .pill, .slide.black .pill {
+  background: rgba(255,255,255,0.05);
+  border-left-color: var(--amber);
+}
+.pill-name {
+  font-family: 'Literata', serif; font-weight: 600;
+  font-size: clamp(16px, 1.55cqw, 26px); color: var(--navy); line-height: 1.15;
+  text-wrap: balance;
+}
+.slide.dark .pill-name, .slide.black .pill-name { color: var(--foam); }
+.pill-sub {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 0.5em;
+}
+.slide.dark .pill-sub, .slide.black .pill-sub { color: var(--amber); }
+/* .pill-sub can also lead the card as a category tag ABOVE the name; it
+   combines freely with .pill-desc (tag + name + body). */
+.pill > .pill-sub:first-child { margin-top: 0; margin-bottom: 0.6em; }
+/* .pill-desc — descriptive body text inside a .pill. Use this when the
+   pill has 1–2 sentences explaining what it is. .pill-sub stays for
+   one-word category tags ("pricing", "rollout", etc.). */
+.pill-desc {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(13px, 1.15cqw, 17px);
+  color: var(--text); line-height: 1.45; margin-top: 0.6em;
+}
+.slide.dark .pill-desc, .slide.black .pill-desc { color: var(--navy-16); }
+
+
+/* ============= MONTH-GRID — week-by-week timeline ============= */
+.month-wrap { flex: 1; display: flex; flex-direction: column; gap: 2cqh; margin-top: 2cqh; }
+.month-grid {
+  display: grid; grid-template-columns: 110px 1fr;
+  gap: clamp(20px, 2cqw, 36px); align-items: start; margin-top: 1cqh;
+}
+.week-tag {
+  font-family: 'PT Mono', monospace; font-weight: 700; color: var(--muted);
+  font-size: clamp(13px, 1.15cqw, 18px);
+  letter-spacing: 0.04em; padding-top: 0.2em;
+}
+.slide.dark .week-tag, .slide.black .week-tag { color: var(--amber); }
+.week-line {
+  font-family: 'Literata', serif; font-weight: 500; color: var(--navy);
+  font-size: clamp(16px, 1.55cqw, 24px); line-height: 1.3;
+}
+.week-line em { font-style: normal; font-weight: 700; color: var(--navy); display: block; margin-bottom: 0.18em; letter-spacing: -0.005em; }
+.week-line .week-body {
+  color: var(--text); font-family: 'Libre Franklin', sans-serif;
+  font-weight: 400; font-size: clamp(13px, 1.05cqw, 17px);
+}
+.month-deliv {
+  background: var(--navy); color: var(--foam);
+  padding: clamp(12px, 1.3cqw, 22px) clamp(16px, 1.6cqw, 28px);
+  border-radius: 2px; margin-top: 1.5cqh;
+}
+.month-deliv .lab {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--amber); margin-bottom: 0.45em;
+}
+.month-deliv .text {
+  font-family: 'Literata', serif; font-weight: 500;
+  font-size: clamp(15px, 1.35cqw, 22px); line-height: 1.35;
+}
+
+
+/* ============= SIX-WRAP — 6h donut split (visual + list) ============= */
+.six-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1.3fr; gap: clamp(30px, 4cqw, 80px); align-items: center; margin-top: 2cqh; }
+.six-visual { position: relative; display: flex; align-items: center; justify-content: center; }
+.six-visual svg { width: 100%; max-width: 420px; height: auto; }
+.six-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; }
+.six-center .big { font-family: 'Literata', serif; font-weight: 700; color: var(--navy); font-size: clamp(40px, 4.6cqw, 78px); line-height: 1; }
+.six-center .lab {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 0.4em;
+}
+.six-list { display: flex; flex-direction: column; gap: clamp(12px, 1.4cqw, 22px); }
+.six-item { display: grid; grid-template-columns: 60px 1fr; gap: clamp(14px, 1.4cqw, 22px); align-items: start; }
+.six-item .six-h { font-family: 'PT Mono', monospace; font-weight: 700; font-size: clamp(20px, 2.2cqw, 36px); color: var(--amber); line-height: 1; padding-top: 0.05em; }
+.six-item .six-name { font-family: 'Literata', serif; font-weight: 600; font-size: clamp(17px, 1.6cqw, 26px); color: var(--navy); }
+.six-item .six-desc { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.05cqw, 17px); color: var(--text); margin-top: 0.3em; line-height: 1.4; }
+
+
+/* ============= DAY-GRID — week schedule (5 cells) ============= */
+.day-grid { flex: 1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: clamp(10px, 1cqw, 18px); margin-top: 3cqh; }
+.day-cell {
+  background: var(--foam); border: 1px solid var(--navy-16);
+  border-radius: 2px; padding: clamp(12px, 1.3cqw, 20px);
+  display: flex; flex-direction: column;
+}
+.day-cell.is-live { background: var(--navy); color: var(--foam); border-color: var(--navy); }
+.day-cell.is-live .day-name, .day-cell.is-live .day-tag { color: var(--amber); }
+.day-cell.is-live .day-text { color: var(--foam); }
+.day-name {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.day-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.7cqw, 11px);
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 0.4em;
+}
+.slide.dark .day-tag, .slide.black .day-tag { color: var(--amber); }
+.day-text { font-family: 'Literata', serif; font-weight: 500; font-size: clamp(13px, 1.1cqw, 18px); color: var(--navy); margin-top: 0.7em; line-height: 1.3; flex: 1; }
+
+
+/* ============= LEVELS-ROW — L1 → L4 progression ============= */
+.levels-row {
+  flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.4cqw, 24px); align-items: stretch; margin-top: 2cqh;
+}
+.levels-row.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.level-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 3px; padding: clamp(14px, 1.6cqw, 28px);
+  display: flex; flex-direction: column;
+}
+.slide:not(.dark):not(.black) .level-card {
+  background: var(--navy-08); border-color: var(--navy-16);
+}
+.level-card.is-target { background: rgba(255,200,87,0.10); border-color: var(--amber); }
+.level-num {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(13px, 1.1cqw, 18px);
+  letter-spacing: 0.04em; color: var(--amber);
+}
+.level-name { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(18px, 1.7cqw, 28px); color: var(--foam); margin-top: 0.5em; line-height: 1.15; }
+.slide:not(.dark):not(.black) .level-name { color: var(--navy); }
+.level-desc { font-family: 'Libre Franklin', sans-serif; font-size: clamp(12px, 1cqw, 16px); color: var(--navy-16); margin-top: 0.7em; line-height: 1.4; flex: 1; }
+.slide:not(.dark):not(.black) .level-desc { color: var(--text); }
+.level-target-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.75cqw, 12px);
+  letter-spacing: 0.04em; color: var(--amber); margin-top: 0.8em;
+}
+
+
+/* ============= FITXA — info card (key/value sheet) ============= */
+.fitxa-wrap { flex: 1; display: flex; align-items: center; justify-content: center; margin-top: 2cqh; }
+.fitxa {
+  background: #fff; border: 1px solid var(--navy-16); border-radius: 4px;
+  padding: clamp(20px, 2cqw, 36px); width: 100%; max-width: 1100px;
+  box-shadow: 0 12px 40px rgba(0,17,125,0.08);
+}
+.fitxa-head { display: flex; justify-content: space-between; align-items: baseline; padding-bottom: 1em; border-bottom: 1px solid var(--navy-08); margin-bottom: 1em; }
+.fitxa-head .fh-name { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(18px, 1.6cqw, 26px); color: var(--navy); }
+.fitxa-head .fh-team {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.slide.dark .fitxa-head .fh-team, .slide.black .fitxa-head .fh-team { color: var(--amber); }
+.fitxa-grid { display: grid; grid-template-columns: 160px 1fr 160px 1fr; gap: 0.9em 1.6em; align-items: baseline; }
+.fitxa-grid .fk {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.fitxa-grid .fv { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.1cqw, 17px); color: var(--text); line-height: 1.35; }
+
+
+/* ============= GOV-GRID — governance two columns ============= */
+.gov-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 2.5cqw, 50px); margin-top: clamp(20px, 3cqh, 36px); align-content: start; }
+.gov-col h3 {
+  font-family: 'PT Mono', monospace; font-size: clamp(11px, 1cqw, 15px);
+  letter-spacing: 0.04em; color: var(--navy); margin-bottom: 1em;
+}
+.slide.dark .gov-col h3, .slide.black .gov-col h3 { color: var(--amber); }
+.gov-list { display: flex; flex-direction: column; gap: 1em; }
+.gov-item { padding-bottom: 1em; border-bottom: 1px solid var(--navy-08); }
+.gov-item:last-child { border-bottom: 0; }
+.gov-name { font-family: 'Literata', serif; font-weight: 600; font-size: clamp(17px, 1.5cqw, 24px); color: var(--navy); }
+.gov-desc { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.05cqw, 16px); color: var(--text); margin-top: 0.3em; line-height: 1.4; }
+
+
+/* ============= KPI-ROW — four KPI cards ============= */
+.kpi-row { flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 1.5cqw, 26px); margin-top: 3cqh; align-items: stretch; }
+.kpi-row.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.kpi-card { background: var(--navy-08); border-top: 4px solid var(--amber); padding: clamp(14px, 1.5cqw, 24px); border-radius: 2px; display: flex; flex-direction: column; }
+.kpi-cat {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--navy); font-weight: 700;
+}
+.kpi-list { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.1cqw, 17px); color: var(--text); margin-top: 1em; line-height: 1.5; flex: 1; }
+.kpi-list ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.55em; }
+.kpi-list li { position: relative; padding-left: 1.4em; }
+.kpi-list li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 7px; height: 7px; background: var(--amber); border-radius: 50%; }
+.kpi-list li strong { color: var(--navy); font-weight: 700; }
+
+
+/* ============= CAL-GRID — 12-week calendar overview ============= */
+.cal-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; margin-top: 1cqh; }
+.cal-grid { display: grid; grid-template-columns: 110px repeat(12, minmax(0, 1fr)); gap: 4px; }
+.cal-cell {
+  background: var(--navy-08); padding: clamp(8px, 0.9cqw, 14px) clamp(6px, 0.6cqw, 10px);
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.04em; color: var(--navy); border-radius: 2px; min-height: 50px;
+}
+.cal-cell.head {
+  background: transparent; color: var(--muted);
+  letter-spacing: 0.04em; font-weight: 700;
+}
+.cal-cell.row-label {
+  background: transparent; color: var(--navy); font-weight: 700;
+  letter-spacing: 0.04em; padding-left: 0;
+}
+.cal-cell.month-1 { background: rgba(255,200,87,0.18); }
+.cal-cell.month-2 { background: rgba(217,138,106,0.18); }
+.cal-cell.month-3 { background: rgba(119,178,140,0.20); }
+.cal-cell.deliv  { background: var(--navy); color: var(--foam); font-family: 'Literata', serif; font-weight: 600; font-size: clamp(11px, 0.95cqw, 15px); letter-spacing: 0; line-height: 1.2; padding: clamp(8px, 0.9cqw, 14px) clamp(8px, 0.8cqw, 12px); }
+.cal-cell.deliv-alt { background: var(--navy-64); color: var(--foam); font-family: 'Literata', serif; font-weight: 500; font-style: italic; font-size: clamp(11px, 0.95cqw, 15px); letter-spacing: 0; line-height: 1.2; padding: clamp(8px, 0.9cqw, 14px) clamp(8px, 0.8cqw, 12px); }
+.cal-grid.mini .cal-cell { min-height: 32px; padding: clamp(5px, 0.6cqw, 9px) clamp(4px, 0.5cqw, 8px); font-size: clamp(8px, 0.72cqw, 11px); }
+.cal-grid.mini .cal-cell.deliv,
+.cal-grid.mini .cal-cell.deliv-alt { padding: clamp(6px, 0.75cqw, 11px) clamp(6px, 0.7cqw, 10px); font-size: clamp(10px, 0.85cqw, 14px); }
+.cal-grid.mini .cal-cell.row-label { font-size: clamp(8px, 0.7cqw, 11px); }
+.cal-grid.mini .cal-cell.head { padding: clamp(3px, 0.4cqw, 6px) clamp(3px, 0.4cqw, 6px); }
+.cal-block { display: flex; flex-direction: column; gap: clamp(4px, 0.5cqw, 8px); margin-top: clamp(8px, 1.2cqw, 18px); }
+.cal-block:first-of-type { margin-top: clamp(10px, 1.5cqh, 18px); }
+.cal-block-head { display: grid; grid-template-columns: max-content 1fr max-content; gap: clamp(10px, 1.4cqw, 22px); align-items: baseline; padding: clamp(6px, 0.8cqw, 12px) clamp(8px, 1cqw, 14px); border-left: 4px solid var(--amber); background: rgba(255,200,87,0.08); border-radius: 2px; }
+.cal-block-head.is-alt { border-left-color: var(--navy-64); background: var(--navy-08); }
+.cal-block-tag {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(9px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.slide.dark .cal-block-tag, .slide.black .cal-block-tag { color: var(--amber); }
+.cal-block-head.is-alt .cal-block-tag { color: var(--navy-64); }
+.cal-block-name { font-family: 'Literata', serif; font-weight: 600; font-size: clamp(13px, 1.15cqw, 18px); color: var(--navy); line-height: 1.2; }
+.cal-block-num { font-family: 'PT Mono', monospace; font-weight: 700; font-size: clamp(13px, 1.2cqw, 19px); color: var(--navy); letter-spacing: 0.04em; }
+.cal-foot { font-family: 'Libre Franklin', sans-serif; font-style: italic; font-size: clamp(11px, 1cqw, 15px); color: var(--muted); text-align: center; margin-top: clamp(6px, 1cqh, 14px); line-height: 1.4; }
+.cal-cell.span-4 { grid-column: span 4; }
+.cal-legend {
+  display: flex; gap: 1.5em; margin-top: 2cqh;
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.cal-legend .lg-item { display: flex; align-items: center; gap: 0.5em; }
+.cal-legend .lg-mark { width: 16px; height: 6px; border-radius: 1px; }
+
+
+/* ============= NEXT-LIST — closing dark slide (numbered actions) ============= */
+.next-list { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(14px, 1.5cqw, 26px); margin-top: 2cqh; }
+.next-item { display: grid; grid-template-columns: 60px 1fr; gap: clamp(14px, 1.5cqw, 28px); align-items: baseline; }
+.next-num { font-family: 'PT Mono', monospace; font-weight: 700; color: var(--amber); font-size: clamp(20px, 2cqw, 32px); letter-spacing: 0.04em; }
+.next-text { font-family: 'Literata', serif; font-weight: 500; font-size: clamp(20px, 2cqw, 34px); line-height: 1.25; color: var(--foam); }
+.slide:not(.dark):not(.black) .next-text { color: var(--navy); }
+
+
+/* ============= MANIFESTO-WRAP — single big quote ============= */
+.manifesto-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; max-width: 86%; }
+.manifesto-quote { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); font-size: clamp(28px, 3.4cqw, 56px); line-height: 1.18; color: var(--navy); letter-spacing: -0.012em; }
+.slide.dark .manifesto-quote, .slide.black .manifesto-quote { color: var(--foam); }
+/* Highlighted words: navy italic over an amber highlighter on light slides
+   (amber as ink on foam is 1.5:1); amber ink on navy, where it reads 9.9:1. */
+.manifesto-quote em { font-style: italic; color: var(--navy); font-weight: var(--display-weight, 400);
+  text-decoration-line: underline; text-decoration-color: var(--amber); text-decoration-thickness: 0.36em; text-underline-offset: -0.26em; text-decoration-skip-ink: none; }
+.slide.dark .manifesto-quote em, .slide.black .manifesto-quote em { color: var(--amber); text-decoration-line: none; }
+.manifesto-quote .punch { color: var(--navy); }
+.slide.dark .manifesto-quote .punch, .slide.black .manifesto-quote .punch { color: var(--foam); }
+.manifesto-sub {
+  font-family: 'PT Mono', monospace; font-size: clamp(11px, 1cqw, 15px);
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 2.5em;
+}
+
+
+/* ============= COMPARE-WRAP — two columns (them vs us) ============= */
+.compare-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3cqw, 60px); margin-top: 3cqh; align-items: stretch; }
+.compare-col { padding: clamp(20px, 2.4cqw, 40px) clamp(20px, 2.4cqw, 40px); border-radius: 3px; display: flex; flex-direction: column; }
+.compare-col.is-them { background: var(--navy-08); }
+.compare-col.is-us { background: var(--navy); color: var(--foam); }
+.compare-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(11px, 0.95cqw, 14px);
+  letter-spacing: 0.04em; color: var(--muted); margin-bottom: 0.6em;
+}
+.compare-col.is-us .compare-tag { color: var(--amber); }
+.compare-name { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); font-size: clamp(22px, 2.4cqw, 38px); color: var(--navy); line-height: 1.1; }
+.compare-col.is-us .compare-name { color: var(--foam); }
+/* Bare copy in a card had no gap: .compare-name is set at up to 38px on a 1.1
+   line-height, so anything written without .compare-line landed on its
+   descenders. A floor for every child; .compare-line sets its own below. */
+.compare-col > * + * { margin-top: clamp(10px, 1.2cqh, 18px); }
+.compare-icon { margin: 1.4em 0; height: clamp(70px, 7cqw, 120px); display: flex; align-items: center; }
+.compare-icon svg { height: 100%; width: auto; }
+.compare-line { font-family: 'Libre Franklin', sans-serif; font-size: clamp(15px, 1.35cqw, 22px); color: var(--text); line-height: 1.4; margin-top: auto; padding-top: clamp(10px, 1.4cqh, 20px); }
+.compare-col.is-us .compare-line { color: var(--navy-16); }
+.compare-line strong { color: var(--navy); font-weight: 700; }
+.compare-col.is-us .compare-line strong { color: var(--amber); }
+
+
+/* ============= COMPARE-WRAP compact variant — short-text two-column cards ============= */
+/* Add .is-compact to .compare-wrap when there is no icon and only 1-2 lines per column */
+.compare-wrap.is-compact { align-items: start; }
+.compare-wrap.is-compact .compare-col { padding: clamp(16px, 1.6cqw, 28px) clamp(18px, 2cqw, 32px); }
+.compare-wrap.is-compact .compare-name { font-size: clamp(18px, 1.9cqw, 30px); }
+.compare-wrap.is-compact .compare-line { font-size: clamp(13px, 1.15cqw, 18px); margin-top: 0.6em; padding-top: 0; }
+
+
+/* ============= MEDIA-WRAP — image with caption ============= */
+/* One side: photo/visual. Other side: tag + title + body text.
+   Default: image left, text right. Add .is-flipped for text left, image right. */
+.media-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3.5cqw, 64px); margin-top: 3cqh; align-items: center; }
+.media-wrap.is-flipped { direction: rtl; }
+.media-wrap.is-flipped > * { direction: ltr; }
+.media-img {
+  border-radius: 3px; overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: var(--navy-08);
+}
+.media-img img { width: 100%; height: 100%; object-fit: cover; display: block; filter: contrast(1.04) saturate(0.94); }
+.media-img figcaption {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted);
+  padding: clamp(8px, 0.8cqw, 12px) clamp(10px, 1cqw, 16px);
+  background: var(--navy-08);
+}
+.media-body { display: flex; flex-direction: column; justify-content: center; gap: clamp(0.6em, 1cqw, 1em); }
+.media-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(11px, 0.95cqw, 14px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.media-title { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); font-size: clamp(20px, 2.1cqw, 34px); color: var(--navy); line-height: 1.15; }
+.media-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.25cqw, 20px); color: var(--text); line-height: 1.55; }
+.media-text strong { color: var(--navy); font-weight: 700; }
+/* Dark slide variant */
+.slide.dark .media-tag { color: var(--amber); }
+.slide.dark .media-title { color: var(--foam); }
+.slide.dark .media-text { color: var(--navy-16); }
+.slide.dark .media-text strong { color: var(--amber); }
+.slide.dark .media-img figcaption { background: rgba(255,255,255,0.06); color: var(--navy-40); }
+
+
+/* ============= PARC-WRAP — coloured dot groups (parcel·les) ============= */
+.parc-wrap { flex: 1; display: grid; grid-template-columns: 1.1fr 1fr; gap: clamp(20px, 3cqw, 60px); margin-top: 2cqh; align-items: center; }
+.parc-visual { display: flex; flex-direction: column; gap: clamp(12px, 1.5cqw, 24px); }
+.parc-group { display: grid; grid-template-columns: 130px 1fr; gap: clamp(14px, 1.5cqw, 24px); align-items: center; }
+.parc-label {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(12px, 1.05cqw, 16px);
+  letter-spacing: 0.04em; color: var(--navy);
+}
+.parc-label .pl-tag {
+  display: block; font-family: 'Libre Franklin', sans-serif; font-weight: 400;
+  font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0;
+  color: var(--muted); margin-top: 0.3em;
+}
+.parc-dots { display: flex; gap: clamp(6px, 0.7cqw, 12px); align-items: center; }
+.parc-dot {
+  width: clamp(28px, 2.8cqw, 46px); height: clamp(28px, 2.8cqw, 46px);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  color: var(--foam); font-weight: 700;
+}
+.parc-dot.c-amber  { background: var(--amber); color: var(--navy); }
+.parc-dot.c-salmon { background: var(--salmon); }
+.parc-dot.c-green  { background: var(--green); }
+.parc-dot.c-plum   { background: var(--plum); }
+.parc-side { display: flex; flex-direction: column; gap: 1.2em; }
+.parc-side h3 {
+  font-family: 'PT Mono', monospace; font-size: clamp(11px, 1cqw, 15px);
+  letter-spacing: 0.04em; color: var(--navy);
+}
+.slide.dark .parc-side h3, .slide.black .parc-side h3 { color: var(--amber); }
+.parc-fact { display: grid; grid-template-columns: max-content 1fr; gap: 0.8em 1.2em; align-items: baseline; }
+.parc-fact .pf-num { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(28px, 3.2cqw, 52px); color: var(--navy); line-height: 1; }
+.parc-fact .pf-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.1cqw, 18px); color: var(--text); line-height: 1.35; }
+.parc-foot { font-family: 'Libre Franklin', sans-serif; font-style: italic; font-size: clamp(13px, 1.05cqw, 17px); color: var(--muted); margin-top: 1em; line-height: 1.4; }
+
+
+/* ============= DYN-WRAP — dynamic agenda rows ============= */
+.dyn-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; margin-top: 2cqh; }
+.dyn-row { display: grid; grid-template-columns: 130px 90px 1fr 80px; gap: clamp(14px, 1.5cqw, 26px); align-items: start; padding: clamp(10px, 1.1cqw, 16px) 0; border-bottom: 1px solid var(--navy-08); }
+.dyn-row:last-child { border-bottom: 0; }
+.dyn-row.is-key { background: linear-gradient(to right, rgba(255,200,87,0.10), transparent 70%); padding-left: clamp(10px, 1.1cqw, 18px); margin-left: calc(-1 * clamp(10px, 1.1cqw, 18px)); border-radius: 2px; }
+.dyn-time { font-family: 'PT Mono', monospace; font-weight: 700; font-size: clamp(13px, 1.2cqw, 18px); color: var(--navy); letter-spacing: 0.04em; }
+.dyn-dur { font-family: 'PT Mono', monospace; font-size: clamp(11px, 1cqw, 15px); color: var(--muted); font-weight: 700; letter-spacing: 0.04em; }
+.slide.dark .dyn-dur, .slide.black .dyn-dur { color: var(--amber); }
+.dyn-block .dyn-name { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(16px, 1.5cqw, 24px); color: var(--navy); line-height: 1.2; }
+.dyn-block .dyn-desc { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.05cqw, 17px); color: var(--text); margin-top: 0.3em; line-height: 1.4; }
+.dyn-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.04em; color: var(--muted);
+  text-align: right; padding-top: 0.4em;
+}
+.dyn-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 2cqh; padding-top: 1.5cqh; border-top: 2px solid var(--navy); }
+.dyn-foot .df-total {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(14px, 1.3cqw, 20px); color: var(--navy); letter-spacing: 0.04em;
+}
+.dyn-foot .df-out { font-family: 'Libre Franklin', sans-serif; font-style: italic; font-size: clamp(13px, 1.1cqw, 18px); color: var(--muted); }
+
+
+/* ============= SCEN-WRAP — best vs real scenarios ============= */
+.scen-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3cqw, 50px); margin-top: 2cqh; align-items: stretch; }
+.scen-col { padding: clamp(18px, 2cqw, 32px) clamp(20px, 2.2cqw, 36px); border-radius: 3px; display: flex; flex-direction: column; }
+.scen-col.is-best { background: rgba(255,200,87,0.10); border-left: 4px solid var(--amber); }
+.scen-col.is-real { background: var(--navy-08); border-left: 4px solid var(--navy-64); }
+.scen-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.9cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted); margin-bottom: 0.5em;
+}
+.scen-col.is-best .scen-tag { color: var(--navy); font-weight: 700; }
+.slide.dark .scen-col.is-best .scen-tag, .slide.black .scen-col.is-best .scen-tag { color: var(--amber); }
+.scen-name { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); font-size: clamp(20px, 2.1cqw, 32px); color: var(--navy); line-height: 1.15; margin-bottom: 0.4em; }
+.scen-num { font-family: 'Literata', serif; font-weight: 700; color: var(--navy); font-size: clamp(56px, 6cqw, 96px); line-height: 1; letter-spacing: -0.03em; margin: 0.3em 0 0.2em; }
+.scen-num small { font-family: 'Libre Franklin', sans-serif; font-weight: 400; font-size: clamp(14px, 1.2cqw, 19px); color: var(--muted); display: block; letter-spacing: 0; margin-top: 0.4em; }
+.scen-bullets { list-style: none; padding: 0; margin-top: 1em; display: flex; flex-direction: column; gap: 0.6em; flex: 1; }
+.scen-bullets li { position: relative; padding-left: 1.5em; font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.1cqw, 17px); color: var(--text); line-height: 1.4; }
+.scen-bullets li::before { content: ""; position: absolute; left: 0; top: 0.55em; width: 7px; height: 7px; background: var(--navy-64); border-radius: 50%; }
+.scen-col.is-best .scen-bullets li::before { background: var(--amber); }
+.scen-foot { font-family: 'Libre Franklin', sans-serif; font-style: italic; font-size: clamp(13px, 1.1cqw, 17px); color: var(--muted); text-align: center; margin-top: 2cqh; max-width: 80%; margin-left: auto; margin-right: auto; line-height: 1.5; }
+.scen-foot strong { color: var(--navy); font-style: normal; font-weight: 700; }
+
+
+/* ============= PHASE-WRAP — single phase guide (left meta + right steps) ============= */
+.phase-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(24px, 3cqw, 60px); margin-top: 1.5cqh; align-items: stretch; }
+.phase-left { display: flex; flex-direction: column; gap: 1.2em; padding-right: 1em; }
+.phase-meta { display: flex; gap: clamp(14px, 1.5cqw, 26px); align-items: center; }
+.phase-num { font-family: 'Literata', serif; font-weight: 700; color: var(--navy); font-size: clamp(80px, 9cqw, 150px); line-height: 0.9; letter-spacing: -0.03em; }
+.slide.dark .phase-num, .slide.black .phase-num { color: var(--amber); }
+.phase-meta-text { display: flex; flex-direction: column; gap: 0.3em; }
+.phase-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(11px, 0.95cqw, 14px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.phase-dur { font-family: 'PT Mono', monospace; font-weight: 700; font-size: clamp(20px, 2cqw, 34px); color: var(--navy); letter-spacing: 0.04em; }
+.phase-name { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); font-size: clamp(28px, 3cqw, 48px); color: var(--navy); line-height: 1.1; letter-spacing: -0.012em; }
+.phase-lede { font-family: 'Libre Franklin', sans-serif; font-size: clamp(16px, 1.45cqw, 24px); color: var(--text); line-height: 1.5; max-width: 100%; }
+.phase-progress { display: flex; gap: clamp(8px, 0.8cqw, 12px); margin-top: auto; padding-top: 1.5em; align-items: center; }
+.phase-progress.is-standalone { margin-top: 1.5em; padding-top: 0; max-width: 60%; }
+.phase-progress .pp-tick { flex: 1; height: 6px; background: var(--navy-16); border-radius: 2px; position: relative; }
+.phase-progress .pp-tick.done { background: var(--amber); }
+.phase-progress .pp-tick.now { background: var(--amber); box-shadow: 0 0 0 2px var(--amber), 0 0 0 4px rgba(255,200,87,0.25); }
+.phase-progress .pp-label {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.78cqw, 12px);
+  letter-spacing: 0.04em; color: var(--muted); margin-left: 0.6em;
+}
+.phase-right { background: var(--navy-08); border-left: 4px solid var(--amber); padding: clamp(20px, 2.2cqw, 36px) clamp(22px, 2.4cqw, 40px); border-radius: 2px; display: flex; flex-direction: column; }
+.phase-right h3 {
+  font-family: 'PT Mono', monospace; font-size: clamp(11px, 1cqw, 14px);
+  letter-spacing: 0.04em; color: var(--navy);
+  margin-bottom: 1.2em; font-weight: 700;
+}
+.phase-steps { list-style: none; padding: 0; display: flex; flex-direction: column; gap: clamp(0.9em, 1.3cqw, 1.4em); flex: 1; }
+.phase-steps li { position: relative; padding-left: 1.8em; font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.2cqw, 19px); color: var(--text); line-height: 1.45; }
+.phase-steps li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 10px; height: 10px; background: var(--amber); border-radius: 50%; }
+.phase-steps li strong { color: var(--navy); font-weight: 700; }
+.phase-out { background: var(--navy); color: var(--foam); padding: clamp(14px, 1.4cqw, 22px) clamp(16px, 1.7cqw, 28px); border-radius: 2px; margin-top: 1.5em; }
+.phase-out .po-lab {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--amber); margin-bottom: 0.4em;
+}
+.phase-out .po-text { font-family: 'Literata', serif; font-weight: 600; font-size: clamp(15px, 1.35cqw, 22px); line-height: 1.3; color: var(--foam); }
+
+
+/* ============= VOTE-WRAP — voting board (cards + rules) ============= */
+.vote-wrap { flex: 1; display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(20px, 3cqw, 50px); margin-top: 2cqh; align-items: stretch; }
+.vote-board { background: var(--navy); padding: clamp(16px, 1.8cqw, 28px); border-radius: 3px; display: flex; flex-direction: column; }
+.vote-board-label {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--amber); margin-bottom: 0.8em;
+}
+.vote-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(6px, 0.7cqw, 10px); flex: 1; }
+.vote-card { background: rgba(255,255,255,0.06); border-left: 3px solid var(--c); border-radius: 2px; padding: clamp(8px, 0.9cqw, 12px); display: flex; flex-direction: column; justify-content: space-between; min-height: clamp(60px, 8cqw, 100px); }
+.vc-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(8px, 0.7cqw, 11px);
+  letter-spacing: 0.04em; color: var(--navy-40);
+}
+.vc-dots { display: flex; gap: 4px; margin-top: 0.5em; }
+.vc-dots span { width: clamp(8px, 0.85cqw, 12px); height: clamp(8px, 0.85cqw, 12px); border-radius: 50%; background: var(--amber); }
+.vote-rules { display: flex; flex-direction: column; justify-content: center; gap: clamp(14px, 1.4cqw, 22px); }
+.vr-rule { display: grid; grid-template-columns: 70px 1fr; gap: clamp(14px, 1.5cqw, 22px); align-items: center; }
+.vr-num { font-family: 'Literata', serif; font-weight: 700; color: var(--navy); font-size: clamp(38px, 4.2cqw, 68px); line-height: 1; text-align: center; }
+.slide.dark .vr-num, .slide.black .vr-num { color: var(--amber); }
+.vr-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.1cqw, 17px); color: var(--text); line-height: 1.4; }
+.vr-text strong { color: var(--navy); font-weight: 700; }
+.vr-foot { font-family: 'Libre Franklin', sans-serif; font-style: italic; font-size: clamp(13px, 1.05cqw, 16px); color: var(--muted); line-height: 1.4; margin-top: 0.5em; }
+
+
+/* ============= GANTT-WRAP — horizontal program timeline ============= */
+/* Week/period columns across the slide, one row per workstream, bars
+   spanning their periods. Set the column count once on the wrap:
+     <div class="gantt-wrap" style="--gantt-cols: 8">
+   and place each bar with an inline grid-column (positional data, the one
+   sanctioned inline-style use): style="grid-column: 2 / span 2".
+   Column 1 is always the row label. Each workstream is one .gantt-item
+   (a .gantt-row plus an optional .gantt-note), so a whole workstream
+   reveals as a single step. Default bar is navy; .is-amber for the
+   emphasised workstream. .gantt-cap carries the row's one-line detail. */
+.gantt-wrap {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  gap: clamp(14px, 2cqh, 28px); margin-top: 2cqh;
+}
+.gantt-head, .gantt-row, .gantt-note {
+  display: grid;
+  grid-template-columns: clamp(110px, 11cqw, 180px) repeat(var(--gantt-cols, 8), minmax(0, 1fr));
+  column-gap: clamp(5px, 0.5cqw, 9px); align-items: center;
+}
+.gantt-tick {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.04em; color: var(--muted); text-align: center;
+  padding-bottom: 0.7em; border-bottom: 1px solid var(--navy-16);
+}
+.gantt-head .gantt-corner { align-self: stretch; border-bottom: 1px solid var(--navy-16); }
+.gantt-label {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(10px, 0.9cqw, 14px);
+  letter-spacing: 0.04em; color: var(--navy); padding-right: 1em;
+}
+/* The lane: a quiet full-width track each bar slides on. First element of
+   every .gantt-row, before the bar. */
+.gantt-track {
+  grid-column: 2 / -1; grid-row: 1;
+  height: clamp(32px, 3.8cqh, 48px); border-radius: 3px;
+  background: var(--navy-08);
+}
+.gantt-bar {
+  grid-row: 1; position: relative; z-index: 1;
+  height: clamp(32px, 3.8cqh, 48px); background: var(--navy); border-radius: 3px;
+  display: flex; align-items: center; gap: 1em;
+  padding: 0 clamp(10px, 1cqw, 18px);
+  color: var(--foam); font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(11px, 0.95cqw, 15px); font-weight: 500;
+  white-space: nowrap; overflow: hidden; min-width: 0;
+  box-shadow: 0 2px 10px rgba(0,17,125,0.18);
+}
+.gantt-bar.is-amber { background: var(--amber); color: var(--navy); font-weight: 600; box-shadow: 0 2px 10px rgba(244,185,66,0.35); }
+/* Quiet right-aligned period range inside the bar: <small>w1 – 2</small> */
+.gantt-bar small {
+  margin-left: auto; font-family: 'PT Mono', monospace;
+  font-size: clamp(8px, 0.7cqw, 11px); letter-spacing: 0.04em;
+  font-weight: 400; opacity: 0.75;
+}
+.gantt-note { margin-top: clamp(4px, 0.6cqh, 9px); }
+.gantt-note .gantt-cap {
+  grid-column: 2 / -1;
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(11px, 0.95cqw, 15px);
+  color: var(--muted); line-height: 1.35;
+}
+.gantt-foot {
+  font-family: 'Libre Franklin', sans-serif; font-style: italic;
+  font-size: clamp(12px, 1cqw, 16px); color: var(--muted);
+  text-align: center; margin-top: 1.5cqh; line-height: 1.4;
+}
+/* dark slide variant */
+.slide.dark .gantt-tick, .slide.black .gantt-tick { color: var(--navy-40); border-bottom-color: rgba(254,253,247,0.18); }
+.slide.dark .gantt-head .gantt-corner, .slide.black .gantt-head .gantt-corner { border-bottom-color: rgba(254,253,247,0.18); }
+.slide.dark .gantt-label, .slide.black .gantt-label { color: var(--foam); }
+.slide.dark .gantt-track, .slide.black .gantt-track { background: rgba(255,255,255,0.06); }
+.slide.dark .gantt-bar, .slide.black .gantt-bar { background: rgba(255,255,255,0.10); box-shadow: none; }
+.slide.dark .gantt-bar.is-amber, .slide.black .gantt-bar.is-amber { background: var(--amber); color: var(--navy); }
+.slide.dark .gantt-cap, .slide.black .gantt-cap { color: var(--navy-40); }
+
+
+/* ============= PRICE-ROW — pricing / investment cards ============= */
+/* One card per offer: mono tag, dominant Literata price, quiet unit line,
+   hairline, then dot bullets for scope. Default 4 columns; .cols-2/.cols-3
+   variants. .is-featured spotlights one card (amber wash + amber accents).
+   Close the slide with .price-foot for the "excludes taxes / assessed
+   jointly" small print. */
+.price-row {
+  flex: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(14px, 1.5cqw, 26px); align-items: stretch; margin-top: 3cqh;
+  /* The row is bounded to the slide (min-height 0) and its single track is
+     capped at the row's height (minmax(0, 1fr)) rather than growing with
+     the tallest card. Short cards look the same as before, since an auto
+     track already stretched to fill the row; a card with a long list now
+     overflows its own box, which is what lets the runtime fit it. */
+  min-height: 0; grid-auto-rows: minmax(0, 1fr);
+}
+.price-row.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.price-row.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* Bounded and fitted like .module-card: a pack that lists every module of a
+   ten-module course used to be cut to a handful of lines by the generator.
+   The card now holds the whole list, and the runtime shrinks it with --fit
+   when the lines still do not fit. */
+.price-card {
+  background: var(--navy-08); border-top: 4px solid var(--navy-64);
+  border-radius: 2px; padding: clamp(16px, 1.8cqw, 30px);
+  display: flex; flex-direction: column;
+  min-height: 0; overflow: hidden;
+}
+.price-card > .price-list { zoom: var(--fit, 1); }
+.price-card.is-featured { background: rgba(255,200,87,0.10); border-top-color: var(--amber); }
+.price-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--muted); font-weight: 700;
+}
+.price-num {
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(34px, 3.4cqw, 58px); color: var(--navy);
+  line-height: 1; letter-spacing: -0.02em; margin-top: 0.5em;
+}
+.price-unit {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 0.7em;
+}
+.price-list {
+  list-style: none; padding: 1.1em 0 0; margin-top: 1.1em;
+  border-top: 1px solid var(--navy-16);
+  display: flex; flex-direction: column; gap: 0.55em; flex: 1;
+}
+.price-list li {
+  position: relative; padding-left: 1.4em;
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(12px, 1.05cqw, 16px);
+  color: var(--text); line-height: 1.4;
+}
+.price-list li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 7px; height: 7px; background: var(--navy-64); border-radius: 50%; }
+.price-card.is-featured .price-list li::before { background: var(--amber); }
+.price-card.is-featured .price-list { border-top-color: rgba(255,200,87,0.45); }
+.price-foot {
+  font-family: 'Libre Franklin', sans-serif; font-style: italic;
+  font-size: clamp(12px, 1cqw, 16px); color: var(--muted);
+  text-align: center; margin-top: 2cqh; line-height: 1.4;
+}
+.price-foot strong { color: var(--navy); font-style: normal; font-weight: 700; }
+
+
+/* ============= CASE-WRAP — client case study ============= */
+/* One reference project on one slide: story left (client tag, title,
+   subtitle, challenge + context blocks), delivery right (what we covered as
+   a dot list, results pinned in a navy box). Fed by the proposal-builder
+   case-study library; also fine hand-written. */
+/* Bounded and fitted like .program-wrap: a long case (three covered items
+   with a sentence each, plus results) ran the navy box off the canvas. */
+.case-wrap { flex: 1; display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(24px, 3cqw, 60px); margin-top: 1.5cqh; align-items: stretch;
+             min-height: 0; overflow: hidden; }
+.case-wrap > * { zoom: var(--fit, 1); }
+.case-left { display: flex; flex-direction: column; gap: clamp(0.9em, 1.4cqh, 1.4em); padding-right: 1em; }
+.case-client {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(10px, 0.9cqw, 14px);
+  letter-spacing: 0.04em; color: var(--muted);
+}
+.slide.dark .case-client, .slide.black .case-client { color: var(--amber); }
+.case-title {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  font-size: clamp(24px, 2.6cqw, 42px); color: var(--navy);
+  line-height: 1.1; letter-spacing: -0.012em; text-wrap: balance;
+}
+.case-sub {
+  font-family: 'Literata', serif; font-style: italic;
+  font-size: clamp(15px, 1.35cqw, 21px); color: var(--navy-80); line-height: 1.4;
+}
+.case-block h3 {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(10px, 0.9cqw, 13px);
+  letter-spacing: 0.04em; color: var(--navy); margin-bottom: 0.5em;
+}
+.case-block p {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(13px, 1.15cqw, 18px); color: var(--text); line-height: 1.5;
+}
+.case-right {
+  background: var(--navy-08); border-left: 4px solid var(--amber);
+  padding: clamp(20px, 2.2cqw, 36px) clamp(22px, 2.4cqw, 40px);
+  border-radius: 2px; display: flex; flex-direction: column;
+}
+.case-right h3 {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(11px, 1cqw, 14px);
+  letter-spacing: 0.04em; color: var(--navy); margin-bottom: 1.2em;
+}
+.case-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: clamp(0.7em, 1.1cqw, 1.1em); flex: 1; }
+.case-list li {
+  position: relative; padding-left: 1.5em;
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.1cqw, 17px);
+  color: var(--text); line-height: 1.45;
+}
+.case-list li::before { content: ""; position: absolute; left: 0; top: 0.5em; width: 7px; height: 7px; background: var(--amber); border-radius: 50%; }
+.case-list li strong { color: var(--navy); font-weight: 700; }
+.case-results {
+  background: var(--navy); color: var(--foam);
+  padding: clamp(14px, 1.4cqw, 22px) clamp(16px, 1.7cqw, 28px);
+  border-radius: 2px; margin-top: 1.5em;
+}
+.case-results .cr-lab {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.04em; color: var(--amber); margin-bottom: 0.6em;
+}
+.case-results ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.45em; }
+.case-results li {
+  position: relative; padding-left: 1.4em;
+  font-family: 'Literata', serif; font-weight: 500;
+  font-size: clamp(13px, 1.15cqw, 18px); line-height: 1.35; color: var(--foam);
+}
+.case-results li::before { content: ""; position: absolute; left: 0; top: 0.45em; width: 7px; height: 7px; background: var(--amber); border-radius: 50%; }
+
+
+/* ============= LOGO-GRID — client logo wall ============= */
+/* White cells with the brand hairline; logos render grayscale so the wall
+   reads as one texture. A cell with no image carries .logo-name text
+   instead (the fallback when a library client has no logo file). */
+.logo-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.logo-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(12px, 1.4cqw, 24px); }
+.logo-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.logo-grid.cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.logo-cell {
+  background: #fff; border: 1px solid var(--navy-16); border-radius: 2px;
+  aspect-ratio: 5 / 3; display: flex; align-items: center; justify-content: center;
+  padding: clamp(10px, 1.2cqw, 20px);
+  min-width: 0; overflow: hidden;
+}
+.logo-cell img { max-width: 72%; max-height: 56%; object-fit: contain; filter: grayscale(1); opacity: 0.82; }
+.logo-cell .logo-name {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(11px, 1cqw, 16px);
+  letter-spacing: 0.04em; color: var(--navy-80); text-align: center;
+}
+.slide.dark .logo-cell, .slide.black .logo-cell { background: rgba(255,255,255,0.05); border-color: rgba(254,253,247,0.16); }
+.slide.dark .logo-cell img, .slide.black .logo-cell img { filter: grayscale(1) brightness(1.6); opacity: 0.85; }
+.slide.dark .logo-cell .logo-name, .slide.black .logo-cell .logo-name { color: var(--navy-16); }
+.logo-foot {
+  font-family: 'Libre Franklin', sans-serif; font-style: italic;
+  font-size: clamp(12px, 1.05cqw, 16px); color: var(--muted);
+  text-align: center; margin-top: 2.5cqh; line-height: 1.4;
+}
+
+
+/* ============= TERMS-WRAP — payment terms & conditions ============= */
+/* Grouped quiet lists for the contractual close: billing, payment terms,
+   FUNDAE notes. Deliberately calm; the slide's job is clarity, not wow. */
+.terms-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(20px, 3cqh, 40px); max-width: 88%; }
+/* dense variant: 8+ term lines read better as two balanced columns */
+.terms-wrap.cols-2 {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(24px, 3.5cqw, 64px); align-content: center; max-width: 100%;
+}
+.terms-group h3 {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(11px, 1cqw, 15px);
+  letter-spacing: 0.04em; color: var(--navy); margin-bottom: 0.9em;
+}
+.slide.dark .terms-group h3, .slide.black .terms-group h3 { color: var(--amber); }
+.terms-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 0.7em; }
+.terms-list li {
+  position: relative; padding-left: 1.5em;
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.25cqw, 20px);
+  color: var(--text); line-height: 1.5;
+}
+.terms-list li::before { content: ""; position: absolute; left: 0; top: 0.6em; width: 7px; height: 7px; background: var(--navy-64); border-radius: 50%; }
+.terms-list li strong { color: var(--navy); font-weight: 700; }
+.slide.dark .terms-list li, .slide.black .terms-list li { color: var(--navy-16); }
+.slide.dark .terms-list li strong, .slide.black .terms-list li strong { color: var(--foam); }
+.terms-foot {
+  font-family: 'Libre Franklin', sans-serif; font-style: italic;
+  font-size: clamp(12px, 1.05cqw, 16px); color: var(--muted); line-height: 1.4;
+}
+
+
+/* ==========================================================================
+   FORGIVING FALLBACKS
+   --------------------------------------------------------------------------
+   When an LLM uses a canonical container (.gov-item, .compare-col, etc.)
+   but drops bare text inside instead of the documented child classes, give
+   the text sensible defaults so the slide still reads as zenital instead of
+   collapsing to unstyled prose. These rules only target text nodes that did
+   not get wrapped in a proper child; documented child classes always win
+   via specificity / order.
+   ========================================================================== */
+
+/* compare-col: bare text gets compare-line typography */
+.compare-col > *:not(.compare-tag):not(.compare-name):not(.compare-line):not(.compare-icon):not(.label):not(.pill-name) {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(15px, 1.35cqw, 22px);
+  color: var(--text); line-height: 1.4;
+}
+.compare-col.is-us > *:not(.compare-tag):not(.compare-name):not(.compare-line):not(.compare-icon):not(.label):not(.pill-name) {
+  color: var(--navy-16);
+}
+
+/* gov-item: a bare gov-item (no .gov-name/.gov-desc inside) reads as the name */
+.gov-item:not(:has(.gov-name)):not(:has(.gov-desc)) {
+  font-family: 'Literata', serif; font-weight: 600;
+  font-size: clamp(15px, 1.35cqw, 22px); color: var(--navy); line-height: 1.3;
+}
+
+/* month-grid: tolerate ad-hoc children (e.g. .month-tag/.month-body the LLM invents) */
+.month-grid > *:first-child:not(.week-tag) {
+  font-family: 'PT Mono', monospace; font-weight: 700; color: var(--amber);
+  font-size: clamp(13px, 1.15cqw, 18px); letter-spacing: 0.04em; padding-top: 0.2em;
+}
+.month-grid > *:nth-child(2):not(.week-line) {
+  font-family: 'Literata', serif; font-weight: 500; color: var(--navy);
+  font-size: clamp(16px, 1.55cqw, 24px); line-height: 1.3;
+}
+
+/* day-cell: bare text picks up the .day-text typography */
+.day-cell > *:not(.day-name):not(.day-tag):not(.day-text) {
+  font-family: 'Literata', serif; font-weight: 500;
+  font-size: clamp(13px, 1.1cqw, 18px); color: var(--navy);
+  margin-top: 0.5em; line-height: 1.3;
+}
+
+/* fitxa-grid: tolerate bare key/value pairs */
+.fitxa-grid > *:not(.fk):not(.fv) {
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.1cqw, 17px);
+  color: var(--text); line-height: 1.35;
+}
+
+/* kpi-card: bare text below .kpi-cat picks up .kpi-list typography */
+.kpi-card > *:not(.kpi-cat):not(.kpi-list) {
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(12px, 1cqw, 16px);
+  color: var(--text); margin-top: 0.8em; line-height: 1.5;
+}
+
+/* phase-right: a bare list directly under it picks up phase-steps typography */
+.phase-right > ul:not(.phase-steps) {
+  list-style: none; padding: 0; display: flex; flex-direction: column;
+  gap: clamp(0.9em, 1.3cqw, 1.4em); flex: 1;
+}
+.phase-right > ul:not(.phase-steps) li {
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.2cqw, 19px);
+  color: var(--text); line-height: 1.45;
+}
+
+/* media-body: bare text children get media-text typography */
+.media-body > *:not(.media-tag):not(.media-title):not(.media-text) {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(14px, 1.25cqw, 20px);
+  color: var(--text); line-height: 1.55;
+}
+
+/* generic: any element with class ending in "-list" gets vertical-stack defaults */
+[class$="-list"]:not(.kpi-list):not(.next-list):not(.gov-list):not(.scen-bullets):not(.phase-steps):not(.hud-list) {
+  display: flex; flex-direction: column; gap: clamp(0.6em, 1cqw, 1.2em);
+}
+
+
+/* ===================================================================
+   PRODUCT-MARKETING COMPONENTS
+   Promoted from template-product-marketing. Use when the deck follows
+   the classic product narrative arc: problem → cost → solution → proof → CTA.
+   =================================================================== */
+
+/* ── .feat-row ─── left lead column + right list of 3 features with
+   icon, title, body, hairline dividers. Reused 3× in the PDF arc
+   (problem, cost-of-problem, solution-intro). The row fills the slide
+   vertically; the left lead vertically centres, the right list
+   distributes items evenly so the slide never has a dead bottom half. */
+.feat-row {
+  flex: 1; display: grid; grid-template-columns: 1fr 1.4fr;
+  gap: clamp(28px, 4.5cqw, 80px); align-items: stretch;
+  margin-top: clamp(14px, 2cqh, 28px);
+}
+.feat-lead {
+  display: flex; flex-direction: column;
+  justify-content: center;
+  gap: clamp(10px, 1.2cqw, 18px);
+}
+.feat-lead .feat-eyebrow {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.9cqw, 13px);
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted);
+}
+.slide.dark .feat-lead .feat-eyebrow, .slide.black .feat-lead .feat-eyebrow { color: var(--amber); }
+.feat-lead h2 {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  font-size: clamp(28px, 3.2cqw, 52px); line-height: 1.08;
+  letter-spacing: -0.018em; color: var(--navy); margin: 0;
+}
+.slide.dark .feat-lead h2, .slide.black .feat-lead h2 { color: var(--amber); }
+.feat-lead .feat-lede {
+  font-family: 'Libre Franklin', sans-serif; font-weight: 500;
+  font-size: clamp(15px, 1.35cqw, 22px); line-height: 1.45;
+  color: var(--navy); margin-top: clamp(0.4em, 0.8cqw, 0.8em);
+}
+.slide.dark .feat-lead .feat-lede { color: var(--foam); }
+
+.feat-list {
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.feat-item {
+  display: grid; grid-template-columns: clamp(36px, 3.4cqw, 56px) 1fr;
+  gap: clamp(12px, 1.4cqw, 22px); align-items: start;
+  padding: clamp(18px, 2.4cqw, 36px) 0;
+  border-bottom: 1px solid var(--navy-16);
+  flex: 1;
+}
+.feat-item:first-child { padding-top: 0; }
+.feat-item:last-child  { border-bottom: 0; padding-bottom: 0; }
+.slide.dark .feat-item { border-bottom-color: rgba(254, 253, 247, 0.15); }
+.feat-icon {
+  width: clamp(36px, 3.4cqw, 56px); height: clamp(36px, 3.4cqw, 56px);
+  border-radius: 50%; background: rgba(255, 200, 87, 0.16);
+  display: grid; place-items: center; color: var(--amber);
+}
+.feat-icon svg { width: 60%; height: 60%; display: block; }
+.feat-body h3 {
+  font-family: 'Literata', serif; font-weight: 600;
+  font-size: clamp(16px, 1.5cqw, 24px); line-height: 1.25;
+  color: var(--navy); margin: 0;
+}
+.slide.dark .feat-body h3 { color: var(--foam); }
+.feat-body p {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(13px, 1.05cqw, 17px); line-height: 1.5;
+  color: var(--text); margin: clamp(0.3em, 0.5cqw, 0.6em) 0 0;
+}
+.slide.dark .feat-body p { color: var(--navy-40); }
+
+/* ── .diff-grid ─── 2×2 differentiator cards. Inspired by Forcadell's
+   .scen-col pattern: tinted background, accent left border, big amber
+   numeric badge, name + description. Used on the product-marketing
+   "why this is different" slide. */
+.diff-grid {
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(16px, 1.8cqw, 28px);
+  margin-top: clamp(18px, 2.5cqh, 32px);
+}
+.diff-card {
+  display: grid;
+  grid-template-columns: clamp(58px, 5.5cqw, 92px) 1fr;
+  gap: clamp(14px, 1.6cqw, 26px);
+  align-items: start;
+  padding: clamp(20px, 2.2cqw, 36px) clamp(22px, 2.4cqw, 40px);
+  border-radius: 3px;
+  background: rgba(255, 200, 87, 0.10);
+  border-left: 4px solid var(--amber);
+}
+.diff-card.is-alt {
+  background: var(--navy-08);
+  border-left-color: var(--navy-64);
+}
+.slide.dark .diff-card {
+  background: rgba(255, 200, 87, 0.12);
+}
+.slide.dark .diff-card.is-alt {
+  background: rgba(255, 255, 255, 0.06);
+  border-left-color: var(--navy-40);
+}
+.diff-num {
+  font-family: 'Literata', serif; font-weight: 700;
+  color: var(--navy);
+  font-size: clamp(46px, 5.2cqw, 86px);
+  line-height: 0.9; letter-spacing: -0.03em;
+  padding-top: 0.02em;
+}
+.slide.dark .diff-num, .slide.black .diff-num { color: var(--amber); }
+.diff-card.is-alt .diff-num { color: var(--navy-64); }
+.slide.dark .diff-card.is-alt .diff-num { color: var(--amber); }
+.diff-body { display: flex; flex-direction: column; gap: clamp(0.35em, 0.6cqw, 0.6em); }
+.diff-tag {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--muted); font-weight: 700;
+}
+.slide.dark .diff-tag, .slide.black .diff-tag { color: var(--amber); }
+.diff-card.is-alt .diff-tag { color: var(--navy-64); }
+.slide.dark .diff-card.is-alt .diff-tag { color: var(--amber-soft); }
+.diff-name {
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(17px, 1.65cqw, 26px); line-height: 1.2;
+  color: var(--navy); letter-spacing: -0.005em;
+}
+.slide.dark .diff-name { color: var(--foam); }
+.diff-desc {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(12px, 1.05cqw, 17px); line-height: 1.5;
+  color: var(--text);
+}
+.slide.dark .diff-desc { color: var(--navy-16); }
+
+/* ── .step-rail ─── numbered procedural steps along a vertical rail with
+   circle markers. Two columns × N rows. Reads top-to-bottom like a timeline. */
+.step-rail {
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 3cqw, 56px) clamp(30px, 4.5cqw, 80px);
+  margin-top: clamp(16px, 2.5cqh, 32px); position: relative;
+}
+.step {
+  display: grid; grid-template-columns: clamp(22px, 2cqw, 32px) 1fr;
+  gap: clamp(14px, 1.6cqw, 26px); align-items: start;
+  position: relative;
+}
+.step-marker {
+  width: clamp(20px, 1.8cqw, 28px); height: clamp(20px, 1.8cqw, 28px);
+  border-radius: 50%; border: 2px solid var(--amber); background: var(--foam);
+  margin-top: 4px;
+}
+.slide.dark .step-marker { background: var(--navy); }
+.step-tag {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 12px);
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted);
+}
+.slide.dark .step-tag, .slide.black .step-tag { color: var(--amber); }
+.step-title {
+  font-family: 'Literata', serif; font-weight: 600;
+  font-size: clamp(16px, 1.5cqw, 23px); line-height: 1.25;
+  color: var(--navy); margin: 0.2em 0 0.4em;
+}
+.slide.dark .step-title { color: var(--foam); }
+.step-bullets {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: clamp(0.25em, 0.4cqw, 0.45em);
+}
+.step-bullets li {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(12px, 1cqw, 16px); line-height: 1.45;
+  color: var(--text); padding-left: 1em; position: relative;
+}
+.slide.dark .step-bullets li { color: var(--navy-40); }
+.step-bullets li::before {
+  content: '—'; position: absolute; left: 0; color: var(--amber);
+}
+
+/* ── .frames-wrap ─── two framed UI mockups separated by an arrow.
+   Use for before/after, prompt → result, input → output narratives. */
+.frames-wrap {
+  flex: 1; display: grid;
+  grid-template-columns: 1fr clamp(24px, 3cqw, 56px) 1fr;
+  gap: clamp(14px, 1.8cqw, 28px); align-items: center;
+  margin-top: clamp(14px, 2cqh, 26px);
+}
+.frame {
+  background: var(--foam); border: 1px solid var(--navy-16);
+  border-radius: 6px; padding: clamp(14px, 1.5cqw, 22px);
+  min-height: clamp(220px, 28cqh, 360px);
+  display: flex; flex-direction: column; gap: clamp(10px, 1.2cqw, 16px);
+  box-shadow: 0 6px 20px -12px rgba(0, 17, 125, 0.25);
+}
+.slide.dark .frame { background: rgba(254, 253, 247, 0.04); border-color: rgba(254, 253, 247, 0.12); }
+.frame-head {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 11px);
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted);
+  padding-bottom: clamp(8px, 1cqw, 12px); border-bottom: 1px solid var(--navy-16);
+}
+.slide.dark .frame-head, .slide.black .frame-head { color: var(--amber); }
+.slide.dark .frame-head { border-bottom-color: rgba(254, 253, 247, 0.12); }
+.frame-body {
+  flex: 1; display: flex; flex-direction: column; gap: clamp(8px, 1cqw, 14px);
+}
+.frame-caption {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 11px);
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+  margin-top: clamp(8px, 1cqw, 12px);
+}
+.frames-arrow {
+  display: grid; place-items: center; color: var(--amber);
+}
+.frames-arrow svg { width: 100%; height: auto; max-width: 56px; }
+
+/* ── .split-cta ─── closing slide split into a light recap (left, ~60%)
+   and a dark contact panel (right, ~40%). The slide itself uses the
+   .split-cta-slide modifier to drop padding and switch to row layout. */
+.slide.split-cta-slide { padding: 0; flex-direction: row; overflow: hidden; }
+.split-cta {
+  flex: 1; display: grid; grid-template-columns: 1.5fr 1fr;
+  min-height: 0;
+}
+.split-cta-light {
+  background: var(--foam); padding: clamp(36px, 5cqh, 72px) clamp(36px, 5cqw, 80px);
+  display: flex; flex-direction: column; justify-content: center; gap: clamp(14px, 1.8cqw, 26px);
+}
+.split-cta-light .feat-eyebrow {
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.9cqw, 13px);
+  letter-spacing: 0.25em; text-transform: uppercase; color: var(--muted);
+}
+.split-cta-light h2 {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  font-size: clamp(32px, 3.6cqw, 60px); line-height: 1.08;
+  letter-spacing: -0.018em; color: var(--navy); margin: 0;
+}
+.split-cta-light .split-lede {
+  font-family: 'Libre Franklin', sans-serif; font-weight: 500;
+  font-size: clamp(15px, 1.3cqw, 21px); line-height: 1.5; color: var(--navy);
+}
+.split-checks {
+  list-style: none; padding: 0; margin: clamp(8px, 1cqw, 14px) 0 0;
+  display: flex; flex-direction: column; gap: clamp(0.6em, 0.9cqw, 1em);
+}
+.split-checks li {
+  display: grid; grid-template-columns: clamp(22px, 2cqw, 32px) 1fr;
+  gap: clamp(10px, 1cqw, 16px); align-items: center;
+  font-family: 'Libre Franklin', sans-serif; font-weight: 600;
+  font-size: clamp(13px, 1.1cqw, 18px); color: var(--navy);
+}
+.split-check-mark {
+  width: clamp(22px, 2cqw, 30px); height: clamp(22px, 2cqw, 30px);
+  border-radius: 50%; background: rgba(255, 200, 87, 0.22);
+  display: grid; place-items: center; color: var(--amber); flex-shrink: 0;
+}
+.split-check-mark svg { width: 55%; height: 55%; }
+.split-cta-dark {
+  background: var(--navy); color: var(--foam);
+  padding: clamp(36px, 5cqh, 72px) clamp(28px, 3.5cqw, 56px);
+  display: flex; flex-direction: column; justify-content: center; gap: clamp(14px, 1.8cqw, 26px);
+}
+.split-cta-dark h3 {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  font-size: clamp(22px, 2.4cqw, 36px); margin: 0; color: var(--foam);
+}
+.split-contact-row {
+  display: flex; flex-direction: column; gap: clamp(2px, 0.3cqw, 4px);
+}
+.split-contact-label {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 11px);
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--amber);
+}
+.split-contact-value {
+  font-family: 'Libre Franklin', sans-serif; font-weight: 500;
+  font-size: clamp(14px, 1.15cqw, 18px); color: var(--foam);
+  display: flex; align-items: center; gap: 0.6em;
+}
+.split-cta-booking {
+  margin-top: auto; padding: clamp(14px, 1.6cqw, 22px) clamp(16px, 1.8cqw, 26px);
+  border: 1px solid rgba(254, 253, 247, 0.2); border-radius: 4px;
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.05cqw, 16px);
+  color: var(--foam); text-align: center; line-height: 1.4;
+}
+
+/* ===================================================================
+   PRODUCT-DEMO COMPONENTS
+   Promoted from the selfbi-pitch deck. Use when the deck needs to SHOW
+   the product rather than describe it: a faux app window with a prompt,
+   KPI tiles, a chart, and a summary. Everything is scoped under
+   .demo-card so the product's own design system (white surface, its own
+   navy/amber) lives inside the card without leaking into the deck chrome.
+   Reference deck: docs/presentations/marketing/selfbi-pitch (zenital-selfbi-docs).
+   =================================================================== */
+
+/* ── .demo-card ─── a single faux product window. Drop it inside a
+   .demo-wrap (centred, max-width 880px) or a .demo-wrap.is-pair (two cards
+   + an arrow between them, for before/after). The card owns its own light
+   surface and tokens so it reads as "the product", not as a deck slide. */
+.demo-wrap {
+  --demo-navy: #0c2752;
+  --demo-navy-mid: #2e5fa3;
+  --demo-navy-light: #5b8dd4;
+  --demo-navy-wash: #f1f4fa;
+  --demo-surface: #ffffff;
+  --demo-bg-alt: #fafafc;
+  --demo-text: #0c1a2e;
+  --demo-text-muted: #4a5470;
+  --demo-text-soft: #7a8499;
+  --demo-border: #e6e8ef;
+  --demo-border-soft: #f0f2f7;
+  font-family: 'Libre Franklin', system-ui, sans-serif;
+  color: var(--demo-text);
+  max-width: 880px;
+  margin: 2cqh auto 0;
+}
+.demo-wrap.is-pair {
+  max-width: min(1280px, 96%);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: stretch;
+  gap: clamp(0.6rem, 1.6cqw, 1.6rem);
+}
+.demo-card {
+  background: var(--demo-surface);
+  border: 1px solid var(--demo-border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow:
+    0 1px 0 rgba(12, 39, 82, 0.04),
+    0 24px 60px -28px rgba(12, 39, 82, 0.25),
+    0 4px 12px -4px rgba(12, 39, 82, 0.08);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: clamp(420px, 62cqh, 560px);
+  overflow: hidden;
+}
+.demo-wrap.is-pair .demo-card {
+  height: clamp(360px, 56cqh, 500px);
+  padding: 1.1rem;
+}
+
+/* Card header: amber dot + uppercase label + step-progress dots on the right */
+.demo-head {
+  display: flex; align-items: center; gap: 0.625rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--demo-border-soft);
+  margin-bottom: 1.25rem;
+}
+.demo-wrap.is-pair .demo-head { margin-bottom: 0.9rem; padding-bottom: 0.75rem; }
+.demo-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 0 4px rgba(255, 200, 87, 0.18);
+}
+.demo-label {
+  font-size: 0.75rem; color: var(--demo-text-soft);
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.demo-progress { margin-left: auto; display: inline-flex; gap: 6px; }
+.demo-progress-dot {
+  width: 18px; height: 3px; border-radius: 2px;
+  background: var(--demo-border);
+  transition: background 240ms ease, width 240ms ease;
+}
+.demo-progress-dot.is-active { background: var(--demo-navy-mid); width: 26px; }
+
+/* The user's prompt line (typed query) */
+.demo-prompt {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  background: var(--demo-bg-alt);
+  border: 1px solid var(--demo-border-soft);
+  border-radius: 10px;
+  margin-bottom: 1.25rem;
+}
+.demo-wrap.is-pair .demo-prompt { margin-bottom: 0.9rem; padding: 0.7rem 0.85rem; }
+.demo-prompt-icon {
+  width: 24px; height: 24px; border-radius: 6px;
+  background: var(--demo-navy); color: #fff;
+  display: grid; place-items: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
+.demo-prompt-text { font-size: 0.9375rem; color: var(--demo-text); font-weight: 500; }
+.demo-caret {
+  display: inline-block; width: 1px; margin-left: 2px; color: var(--demo-navy);
+  animation: demo-caret 1s steps(2, end) infinite;
+}
+@keyframes demo-caret { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+/* The result region. Toggle .is-visible (via deck-runtime reveal) to fade it in */
+.demo-result {
+  opacity: 0; transform: translateY(6px);
+  transition: opacity 320ms ease, transform 320ms ease;
+  flex: 1; display: flex; flex-direction: column;
+}
+.demo-result.is-visible { opacity: 1; transform: translateY(0); }
+
+/* KPI tiles row (3 across) */
+.demo-kpis {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem; margin-bottom: 1.25rem;
+}
+.demo-wrap.is-pair .demo-kpis { gap: 0.5rem; margin-bottom: 0.85rem; }
+.demo-kpi {
+  background: var(--demo-bg-alt);
+  border: 1px solid var(--demo-border-soft);
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+}
+.demo-wrap.is-pair .demo-kpi { padding: 0.55rem 0.65rem; min-width: 0; }
+.demo-kpi-label {
+  font-size: 0.6875rem; color: var(--demo-text-soft);
+  font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 0.375rem;
+}
+.demo-wrap.is-pair .demo-kpi-label { font-size: 0.5625rem; margin-bottom: 0.2rem; }
+.demo-kpi-value {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: 1.5rem; line-height: 1.1;
+  color: var(--demo-navy); font-weight: 500;
+  font-feature-settings: 'tnum' 1;
+}
+.demo-wrap.is-pair .demo-kpi-value { font-size: 1.05rem; overflow-wrap: anywhere; }
+.demo-kpi-delta { font-size: 0.75rem; font-weight: 600; margin-top: 0.25rem; }
+.demo-wrap.is-pair .demo-kpi-delta { font-size: 0.625rem; }
+.demo-kpi-delta.is-up { color: #2f9e44; }
+.demo-kpi-delta.is-down { color: #c0150a; }
+
+/* Chart panel: title + a big number with an animated bar sparkline */
+.demo-chart {
+  background: var(--demo-bg-alt);
+  border: 1px solid var(--demo-border-soft);
+  border-radius: 10px;
+  padding: 1rem 0.75rem 0.5rem;
+  flex: 1; display: flex; flex-direction: column;
+}
+.demo-wrap.is-pair .demo-chart { padding: 0.75rem 0.65rem 0.4rem; }
+.demo-chart-title {
+  font-size: 0.8125rem; color: var(--demo-text-muted);
+  font-weight: 500; margin: 0 0 0.5rem 0.5rem;
+}
+.demo-bignum {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 0.5rem 0 0.75rem;
+  text-align: center; gap: 0.5rem; min-height: 180px;
+}
+.demo-wrap.is-pair .demo-bignum { min-height: 110px; gap: 0.35rem; }
+.demo-bignum-value {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(2.75rem, 6cqw, 3.5rem);
+  line-height: 1; color: var(--demo-navy); font-weight: 700;
+  font-feature-settings: 'tnum' 1;
+}
+.demo-wrap.is-pair .demo-bignum-value { font-size: clamp(1.75rem, 3cqw, 2.25rem); }
+.demo-bignum-label { font-size: 0.8125rem; color: var(--demo-text-muted); font-weight: 500; }
+.demo-wrap.is-pair .demo-bignum-label { font-size: 0.6875rem; }
+.demo-bignum-spark {
+  margin-top: 0.5rem;
+  display: flex; align-items: flex-end; gap: 4px;
+  height: 56px; width: 100%; max-width: 220px;
+}
+.demo-wrap.is-pair .demo-bignum-spark { height: 38px; max-width: 160px; }
+.demo-bignum-spark span {
+  flex: 1;
+  background: linear-gradient(180deg, var(--demo-navy-mid) 0%, var(--demo-navy-light) 100%);
+  border-radius: 3px; transform-origin: bottom;
+  animation: demo-spark 600ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.demo-bignum-spark span:nth-child(1) { animation-delay: 0ms; }
+.demo-bignum-spark span:nth-child(2) { animation-delay: 60ms; }
+.demo-bignum-spark span:nth-child(3) { animation-delay: 120ms; }
+.demo-bignum-spark span:nth-child(4) { animation-delay: 180ms; }
+.demo-bignum-spark span:nth-child(5) { animation-delay: 240ms; }
+.demo-bignum-spark span:nth-child(6) { animation-delay: 300ms; }
+.demo-bignum-spark span:nth-child(7) { animation-delay: 360ms; }
+.demo-bignum-spark span:nth-child(8) { animation-delay: 420ms; }
+@keyframes demo-spark {
+  from { transform: scaleY(0); opacity: 0; }
+  to   { transform: scaleY(1); opacity: 1; }
+}
+
+/* Plain-language summary line under the chart */
+.demo-summary {
+  margin-top: 0.875rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--demo-navy-wash);
+  border-left: 3px solid var(--demo-navy-mid);
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  color: var(--demo-text); line-height: 1.5;
+}
+.demo-wrap.is-pair .demo-summary { font-size: 0.6875rem; padding: 0.55rem 0.7rem; margin-top: 0.7rem; }
+
+/* "Empty" state card for the left side of a before/after pair: a dashed
+   placeholder that says the product hasn't been asked anything yet. */
+.demo-empty {
+  flex: 1;
+  background: var(--demo-bg-alt);
+  border: 1px dashed var(--demo-border);
+  border-radius: 10px;
+  display: grid; place-items: center;
+  padding: 1rem; min-height: 120px;
+}
+.demo-thinking {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(12, 39, 82, 0.06);
+  padding: 0.5rem 0.85rem; border-radius: 999px;
+  font-size: 0.8125rem; color: var(--demo-text-muted);
+}
+
+/* The amber arrow between the two cards in .is-pair (before → after) */
+.demo-arrow {
+  display: grid; place-items: center;
+  color: var(--amber);
+  width: clamp(36px, 4cqw, 64px);
+}
+.demo-arrow svg { width: 100%; height: auto; display: block; }
+
+@media print {
+  .demo-bignum-spark span { transform: scaleY(1); opacity: 1; animation: none; }
+  .demo-caret { display: none; }
+  .demo-result { opacity: 1; transform: none; }
+}
+
+/* ── .stepway ─── 2×2 grid of numbered steps. Big amber numeral on the
+   left of each cell, short amber rails joining 01↔02 and 03↔04. Each cell
+   carries a PT Mono tag, a Literata title, and an em-dash bullet list.
+   Fills the slide vertically where a single .step-rail column would leave
+   the bottom half empty. Promoted from selfbi-pitch slide 06. */
+.stepway {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  column-gap: clamp(2rem, 5cqw, 5rem);
+  row-gap: clamp(2.5cqh, 5cqh, 6cqh);
+  margin-top: clamp(2cqh, 3.5cqh, 4.5cqh);
+}
+.stepway-col {
+  position: relative;
+  display: grid;
+  grid-template-columns: clamp(80px, 8cqw, 120px) 1fr;
+  column-gap: clamp(1rem, 1.8cqw, 1.8rem);
+  align-items: start;
+  text-align: left;
+  color: var(--text);
+}
+/* Amber rail joining 01↔02 (row 1) and 03↔04 (row 2) */
+.stepway-col:nth-child(2)::before,
+.stepway-col:nth-child(4)::before {
+  content: '';
+  position: absolute;
+  left: calc(-1 * clamp(2rem, 5cqw, 5rem));
+  width: clamp(2rem, 5cqw, 5rem);
+  top: calc(clamp(60px, 6cqw, 90px) / 2 - 1px);
+  height: 2px;
+  background: var(--amber);
+  opacity: 0.55;
+}
+.stepway-num {
+  grid-column: 1;
+  grid-row: 1 / span 3;
+  width: clamp(60px, 6cqw, 90px);
+  height: clamp(60px, 6cqw, 90px);
+  background: rgba(255, 200, 87, 0.12);
+  color: var(--amber);
+  font-family: 'Literata', serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 3.6cqw, 3.2rem);
+  line-height: 1;
+  display: grid; place-items: center;
+  border-radius: 8px;
+}
+.stepway-tag,
+.stepway-title,
+.stepway-bullets { grid-column: 2; }
+.stepway-tag {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.14em;
+  color: var(--amber);
+  text-transform: uppercase;
+  margin-bottom: 0.4em;
+}
+.stepway-title {
+  font-family: 'Literata', serif;
+  font-weight: 700;
+  font-size: clamp(16px, 1.5cqw, 22px);
+  line-height: 1.2;
+  color: var(--navy);
+  margin: 0 0 0.7em 0;
+}
+.stepway-bullets {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 0.45em;
+}
+.stepway-bullets li {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(12px, 1cqw, 15px);
+  line-height: 1.45;
+  color: var(--muted);
+  padding-left: 0.9em;
+  position: relative;
+}
+.stepway-bullets li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.55em;
+  width: 0.5em; height: 2px;
+  background: var(--amber);
+  opacity: 0.85;
+}
+.slide.dark .stepway-num { background: var(--navy); }
+.slide.dark .stepway-title { color: var(--foam); }
+.slide.dark .stepway-bullets li { color: var(--navy-40); }
+
+/* ============= PRINT: keep component grids unbroken across pages ============= */
+@media print {
+  .stats-row, .pill-grid, .levels-row, .kpi-row,
+  .month-grid, .day-grid, .gov-grid, .scen-wrap,
+  .compare-wrap, .parc-wrap, .six-wrap, .vote-wrap,
+  .phase-wrap, .dyn-wrap, .next-list, .cal-grid,
+  .feat-row, .step-rail, .frames-wrap, .split-cta, .diff-grid,
+  .demo-wrap, .stepway {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+
+/* ============================================================
+   IMG-PLATE — imagen enmarcada + cuerpo de texto (origen: facilities)
+   Uso: <div class="img-plate"><figure class="img-plate-frame"><img>
+        <figcaption></figcaption></figure><div class="img-plate-body">
+        .img-plate-tag / .img-plate-title / .img-plate-text | .plate-list
+   ============================================================ */
+.img-plate {
+  flex: 1; display: grid; grid-template-columns: 1.25fr 1fr;
+  gap: clamp(24px, 3.5cqw, 64px); margin-top: 2.5cqh; align-items: center;
+}
+.img-plate-frame {
+  position: relative; height: 100%;
+  display: flex; flex-direction: column;
+  border: 1px solid var(--navy-16); background: var(--navy-08);
+  padding: clamp(10px, 1cqw, 18px); margin: 0;
+}
+.img-plate-frame img {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+  background: var(--foam);
+}
+/* Inside an .img-plate the screenshot gives way, the text does not. With
+   height: 100% the image still offered its natural height to the grid row,
+   so a tall capture at full column width made the row taller than the room
+   left on the slide, and the paragraph after the plate was pushed down onto
+   the chrome. A zero basis that grows takes the image out of the row's
+   sizing: the row is the room the slide has left or the text column,
+   whichever is taller, and the image fills it with object-fit: contain.
+   When there is room, the image ends the same size as before. A frame used
+   outside an .img-plate keeps the rule above. */
+.img-plate > .img-plate-frame > img {
+  height: 0; flex: 1 1 auto; min-height: 0;
+}
+.img-plate-frame figcaption {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+  margin-top: 0.8em; line-height: 1.4;
+}
+.img-plate-body { display: flex; flex-direction: column; justify-content: center; gap: clamp(0.5em, 1cqw, 0.9em); }
+.img-plate-tag {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.9cqw, 14px); letter-spacing: 0.25em;
+  text-transform: uppercase; color: var(--muted);
+}
+.slide.dark .img-plate-tag, .slide.black .img-plate-tag { color: var(--amber); }
+.img-plate-title { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); font-size: clamp(22px, 2.3cqw, 38px); color: var(--navy); line-height: 1.12; }
+.img-plate-title em { color: var(--amber-soft); font-style: italic; }
+.img-plate-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.3cqw, 21px); color: var(--text); line-height: 1.55; }
+.img-plate-text strong { color: var(--navy); font-weight: 700; }
+
+/* PLATE-LIST — lista de puntos dentro de un img-plate-body */
+.plate-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: clamp(0.6em, 1.4cqh, 1em); }
+.plate-list li { position: relative; padding-left: 1.2em; font-family: 'Libre Franklin', sans-serif; font-size: clamp(14px, 1.25cqw, 20px); color: var(--text); line-height: 1.5; }
+.plate-list li::before { content: '·'; position: absolute; left: 0.25em; color: var(--navy); font-weight: 700; }
+.plate-list li strong { color: var(--navy); font-weight: 700; }
+.plate-list li em { color: var(--muted); font-style: italic; }
+
+/* ============================================================
+   CHAT-STACK — dos capturas de conversación lado a lado (50/50),
+   la segunda normalmente con reveal
+   Uso: <div class="chat-stack"><figure class="chat-shot"><img></figure>
+        <figure class="chat-shot reveal" data-rev="..."><img></figure></div>
+   ============================================================ */
+.chat-stack { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2cqw, 40px); align-items: center; justify-items: center; margin-top: 1cqh; min-height: 0; }
+.chat-shot { margin: 0; max-width: 100%; border: 1px solid var(--navy-16); border-radius: 6px; overflow: hidden; background: #fff; box-shadow: 0 8px 24px rgba(0,17,125,0.10); }
+.chat-shot img { display: block; max-width: 100%; max-height: 56cqh; width: auto; height: auto; }
+
+/* ============================================================
+   QUOTES — citas con foto, una o dos por slide (origen: facilities)
+   Uso: <div class="quotes-wrap"><figure class="quote-row reveal">
+        <div class="quote-main"><span class="quote-mark">"</span>
+        <blockquote class="quote-text"></blockquote>
+        <figcaption class="quote-cite"></figcaption></div>
+        <div class="quote-photo"><img></div></figure>...</div>
+   ============================================================ */
+.quotes-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(24px, 5cqh, 72px); }
+.quote-row { display: grid; grid-template-columns: 1fr clamp(110px, 14cqw, 190px); gap: clamp(24px, 3.5cqw, 60px); align-items: center; margin: 0; }
+.quote-mark { display: block; font-family: 'Literata', serif; font-weight: 700; font-size: clamp(40px, 5cqw, 84px); line-height: 0.5; color: var(--navy-16); margin-bottom: 0.15em; }
+.quote-text { margin: 0; font-family: 'Libre Franklin', sans-serif; font-style: italic; font-size: clamp(16px, 1.9cqw, 30px); line-height: 1.4; color: var(--navy); }
+.quote-cite { margin-top: clamp(0.7em, 1.6cqh, 1.2em); padding-left: 0.9em; border-left: 2px solid var(--amber); font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.9cqw, 14px); line-height: 1.45; color: var(--muted); }
+.quote-photo { aspect-ratio: 1 / 1; border-radius: 4px; overflow: hidden; background: var(--navy-08); }
+.quote-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ============================================================
+   CLOSE — cierre de jornada (origen: Lumen)
+   Uso: <div class="close"> eyebrow + .close-claim + .close-sub +
+        .close-thanks + .close-partners + img.close-logo </div>
+   ============================================================ */
+.close { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+.close-claim {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  font-size: clamp(36px, 4.4cqw, 76px); line-height: 1.05;
+  color: var(--foam); letter-spacing: -0.02em; max-width: 80%;
+  /* El claim quedaba pegado al eyebrow y suelto respecto al subtítulo: cero
+     píxeles arriba contra cincuenta abajo. Un bloque centrado con dos huecos
+     tan distintos se lee descolgado, no centrado. */
+  margin-top: 0.68em;
+}
+.close-claim em { color: var(--amber); font-style: italic; font-weight: var(--display-weight, 400); }
+.close-sub {
+  font-family: 'Literata', serif; font-style: italic;
+  font-size: clamp(20px, 1.8cqw, 30px); color: var(--navy-40);
+  margin-top: 1.5em;
+}
+.close-thanks {
+  margin-top: 4cqh;
+  font-family: 'PT Mono', monospace; font-size: clamp(12px, 1.1cqw, 18px);
+  letter-spacing: 0.4em; text-transform: uppercase; color: var(--amber);
+}
+.close-partners {
+  margin-top: clamp(20px, 3cqh, 40px);
+  font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.9cqw, 13px);
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--navy-40);
+}
+.close-partners strong { color: var(--foam); font-weight: 700; margin: 0 0.4em; }
+.close-logo { height: clamp(28px, 2.8cqw, 48px); margin-top: 2em; opacity: 0.85; }
+
+/* ===== PERSON (speaker / profile slide) =====
+   Ported verbatim from examples/lumen-event so slide templates can use it.
+   Photo card with overlay name/role left, detail column right; .pillars are
+   the label + paragraph rows inside .person-detail. */
+.person {
+  flex: 1; display: grid; grid-template-columns: 0.85fr 1.15fr;
+  gap: clamp(30px, 4cqw, 70px); align-items: center; margin-top: 2cqh;
+}
+.person-photo-wrap {
+  position: relative;
+  aspect-ratio: 4/5;
+  border-radius: 4px; overflow: hidden;
+  background: var(--navy);
+}
+.person-photo-wrap::after {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0,17,125,0) 50%, rgba(0,17,125,0.85) 100%);
+  pointer-events: none;
+}
+.person-photo {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  filter: contrast(1.05) saturate(0.92);
+}
+.person-photo-overlay {
+  position: absolute; left: 8%; right: 8%; bottom: 6%; z-index: 2;
+  color: var(--foam);
+}
+.person-photo-overlay .pname {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  font-size: clamp(22px, 2.1cqw, 36px); line-height: 1; color: var(--foam);
+}
+.person-photo-overlay .prole {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.85cqw, 13px);
+  letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber);
+  margin-top: 0.7em;
+}
+.person-photo-tag {
+  position: absolute; top: 5%; left: 5%; z-index: 2;
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.3em; text-transform: uppercase;
+  color: var(--foam); opacity: 0.9;
+  border: 1px solid rgba(254,253,247,0.4); padding: 0.5em 0.9em; border-radius: 2px;
+  background: rgba(0,0,0,0.25); backdrop-filter: blur(4px);
+}
+
+.person-detail-block {
+  opacity: 0; transform: translateY(14px);
+  transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1);
+}
+.person-detail-block.on { opacity: 1; transform: translateY(0); }
+.person-detail .label { display: block; margin-bottom: 0.7em; }
+.person-detail .ppos {
+  font-family: 'PT Mono', monospace; font-size: clamp(11px, 1cqw, 16px);
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--navy-80); margin-bottom: 1.3em; line-height: 1.4;
+}
+.person-detail h2 { margin-bottom: 0.7em; }
+.person-detail .lede {
+  font-family: 'Literata', serif; font-style: italic; font-weight: 400;
+  font-size: clamp(17px, 1.5cqw, 24px); line-height: 1.45;
+  color: var(--navy-80); margin-bottom: 1.2em;
+}
+.pillars {
+  display: flex; flex-direction: column;
+  gap: clamp(14px, 1.4cqw, 20px);
+  margin-top: 1.6em;
+}
+.pillar {
+  display: grid;
+  grid-template-columns: 9em 1fr;
+  gap: clamp(18px, 1.8cqw, 28px);
+  align-items: start;
+}
+.pillar-tag {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--muted);
+  padding-top: 0.45em;
+  border-top: 2px solid var(--amber-soft);
+  width: 100%;
+}
+.slide.dark .pillar-tag, .slide.black .pillar-tag { color: var(--amber); }
+.pillar p {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(14px, 1.2cqw, 19px); line-height: 1.5;
+  color: var(--text);
+  margin: 0;
+}
+.pillar p strong { color: var(--navy); font-weight: 600; }
+
+/* person-stats: compact stat strip under the pillars (trainer profiles:
+   years, hours delivered, cohorts). Short digits only, like .stat-num. */
+.person-stats { display: flex; gap: clamp(16px, 2cqw, 32px); margin-top: 1.6em; }
+.person-stat { border-top: 2px solid var(--navy-16); padding-top: 0.55em; min-width: 6.5em; }
+.person-stat .ps-num {
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(20px, 2cqw, 34px); color: var(--navy); line-height: 1;
+}
+.person-stat .ps-cap {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.75cqw, 12px);
+  letter-spacing: 0.04em; color: var(--muted); margin-top: 0.5em;
+}
+/* person-certs: quiet mono chip row for certifications / key skills */
+.person-certs { display: flex; flex-wrap: wrap; gap: 0.6em; margin-top: 1.4em; }
+.person-certs span {
+  font-family: 'PT Mono', monospace; font-size: clamp(9px, 0.78cqw, 12px);
+  letter-spacing: 0.04em; color: var(--navy-80);
+  background: var(--navy-08); border: 1px solid var(--navy-16);
+  padding: 0.35em 0.8em; border-radius: 2px;
+}
+
+
+/* ==========================================================================
+   PRINT — component reveals render complete
+   --------------------------------------------------------------------------
+   deck-shell.css already forces the generic reveal helpers visible in print;
+   these are the component-specific animated states that live in this file.
+   ========================================================================== */
+@media print {
+  .program-row .pcell { opacity: 1 !important; transform: none !important; }
+  .curve-axes, .curve-marker, .curve-dot, .curve-overlay-label { opacity: 1 !important; }
+  .curve-line, .curve-overlay { stroke-dashoffset: 0 !important; opacity: 1 !important; }
+}
+
+/* ==========================================================================
+   JOURNEY / PROGRAMME MAP (.jv-*) — click-driven dark one-pager infographic
+   --------------------------------------------------------------------------
+   A black/dark slide whose body is one inline SVG timeline: phases land one
+   reveal step at a time (line segments draw, nodes pop, cards fade up), an
+   optional decision diamond splits the path into an amber recommended lane
+   and a quiet alternative lane that converge again. Header carries an
+   entrance-animated title block (.jv-in) and an optional week counter that a
+   small per-slide driver script advances (mirror the curve-wrap driver
+   pattern; see §6 of the style guide). Geometry (paths, x/y of nodes and
+   text) lives per deck inside the SVG; each reveal step is one
+   <g class="reveal" data-rev="…"> group. Origin deck: bimbo programa de
+   agentes. Designed for dark/black slides.
+   ========================================================================== */
+.jv-head { display: flex; align-items: flex-start; justify-content: space-between; }
+.jv-title { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); color: var(--foam); font-size: clamp(26px, 2.6cqw, 44px); margin: 0.35em 0 0; }
+.jv-sub { font-family: 'Literata', serif; font-style: italic; color: var(--navy-40); font-size: clamp(14px, 1.25cqw, 20px); margin-top: 0.5em; }
+.jv-goal { font-family: 'PT Mono', monospace; color: var(--navy-64); font-size: clamp(11px, 0.95cqw, 14.5px); letter-spacing: 0.05em; margin-top: 0.9em; }
+.jv-goal strong { color: var(--amber); font-weight: 400; }
+.jv-weeks { font-family: 'PT Mono', monospace; color: var(--muted); font-size: clamp(12px, 1cqw, 16px); letter-spacing: 0.14em; white-space: nowrap; margin-top: 0.6em; }
+.jv-weeks strong { color: var(--amber); font-weight: 400; }
+/* staggered entrance when the slide activates */
+.jv-in { opacity: 0; transform: translateY(12px); }
+.slide.active .jv-in { animation: jv-in .9s cubic-bezier(.2,.7,.2,1) forwards; }
+.slide.active .jv-in.d1 { animation-delay: .25s; }
+.slide.active .jv-in.d2 { animation-delay: .5s; }
+.slide.active .jv-in.d3 { animation-delay: .75s; }
+@keyframes jv-in { to { opacity: 1; transform: translateY(0); } }
+.jv-wrap { flex: 1; display: flex; align-items: center; min-height: 0; margin-top: 0.5cqh; }
+.jv-svg { width: 100%; height: 100%; }
+/* reveal groups: the canonical .reveal handles reset; children choreograph */
+.jv-svg g.reveal { transform: none; transition: opacity .01s linear; }
+.jv-seg { fill: none; stroke: var(--foam); stroke-width: 3.5; stroke-linecap: round;
+          stroke-dasharray: 100; stroke-dashoffset: 100;
+          transition: stroke-dashoffset 1.15s cubic-bezier(.2,.7,.2,1) .05s; }
+.jv-seg.is-amber { stroke: var(--amber); stroke-width: 4.5; }
+.jv-seg.is-alt { stroke: var(--navy-64); }
+.jv-seg.is-dotted { stroke: var(--navy-64); stroke-width: 3; stroke-dasharray: 0.5 2.2; stroke-dashoffset: 0; opacity: 0; transition: opacity .9s ease .1s; }
+.jv-glow { fill: none; stroke: var(--amber); stroke-width: 11; opacity: 0; filter: blur(7px); transition: opacity 1.2s ease .3s; }
+.jv-arrow { fill: var(--navy-64); opacity: 0; transition: opacity .9s ease .5s; }
+g.reveal.on .jv-seg { stroke-dashoffset: 0; }
+g.reveal.on .jv-seg.is-dotted, g.reveal.on .jv-arrow { opacity: 1; }
+g.reveal.on .jv-glow { opacity: 0.3; }
+.jv-node { fill: var(--foam); stroke: var(--black); stroke-width: 3; }
+.jv-node.is-amber { fill: var(--amber); }
+.jv-nnum { font-family: 'PT Mono', monospace; font-size: 13px; font-weight: 700; fill: var(--navy); }
+.jv-diamond { fill: var(--amber); stroke: var(--foam); stroke-width: 2; transform-box: fill-box; transform-origin: center; }
+g.reveal.on .jv-diamond { animation: jv-pulse 1.4s cubic-bezier(.2,.7,.2,1) .8s 2; }
+@keyframes jv-pulse { 50% { transform: scale(1.22); } }
+.jv-pop { opacity: 0; transform: translateY(10px); transform-box: fill-box;
+          transition: opacity .55s ease .55s, transform .55s cubic-bezier(.2,.7,.2,1) .55s; }
+g.reveal.on .jv-pop { opacity: 1; transform: translateY(0); }
+.jv-name { font-family: 'Literata', serif; font-weight: 600; font-size: 22px; fill: var(--foam); }
+.jv-dur { font-family: 'PT Mono', monospace; font-size: 13.5px; letter-spacing: 0.06em; fill: var(--amber); }
+.jv-price { font-family: 'PT Mono', monospace; font-size: 13.5px; letter-spacing: 0.06em; fill: var(--foam); }
+.jv-desc { font-family: 'Libre Franklin', sans-serif; font-size: 14.5px; fill: var(--navy-40); }
+.jv-q { font-family: 'PT Mono', monospace; font-size: 16.5px; letter-spacing: 0.08em; fill: var(--amber); }
+.jv-qsub { font-family: 'Libre Franklin', sans-serif; font-size: 13.5px; fill: var(--navy-64); }
+.jv-yn { font-family: 'PT Mono', monospace; font-size: 16px; fill: var(--amber); }
+.jv-chip { font-family: 'PT Mono', monospace; font-size: 13px; letter-spacing: 0.04em; fill: var(--navy-40); }
+.jv-tickmark { fill: none; stroke: var(--amber); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.jv-tickword { font-family: 'PT Mono', monospace; font-size: 13px; letter-spacing: 0.05em; fill: var(--navy-16); }
+.jv-tickbox { fill: rgba(255,200,87,0.07); stroke: rgba(255,200,87,0.4); stroke-width: 1; }
+.jv-close { font-family: 'Literata', serif; font-style: italic; font-size: 21px; fill: var(--foam); }
+.jv-dot { fill: var(--amber); opacity: 0; transition: opacity .3s ease; }
+.jv-dot.live { opacity: 1; }
+.jv-dot.is-alt { fill: var(--foam); }
+@media print {
+  .jv-in { opacity: 1 !important; transform: none !important; animation: none !important; }
+  .jv-seg { stroke-dashoffset: 0 !important; }
+  .jv-seg.is-dotted, .jv-arrow, .jv-pop { opacity: 1 !important; }
+  .jv-glow { opacity: 0.3 !important; }
+  .jv-pop { transform: none !important; }
+  .jv-dot { display: none; }
+}
+
+/* ==========================================================================
+   METAPHOR BOARD (.mk-*) — three-lane mapping table with narrative lanes
+   --------------------------------------------------------------------------
+   Dark-slide board that maps a familiar metaphor onto a technical reality,
+   one row per concept: lane 1 the metaphor's "before" (italic Literata with
+   an amber arrow), lane 2 its "after" as an amber chip, lane 3 the real
+   setting or control in plain words. Header row (.mk-head) carries the lane
+   titles in PT Mono. Each .mk-row takes .reveal + data-rev so rows land one
+   per step. Origin deck: bimbo programa de agentes (test kitchen vs
+   industrial bakery mapped onto Copilot Studio production controls).
+   ========================================================================== */
+.mk-board { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(9px, 1.2cqh, 16px); margin-top: 1cqh; min-height: 0; }
+.mk-head, .mk-row { display: grid; grid-template-columns: 1fr 1.05fr 1.9fr; gap: clamp(12px, 1.6cqw, 30px); align-items: center; }
+.mk-head { padding-bottom: clamp(4px, 0.6cqh, 8px); border-bottom: 1px solid rgba(254,253,247,0.22); }
+.mk-lane { font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.08em; color: var(--amber); }
+.mk-row { border-top: 1px solid rgba(254,253,247,0.08); padding-top: clamp(6px, 0.9cqh, 12px); }
+.mk-row:first-of-type { border-top: none; }
+.mk-k { font-family: 'Literata', serif; font-style: italic; font-size: clamp(13px, 1.15cqw, 18px); color: var(--navy-16); }
+.mk-k::after { content: " →"; color: var(--amber); font-style: normal; }
+.mk-b { font-family: 'Literata', serif; font-weight: 600; font-size: clamp(13px, 1.1cqw, 17px); color: var(--amber);
+        padding: clamp(5px, 0.55cqw, 9px) clamp(12px, 1.2cqw, 18px);
+        background: rgba(255,200,87,0.07); border: 1px solid rgba(255,200,87,0.4); border-radius: 999px;
+        justify-self: start; }
+.mk-r { font-family: 'Libre Franklin', sans-serif; font-size: clamp(11.5px, 0.98cqw, 15px); line-height: 1.35; color: var(--navy-40); }
+.mk-r strong { color: var(--foam); font-weight: 600; }
+
+/* ============================================================
+   READING-SCALE CONTENT — .read-list · .idea-grid · .step-bullets.lg
+   ------------------------------------------------------------
+   Componentes a ESCALA DE LECTURA para cuando la lista o los puntos
+   titulados SON el contenido principal de la diapositiva.
+
+   Regla de uso: pill-grid, kpi-list, step-bullets y terms-list son
+   COMPACTOS (chips, tarjetas, apoyos); en pantalla grande su texto
+   se queda en 12-17px, correcto como apoyo e ilegible como contenido
+   principal. Si la diapositiva es "título + esta lista", usa .read-list.
+   Si es "título + 2-4 puntos titulados", usa .idea-grid. No subas los
+   tamaños de los componentes compactos: cambia de componente.
+   ============================================================ */
+
+/* .read-list — la lista principal de la diapositiva, a escala de lectura.
+   Uso: <ul class="read-list"><li>…</li></ul> · máx. 5-6 items */
+.read-list {
+  list-style: none; padding: 0; margin: clamp(14px, 2.5cqh, 28px) 0 0;
+  display: flex; flex-direction: column;
+  gap: clamp(0.7em, 1.6cqh, 1.1em);
+  max-width: 82%;
+}
+.read-list li {
+  position: relative; padding-left: 1.3em;
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(16px, 1.5cqw, 24px); line-height: 1.5;
+  color: var(--text);
+}
+.read-list li::before { content: '—'; position: absolute; left: 0; color: var(--amber); }
+.read-list li strong { color: var(--navy); font-weight: 700; }
+.slide.dark .read-list li, .slide.black .read-list li { color: var(--navy-16); }
+.slide.dark .read-list li strong, .slide.black .read-list li strong { color: var(--foam); }
+
+/* .idea-grid — 2-4 puntos titulados como contenido principal.
+   Uso: <div class="idea-grid cols-3">
+          <div class="idea-card"><div class="idea-name">…</div>
+          <p class="idea-desc">…</p></div>…</div> */
+.idea-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: clamp(16px, 1.8cqw, 30px);
+  margin-top: clamp(18px, 3cqh, 36px);
+}
+.idea-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.idea-grid.cols-4 { grid-template-columns: repeat(4, 1fr); }
+.idea-card {
+  padding: clamp(18px, 2cqw, 32px) clamp(20px, 2.2cqw, 36px);
+  background: var(--navy-08); border-left: 3px solid var(--amber);
+  border-radius: 3px;
+  display: flex; flex-direction: column; gap: clamp(0.4em, 0.8cqh, 0.7em);
+}
+.idea-name {
+  font-family: 'Literata', serif; font-weight: 600;
+  font-size: clamp(18px, 1.7cqw, 28px); line-height: 1.2;
+  color: var(--navy); text-wrap: balance;
+}
+.idea-desc {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(14px, 1.25cqw, 20px); line-height: 1.5;
+  color: var(--text); margin: 0;
+}
+.slide.dark .idea-card, .slide.black .idea-card { background: rgba(254,253,247,0.06); }
+.slide.dark .idea-name, .slide.black .idea-name { color: var(--foam); }
+.slide.dark .idea-desc, .slide.black .idea-desc { color: var(--navy-16); }
+
+/* .step-bullets.lg — variante a escala de lectura cuando el step-rail es el
+   contenido principal de la diapositiva (no una tarjeta de apoyo). */
+.step-bullets.lg li { font-size: clamp(14px, 1.25cqw, 20px); line-height: 1.5; }
+.step-bullets.lg { gap: clamp(0.4em, 0.8cqh, 0.65em); }
+
+/* ============================================================
+   CLINIC — antes / por qué / después para enseñar prompting
+   ------------------------------------------------------------
+   Filas de "clínica de prompts": el mal ejemplo (mono, apagado),
+   el porqué falla (centro, breve) y la versión corregida (mono,
+   destacada ámbar). Para diapositivas de formación que corrigen
+   patrones: prompts, correos, instrucciones.
+
+   Uso: <div class="clinic">
+          <div class="clinic-row reveal" data-rev="e1">
+            <div class="clinic-head">nombre del error</div>
+            <div class="clinic-bad">"mal ejemplo"</div>
+            <div class="clinic-why">por qué falla</div>
+            <div class="clinic-good">"versión corregida"</div>
+          </div>…</div>
+   ============================================================ */
+.clinic { display: flex; flex-direction: column; gap: clamp(14px, 2cqh, 24px); margin-top: clamp(14px, 2.5cqh, 26px); }
+.clinic-row {
+  display: grid;
+  grid-template-columns: 1.15fr clamp(120px, 14cqw, 220px) 1.15fr;
+  grid-template-areas: "head head head" "bad why good";
+  gap: clamp(8px, 1cqw, 16px) clamp(14px, 1.6cqw, 26px);
+  align-items: stretch;
+}
+.clinic-head {
+  grid-area: head;
+  font-family: 'Literata', serif; font-weight: 600;
+  font-size: clamp(15px, 1.35cqw, 21px); color: var(--navy);
+}
+.clinic-bad, .clinic-good {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(12px, 1.05cqw, 16px); line-height: 1.5;
+  padding: clamp(10px, 1.2cqw, 18px) clamp(12px, 1.4cqw, 22px);
+  border-radius: 3px; white-space: pre-wrap;
+}
+.clinic-bad { grid-area: bad; background: var(--navy-08); border-left: 3px solid var(--navy-40); color: var(--muted); }
+.clinic-good { grid-area: good; background: rgba(255, 200, 87, 0.12); border-left: 3px solid var(--amber); color: var(--text); }
+.clinic-why {
+  grid-area: why;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.4em; text-align: center;
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(12px, 1.05cqw, 16px); line-height: 1.4; color: var(--muted);
+}
+.clinic-why::before {
+  content: ''; display: block; width: clamp(28px, 3cqw, 48px); height: 2px;
+  background: var(--amber);
+}
+.slide.dark .clinic-head { color: var(--foam); }
+.slide.dark .clinic-bad { background: rgba(254,253,247,0.05); }
+.slide.dark .clinic-good { color: var(--navy-16); }
+
+/* .step-rail.lg — variante a escala de lectura del step-rail, para cuando el
+   proceso ES el contenido principal de la diapositiva (proyectable desde el
+   fondo de la sala). Sube etiqueta, título y viñetas, y reparte las filas en
+   la altura disponible. Misma regla que .read-list/.idea-grid: no agrandes
+   el step-rail compacto por deck; usa el modificador. */
+.step-rail.lg { align-content: space-evenly; row-gap: clamp(24px, 4cqh, 64px); }
+.step-rail.lg .step-tag { font-size: clamp(12px, 1.1cqw, 16px); }
+.step-rail.lg .step-title { font-size: clamp(19px, 1.9cqw, 30px); }
+.step-rail.lg .step-bullets { gap: clamp(0.4em, 0.8cqh, 0.65em); }
+.step-rail.lg .step-bullets li { font-size: clamp(14px, 1.25cqw, 20px); line-height: 1.5; }
+.step-rail.lg .step-marker { width: clamp(24px, 2.1cqw, 34px); height: clamp(24px, 2.1cqw, 34px); }
+/* ==========================================================================
+   CONTENTS · numbered index of a long deck's sections
+   --------------------------------------------------------------------------
+   Sits after the cover. Pairs with the `contents` template. Rows are quiet
+   rules, not cards: the index orients, it does not compete with the content.
+   ========================================================================== */
+.contents-list { display: flex; flex-direction: column; gap: clamp(9px, 1.4cqh, 18px); max-width: 62%; margin-top: 1cqh; }
+.contents-row { display: flex; align-items: baseline; gap: clamp(14px, 2cqw, 28px);
+                border-bottom: 1px solid rgba(0,17,125,0.10); padding-bottom: clamp(6px, 1cqh, 12px); }
+.contents-num { font-family: 'PT Mono', monospace; font-size: clamp(12px, 1cqw, 16px); color: var(--muted); }
+.slide.dark .contents-num, .slide.black .contents-num { color: var(--amber); }
+.contents-label { font-family: 'Literata', serif; font-weight: 600; color: var(--navy);
+                  font-size: clamp(17px, 1.7cqw, 27px); }
+.slide.dark .contents-row { border-color: rgba(254,253,247,0.14); }
+.slide.dark .contents-label { color: var(--foam); }
+
+/* ==========================================================================
+   DIVIDER · dark numbered break between blocks
+   --------------------------------------------------------------------------
+   Pairs with the `divider` template. Carry data-hud="skip" on the section so
+   the runtime leaves it out of the HUD index: dividers are punctuation, not
+   destinations.
+   ========================================================================== */
+.divider-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.divider-num { font-family: 'PT Mono', monospace; color: var(--amber); letter-spacing: 0.2em;
+               font-size: clamp(13px, 1.3cqw, 21px); margin-bottom: clamp(10px, 1.8cqh, 22px); }
+.divider-title { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); color: var(--foam); line-height: 1.05;
+                 font-size: clamp(38px, 5.4cqw, 86px); max-width: 80%; }
+
+/* ==========================================================================
+   MODULE DETAIL · one programme module in full
+   --------------------------------------------------------------------------
+   Pairs with the `module-detail` template. Two columns of boxed sections so
+   a text-heavy module reads as a slide, not an article. Every module owns a
+   colour: pass it inline on .module-ghost (soft tint), .module-rule (solid),
+   the .is-tinted card and .module-hero's wash, so the deck matches whatever
+   the PPTX renders for that module.
+   ========================================================================== */
+.module-ghost { position: absolute; top: clamp(18px, 3.5cqh, 44px); right: clamp(24px, 5cqh, 62px);
+                font-family: 'Literata', serif; font-weight: 900; line-height: 1; opacity: 0.5;
+                font-size: clamp(70px, 16cqh, 190px); pointer-events: none; user-select: none; }
+/* The rule breathes on both sides: tight under the title it read as an
+   underline glued to the last line rather than a mark of its own. */
+.module-rule { width: clamp(44px, 9cqh, 96px); height: clamp(3px, 0.5cqh, 6px); border-radius: 3px;
+               margin: clamp(10px, 1.8cqh, 22px) 0 clamp(10px, 1.8cqh, 22px); }
+/* The grid owns the rest of the slide. `align-items: start` left three short
+   cards clustered in the top half of a 16:9 canvas with the bottom half empty,
+   which reads as an unfinished slide. Cards now take the slack, and the gaps
+   grow with it so the blocks breathe instead of touching. */
+.module-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: clamp(18px, 3.4cqh, 42px);
+               align-items: stretch; flex: 1; min-height: 0;
+               margin-top: clamp(10px, 1.8cqh, 20px); }
+.module-col { display: flex; flex-direction: column; gap: clamp(18px, 3.4cqh, 42px); min-height: 0; }
+/* Grow into the free space, but only so far: a two-line card blown up to half
+   a slide reads as a mistake rather than as air. A column holding one card can
+   take more, since there is nothing below it to balance against.
+
+   min-height: 0 is what makes the cap hold. A flex item never shrinks below
+   its own content without it, so a card with more text than the design has
+   room for grew past its border and printed over the card beneath it. With
+   the column owning the height and overflow clipped, that cannot happen; the
+   runtime then steps the body type down inside a card that is still too full
+   (--fit), so long copy shrinks instead of being cut. */
+.module-card { flex: 1 1 auto; max-height: 58%; min-height: 0; overflow: hidden;
+               background: rgba(0,17,125,0.04); border: 1px solid rgba(0,17,125,0.10);
+               border-radius: clamp(7px, 1.2cqh, 14px); padding: clamp(18px, 3cqh, 34px) clamp(19px, 3.2cqh, 36px); }
+.module-col > .module-card:only-child { max-height: 78%; }
+.module-card p { font-family: 'Libre Franklin', sans-serif; font-size: clamp(12px, 1.85cqh, 19px);
+                 line-height: 1.55; color: var(--text); }
+.module-card .bul { margin: 0; padding-left: clamp(12px, 2.2cqh, 24px); max-width: 100%; }
+.module-card .bul li { margin-bottom: clamp(6px, 1cqh, 12px); }
+/* The runtime sets --fit on a card whose content does not fit. zoom, not
+   font-size, so the text re-wraps as it shrinks and the padding comes with
+   it: the card keeps its proportions, just smaller. */
+.module-card > p, .module-card > ul { zoom: var(--fit, 1); }
+.module-hero { height: clamp(90px, 16cqh, 190px); border-radius: clamp(7px, 1.2cqh, 14px);
+               background-size: cover; background-position: center; position: relative; overflow: hidden; }
+.module-hero span { position: absolute; inset: 0; opacity: 0.32; mix-blend-mode: multiply; }
+
+/* ==========================================================================
+   PROFILE (no photo) · credentials-first trainer slide
+   --------------------------------------------------------------------------
+   Pairs with the `trainer-detail` template, and complements `.person` (the
+   photo version) for profiles with no usable portrait. Experience reads as a
+   timeline; stats, expertise and certifications sit in a panel on the right.
+   ========================================================================== */
+.role-line { font-family: 'PT Mono', monospace; color: var(--muted); text-transform: uppercase;
+             letter-spacing: 0.1em; font-size: clamp(11px, 1.9cqh, 20px); margin: 0 0 clamp(12px, 2.2cqh, 26px); }
+.slide.dark .role-line, .slide.black .role-line { color: var(--amber); }
+/* Top-aligned, not centred. Centring looked right when every profile had a
+   bio, and left a hole between the role line and the timeline when one did
+   not, which is most library trainers. */
+/* The top margin matches what the shell gives a .body-text after a title.
+   The old 1cqh was measured for a block that starts with the timeline; the
+   moment the left column opens with a line of prose, that line reads as if it
+   were glued to the heading. */
+.profile-layout { display: grid; grid-template-columns: 1.7fr 1fr; gap: clamp(20px, 4cqh, 46px);
+                  align-items: start; flex: 1; min-height: 0;
+                  margin-top: clamp(8px, 1.6cqh, 20px); }
+.profile-timeline { border-left: 2px solid rgba(0,17,125,0.15); padding-left: clamp(14px, 2.6cqh, 30px);
+                    display: flex; flex-direction: column; gap: clamp(13px, 2.4cqh, 28px);
+                    margin: clamp(10px, 1.8cqh, 22px) 0 clamp(15px, 2.8cqh, 32px); }
+.timeline-item { position: relative; }
+.timeline-item::before { content: ""; position: absolute; left: calc(-1 * clamp(14px, 2.6cqh, 30px) - 7px);
+                         top: clamp(4px, 0.7cqh, 9px); width: clamp(6px, 1.1cqh, 12px); height: clamp(6px, 1.1cqh, 12px);
+                         border-radius: 50%; background: var(--amber-soft); }
+.timeline-head, .profile-edu { display: flex; align-items: baseline; gap: clamp(10px, 2cqh, 22px);
+                               justify-content: space-between; font-size: clamp(12px, 2cqh, 21px); color: var(--text); }
+.timeline-head { margin-bottom: clamp(3px, 0.5cqh, 6px); }
+/* A role can carry more than one line of what was actually done there. The
+   generator used to send only the first, because this only ever styled one. */
+.timeline-item .body-sm + .body-sm { margin-top: clamp(3px, 0.6cqh, 8px); }
+/* The period has a column of its own in .timeline-head. The description under
+   it had none, so a long line ran the full width and finished underneath the
+   date, which reads as one sentence about the wrong thing. This keeps that
+   gutter clear at every size. */
+.timeline-item .body-sm { padding-right: clamp(56px, 9cqh, 124px); }
+.timeline-head strong, .profile-edu strong { color: var(--navy); }
+.timeline-who { min-width: 0; }
+/* Opt-in: the trajectory uses the height the slide gives it instead of
+   bunching at the top and leaving a third of the frame empty. Only worth it
+   from four or five items up; below that the gaps read as separations. The
+   layout has to stretch for the column to have a height to fill. */
+.profile-layout:has(> * > .profile-timeline.is-spread) { align-items: stretch; }
+.profile-layout > *:has(> .profile-timeline.is-spread) { display: flex; flex-direction: column; min-height: 0; }
+.profile-timeline.is-spread { flex: 1; justify-content: space-between; margin-bottom: 0; }
+.timeline-period { font-family: 'PT Mono', monospace; white-space: nowrap; flex-shrink: 0;
+                   font-size: clamp(10px, 1.5cqh, 16px); color: var(--muted); }
+.profile-edu { padding: clamp(5px, 0.9cqh, 11px) 0; border-bottom: 1px solid rgba(0,17,125,0.08); }
+.profile-panel { background: rgba(0,17,125,0.045); border: 1px solid rgba(0,17,125,0.10);
+                 border-radius: clamp(7px, 1.2cqh, 14px); padding: clamp(16px, 3cqh, 34px); align-self: start; }
+.profile-stats { display: flex; flex-direction: column; gap: clamp(13px, 2.4cqh, 28px);
+                 margin-bottom: clamp(6px, 1cqh, 12px); }
+.profile-stat-num { display: block; font-family: 'Literata', serif; font-weight: 700; color: var(--navy);
+                    font-size: clamp(26px, 5cqh, 58px); line-height: 1.05; }
+.profile-stat-cap { font-size: clamp(10px, 1.6cqh, 17px); color: var(--muted); }
+.chip-row { display: flex; flex-wrap: wrap; gap: clamp(4px, 0.8cqh, 9px); }
+.chip-row span { font-family: 'PT Mono', monospace; font-size: clamp(9px, 1.4cqh, 15px);
+                 padding: clamp(3px, 0.5cqh, 6px) clamp(6px, 1.2cqh, 13px); background: rgba(0,17,125,0.06);
+                 border: 1px solid rgba(0,17,125,0.15); border-radius: 4px; color: var(--navy); }
+/* ---- PROFILE-LAYOUT on a dark slide ---------------------------------------
+   Every colour above is written for a light ground: the role names, the
+   stat numbers and the chips all resolve to var(--navy), and the panel, the
+   rule under each line of education and the chip fills are navy tints. Put
+   the component on a .slide.dark and it is navy on navy, which is to say
+   invisible. The component was only ever exercised on the light trainer
+   template, so nothing caught it.
+
+   The dark ground is navy, so these flip to foam and to foam tints at the
+   same weights, and the eyebrow takes amber, which is what every other dark
+   slide in the kit does with a label. ------------------------------------ */
+.slide.dark .timeline-head strong,
+.slide.dark .profile-edu strong { color: var(--foam); }
+.slide.dark .timeline-head,
+.slide.dark .profile-edu { color: var(--navy-16); }
+.slide.dark .timeline-item .body-sm { color: var(--navy-16); }
+.slide.dark .profile-edu { border-bottom-color: rgba(254,253,247,0.14); }
+.slide.dark .profile-panel {
+  background: rgba(254,253,247,0.05);
+  border-color: rgba(254,253,247,0.14);
+}
+.slide.dark .profile-stat-num { color: var(--foam); }
+.slide.dark .profile-stat-cap { color: var(--navy-40); }
+.slide.dark .chip-row span {
+  background: rgba(254,253,247,0.07);
+  border-color: rgba(254,253,247,0.18);
+  color: var(--navy-16);
+}
+.slide.dark .mini-label { color: var(--amber); }
+
+/* ==========================================================================
+   SHARED SMALL PARTS
+   --------------------------------------------------------------------------
+   .mini-label is the small mono caption above a block inside a card.
+   .body-sm is body copy one notch down. .bul.is-sm tightens a bullet list.
+   ========================================================================== */
+.mini-label { font-family: 'PT Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase;
+              color: var(--muted); font-size: clamp(9px, 1.5cqh, 16px);
+              margin: clamp(9px, 1.6cqh, 19px) 0 clamp(5px, 0.8cqh, 10px); }
+.module-card .mini-label, .profile-panel .mini-label:first-child { margin-top: 0; }
+.body-sm { font-family: 'Libre Franklin', sans-serif; font-size: clamp(11px, 1.7cqh, 18px);
+           line-height: 1.45; color: var(--text); }
+.bul.is-sm li { font-size: clamp(11px, 1.7cqh, 18px); margin-bottom: clamp(4px, 0.7cqh, 9px); }
+
+/* ==========================================================================
+   HUD ACTION · the index overlay's PDF button and print tip
+   --------------------------------------------------------------------------
+   The shell styles the HUD panel; these three were copied into every deck by
+   hand, so generated decks shipped them unstyled. They live here now.
+   ========================================================================== */
+.hud-action { display: inline-flex; align-items: center; gap: 12px; margin-top: 24px;
+              padding: 12px 18px; background: rgba(255,200,87,0.10);
+              border: 1px solid rgba(255,200,87,0.4); border-radius: 3px; color: var(--amber);
+              font-family: 'PT Mono', monospace; font-size: 11px; letter-spacing: 0.22em;
+              text-transform: uppercase; cursor: pointer; transition: background .15s; }
+.hud-action:hover { background: rgba(255,200,87,0.18); }
+.hud-action .ha-key { display: inline-block; padding: 2px 6px; background: rgba(255,255,255,0.08);
+                      border-radius: 2px; font-size: 10px; color: var(--foam); }
+.hud-tip { font-family: 'Libre Franklin', sans-serif; font-size: 11px; color: var(--navy-40);
+           margin-top: 8px; max-width: 480px; line-height: 1.5; font-style: italic; }
+.hud-tip strong { color: var(--amber); font-style: normal; }
+
+
+/* ============================================================================
+   GRADUATED COMPONENTS
+   Patterns proven in client decks (BSM course, Lumen event, facilities) and
+   promoted here so the next deck gets them without re-inventing the CSS.
+
+   Note on tints: these use color-mix() over --amber rather than a hard-coded
+   rgba of it, so a client layer that re-tokens the accent gets its own tints
+   for free. Re-theming BSM is what showed why that matters.
+   ============================================================================ */
+
+/* ---- SRC-NOTE — the source line under figures and quotes -------------------
+   Any slide that says a number owes the room where the number came from. */
+.src-note {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-top: 2.2cqh;
+}
+.slide.dark .src-note, .slide.black .src-note { color: var(--navy-40); }
+
+/* ---- DEF-CALLOUT — a term and its definition, set apart ------------------- */
+.def-callout {
+  background: var(--navy-08);
+  border-left: 4px solid var(--navy);
+  border-radius: 4px;
+  padding: clamp(18px, 2.4cqh, 32px) clamp(20px, 2.4cqw, 38px);
+  margin-top: 1.8cqh;
+  max-width: 92%;
+}
+.def-callout .def-word {
+  display: block;
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.6em;
+}
+.def-callout p {
+  margin: 0;
+  font-family: 'Literata', serif;
+  font-size: clamp(17px, 1.7cqw, 27px);
+  color: var(--navy);
+  line-height: 1.4;
+}
+.slide.dark .def-callout {
+  background: rgba(254, 253, 247, 0.06);
+  border-left-color: var(--amber);
+}
+.slide.dark .def-callout p { color: var(--foam); }
+.slide.dark .def-callout .def-word { color: var(--navy-40); }
+
+/* ---- VIDEO-STAGE — a clip as the centrepiece of a slide -------------------
+   .media-split puts text beside it when the clip is the evidence, not the
+   whole point. */
+.video-stage { display: flex; flex-direction: column; align-items: center; margin-top: 2.5cqh; }
+.video-frame {
+  width: 100%; max-width: 62%;
+  border: 1px solid var(--navy-16);
+  background: var(--black);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 18px 50px rgba(0, 17, 125, 0.14);
+}
+.video-frame video, .video-frame iframe {
+  width: 100%; height: auto; display: block;
+  aspect-ratio: 16 / 9; border: 0; background: var(--black);
+}
+.video-note {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.85cqw, 13px);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 0.9em;
+  text-align: center;
+}
+.slide.dark .video-frame { border-color: rgba(254, 253, 247, 0.18); box-shadow: none; }
+.slide.dark .video-note { color: var(--navy-40); }
+
+.media-split {
+  flex: 1; display: grid;
+  grid-template-columns: 38% 1fr;
+  gap: clamp(24px, 3cqw, 56px);
+  align-items: center;
+  margin-top: 2.5cqh;
+}
+.media-split .video-stage { margin-top: 0; }
+.media-split .video-frame { max-width: 100%; }
+
+/* ---- VENN — two sets and what their overlap is ---------------------------
+   The SVG is written per deck (the circles carry the deck's own labels); this
+   sizes it and types the labels. */
+.venn-wrap { flex: 1; display: flex; align-items: center; justify-content: center; }
+.venn-wrap svg { width: min(64cqw, 62cqh * 16 / 9); height: auto; display: block; }
+.venn-set { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(15px, 1.5cqw, 24px); }
+.venn-sub { font-family: 'Libre Franklin', sans-serif; font-size: clamp(11px, 1cqw, 16px); }
+.venn-hit { font-family: 'Literata', serif; font-weight: var(--display-weight, 400); font-size: clamp(20px, 2cqw, 34px); }
+.venn-label { font-family: 'PT Mono', monospace; font-size: clamp(12px, 1.1cqw, 17px); }
+
+/* ---- CLAIM-SPLIT — a lead statement beside two labelled cards -------------
+   The shape of "this looks like X, it is actually Y": the claim on the left,
+   the two readings stacked on the right. Reveal the cards one at a time. */
+.claim-split {
+  flex: 1; display: grid;
+  grid-template-columns: 42% 1fr;
+  gap: clamp(24px, 3.5cqw, 64px);
+  align-items: center;
+  margin-top: 2cqh;
+}
+.claim-lead-num {
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(64px, 10cqw, 160px); line-height: 0.9;
+  color: var(--amber);
+}
+.claim-lead-text {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(14px, 1.3cqw, 20px);
+  color: var(--text); line-height: 1.5;
+  margin-top: 0.5em; max-width: 92%;
+}
+.slide.dark .claim-lead-text, .slide.black .claim-lead-text { color: var(--foam); }
+.claim-cols { display: flex; flex-direction: column; gap: clamp(14px, 2cqh, 26px); }
+.claim-col {
+  background: var(--navy-08);
+  border: 1px solid var(--navy-16);
+  border-left: 4px solid var(--navy-40);
+  border-radius: 3px;
+  padding: clamp(14px, 1.6cqw, 24px);
+}
+.claim-col.is-key { border-left-color: var(--amber); }
+.claim-col-tag {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted);
+}
+.claim-col-title {
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(16px, 1.6cqw, 24px);
+  color: var(--navy); margin-top: 0.3em; line-height: 1.15;
+}
+.claim-col-line {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(12px, 1.1cqw, 17px);
+  color: var(--text); line-height: 1.45; margin-top: 0.4em;
+}
+.slide.dark .claim-col, .slide.black .claim-col {
+  background: rgba(254, 253, 247, 0.04);
+  border-color: rgba(254, 253, 247, 0.12);
+  border-left-color: rgba(254, 253, 247, 0.3);
+}
+.slide.dark .claim-col.is-key, .slide.black .claim-col.is-key { border-left-color: var(--amber); }
+.slide.dark .claim-col-tag, .slide.black .claim-col-tag { color: rgba(254, 253, 247, 0.55); }
+.slide.dark .claim-col-title, .slide.black .claim-col-title { color: var(--foam); }
+.slide.dark .claim-col-line, .slide.black .claim-col-line { color: rgba(254, 253, 247, 0.7); }
+
+/* ---- DILEMMA — the room votes, then the slide answers ---------------------
+   A room dynamic, not a slide: one either/or at a time, the audience commits
+   out loud, and only then does the argument appear. Driven by
+   js/deck-dilemma.js, which reads the questions from a JSON script block. */
+.dilemma-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.dilemma-kicker {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(11px, 1cqw, 15px);
+  letter-spacing: 0.25em; text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 1.5em; text-align: center;
+  transition: opacity .35s ease;
+}
+.dilemma-headline {
+  font-family: 'Literata', serif; font-weight: var(--display-weight, 400);
+  font-size: clamp(28px, 3.4cqw, 56px); line-height: 1.15;
+  color: var(--navy); text-align: center; max-width: 90%;
+  margin: 0 auto 2.5em auto; letter-spacing: -0.01em;
+  transition: opacity .35s ease;
+}
+.slide.dark .dilemma-headline, .slide.black .dilemma-headline { color: var(--foam); }
+.dilemma-options {
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: clamp(20px, 2.5cqw, 50px); align-items: center;
+}
+.dilemma-option {
+  background: var(--navy-08);
+  border: 1.5px solid var(--navy-16);
+  border-radius: 4px;
+  padding: clamp(18px, 2cqw, 32px) clamp(20px, 2.2cqw, 36px);
+  display: flex; gap: clamp(14px, 1.5cqw, 24px); align-items: center;
+  min-height: clamp(110px, 11cqw, 170px);
+  transition: opacity .35s ease, border-color .35s ease, background .35s ease, box-shadow .35s ease;
+}
+.slide.dark .dilemma-option, .slide.black .dilemma-option {
+  background: rgba(254, 253, 247, 0.04);
+  border-color: rgba(254, 253, 247, 0.1);
+}
+.dilemma-option svg {
+  width: clamp(54px, 5.5cqw, 88px); height: clamp(54px, 5.5cqw, 88px);
+  flex-shrink: 0; opacity: 0; transition: opacity .5s ease;
+}
+.dilemma-option.revealed svg { opacity: 1; }
+.dilemma-option .otext {
+  font-family: 'Literata', serif; font-weight: 500;
+  font-size: clamp(16px, 1.5cqw, 25px); line-height: 1.25;
+  color: var(--navy);
+}
+.slide.dark .dilemma-option .otext, .slide.black .dilemma-option .otext { color: var(--foam); }
+.dilemma-divider {
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(14px, 1.3cqw, 20px);
+  color: var(--muted); letter-spacing: 0.2em;
+}
+/* Revealed: the two readings separate, the second one carries the accent. */
+.dilemma-option.is-a.revealed {
+  border-color: color-mix(in srgb, var(--amber) 55%, transparent);
+  background: color-mix(in srgb, var(--amber) 6%, transparent);
+}
+.dilemma-option.is-b.revealed {
+  border-color: color-mix(in srgb, var(--amber) 85%, transparent);
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+  box-shadow: 0 0 50px color-mix(in srgb, var(--amber) 18%, transparent);
+}
+.dilemma-option .dilemma-tag {
+  display: inline-block; margin-top: 0.5em;
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(9px, 0.8cqw, 12px);
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--amber); opacity: 0; transition: opacity .4s ease;
+}
+.dilemma-option.revealed .dilemma-tag { opacity: 1; }
+.dilemma-argument {
+  margin-top: 1.8em; text-align: center;
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(13px, 1.2cqw, 19px); line-height: 1.5;
+  color: var(--text); max-width: 82%; margin-left: auto; margin-right: auto;
+  opacity: 0; transition: opacity .45s ease;
+}
+.slide.dark .dilemma-argument, .slide.black .dilemma-argument { color: var(--navy-40); }
+.dilemma-argument.on { opacity: 1; }
+.dilemma-counter {
+  margin-top: 1.6em; text-align: center;
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(11px, 0.95cqw, 14px);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--muted);
+}
+.slide.dark .dilemma-counter, .slide.black .dilemma-counter { color: var(--navy-40); }
+.dilemma-counter strong { color: var(--amber); }
+
+
+/* ============= PTAB — per-module pricing table ============= */
+/* The investment table of a training proposal, one row per module, the same
+   composition the PPTX export uses: a numbered info card on the left (title,
+   duration and sessions, format, includes and excludes) and, on the right,
+   one line per modality with the price and the FUNDAE subsidy under a navy
+   header. Four rows fill a slide; more modules paginate, the generator does
+   not squeeze. .cols-2 on the wrap drops the subsidy column (projects).
+   Row modifiers: .is-optional (quiet add-on), .is-bundle (navy total row).
+   Bounded and fitted like .program-wrap: the wrap obeys the slide and the
+   runtime shrinks the table with --fit when the rows still do not fit. */
+.ptab-wrap { flex: 1; display: flex; flex-direction: column; margin-top: 2cqh;
+             min-height: 0; overflow: hidden; }
+.ptab-wrap > * { zoom: var(--fit, 1); }
+.ptab-note {
+  font-family: 'Libre Franklin', sans-serif; font-style: italic;
+  font-size: clamp(9px, 0.8cqw, 12px); line-height: 1.35; color: var(--muted);
+  margin-bottom: clamp(8px, 1.4cqh, 14px);
+}
+.ptab-head, .ptab-row {
+  display: grid; grid-template-columns: 58fr 42fr;
+  column-gap: clamp(10px, 1.2cqw, 20px);
+}
+.ptab-head { margin-bottom: clamp(5px, 0.8cqh, 8px); }
+/* The header strip sits over the price cells, the info column above stays empty. */
+.ptab-head .ptab-cells { grid-column: 2; background: var(--navy); border-radius: 4px 4px 0 0; }
+.ptab-head .ptab-cells span {
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(9px, 0.75cqw, 12px); letter-spacing: 0.04em;
+  color: var(--foam); text-align: center; padding: 0.6em 0.3em;
+}
+/* Rows share the height equally up to a cap, so a slide with two rows keeps
+   them the size of a full slide's rows (the PPTX caps its rows the same way)
+   and leaves the rest of the canvas empty rather than stretching them. */
+.ptab-rows {
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column;
+  gap: clamp(6px, 1cqh, 10px);
+}
+.ptab-row { flex: 1 1 0; min-height: 0; max-height: 21cqh; }
+/* Info card: navy-08 and foam alternate row by row, like the PPTX. */
+.ptab-info {
+  display: grid; grid-template-columns: clamp(28px, 3cqw, 44px) 1fr;
+  background: var(--navy-08); border: 1px solid var(--navy-16);
+  border-radius: 4px; overflow: hidden; min-height: 0;
+}
+.ptab-row:nth-child(even) .ptab-info,
+.ptab-row:nth-child(even) .ptab-cells { background: var(--foam); }
+.ptab-num {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--navy); color: var(--foam);
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(14px, 1.4cqw, 22px);
+}
+.ptab-body {
+  display: flex; flex-direction: column; justify-content: center; gap: 0.35em;
+  padding: clamp(6px, 1cqh, 10px) clamp(10px, 1cqw, 16px); min-width: 0;
+}
+.ptab-title {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 1em;
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(12px, 1.2cqw, 18px); line-height: 1.15; color: var(--navy);
+}
+.ptab-opt {
+  flex: none; font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(8px, 0.65cqw, 10px); letter-spacing: 0.04em;
+  color: var(--navy); background: var(--navy-16); border-radius: 3px;
+  padding: 0.25em 0.7em; white-space: nowrap;
+}
+.ptab-meta {
+  display: flex; justify-content: space-between; gap: 1em;
+  font-size: clamp(9px, 0.8cqw, 12px); color: var(--navy-64);
+  padding-bottom: 0.45em; border-bottom: 1px solid var(--navy-16);
+}
+.ptab-dur { font-family: 'Libre Franklin', sans-serif; }
+.ptab-fmt { font-family: 'PT Mono', monospace; letter-spacing: 0.04em; white-space: nowrap; }
+.ptab-scope {
+  font-family: 'Libre Franklin', sans-serif;
+  font-size: clamp(9px, 0.85cqw, 13px); line-height: 1.35; color: var(--text);
+}
+.ptab-scope .ptab-lab {
+  font-family: 'PT Mono', monospace; font-weight: 700; font-size: 0.85em;
+  letter-spacing: 0.04em; color: var(--muted); margin-right: 0.7em;
+}
+.ptab-scope.is-excl, .ptab-scope.is-excl .ptab-lab { color: var(--red); }
+/* Price cells: one .ptab-line per modality, three cells each (two with
+   .cols-2). display: contents lets the lines share the card's grid so the
+   columns line up with the header above. */
+.ptab-cells {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: minmax(0, 1fr);
+  background: var(--navy-08); border-radius: 4px; overflow: hidden; min-height: 0;
+}
+.ptab-wrap.cols-2 .ptab-cells { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ptab-line { display: contents; }
+.ptab-line > div {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 0.3em 0.4em; min-width: 0;
+}
+.ptab-line > div + div { border-left: 1px solid var(--navy-16); }
+.ptab-line + .ptab-line > div { border-top: 1px solid var(--navy-16); }
+.ptab-mod { font-family: 'Libre Franklin', sans-serif; font-size: clamp(10px, 0.95cqw, 14px); color: var(--navy-80); }
+.ptab-price {
+  font-family: 'Literata', serif; font-weight: 700;
+  font-size: clamp(14px, 1.5cqw, 24px); line-height: 1.05; color: var(--navy);
+}
+/* The figure line: a struck original (digits only) beside the price, on one
+   line, so the cell's column flex stacks only figure and breakdown. */
+.ptab-fig { white-space: nowrap; }
+.ptab-price s {
+  font-family: 'PT Mono', monospace; font-weight: 400; font-size: 0.55em;
+  color: var(--muted); letter-spacing: 0.04em;
+}
+.ptab-price s + strong { margin-left: 0.3em; }
+.ptab-price small {
+  display: block; font-family: 'PT Mono', monospace; font-weight: 400;
+  font-size: clamp(8px, 0.7cqw, 11px); letter-spacing: 0.04em;
+  color: var(--muted); margin-top: 0.4em;
+}
+.ptab-fundae { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(11px, 1.1cqw, 17px); color: var(--green); }
+/* Optional add-on: barely-there card, quiet number tab, muted title and price. */
+.ptab-row.is-optional .ptab-info { background: rgba(0,17,125,0.02); }
+.ptab-row.is-optional .ptab-num { background: var(--navy-40); color: var(--navy); }
+.ptab-row.is-optional .ptab-title, .ptab-row.is-optional .ptab-price { color: var(--navy-64); }
+/* Bundle total: navy card, foam text, amber number tab and subsidy. */
+.ptab-row.is-bundle .ptab-info, .ptab-row.is-bundle .ptab-cells { background: var(--navy); border-color: var(--navy); }
+.ptab-row.is-bundle .ptab-num { background: var(--amber); color: var(--navy); }
+.ptab-row.is-bundle .ptab-title, .ptab-row.is-bundle .ptab-price, .ptab-row.is-bundle .ptab-scope { color: var(--foam); }
+.ptab-row.is-bundle .ptab-mod, .ptab-row.is-bundle .ptab-dur, .ptab-row.is-bundle .ptab-price s,
+.ptab-row.is-bundle .ptab-price small, .ptab-row.is-bundle .ptab-scope .ptab-lab { color: var(--navy-40); }
+.ptab-row.is-bundle .ptab-fmt, .ptab-row.is-bundle .ptab-fundae { color: var(--amber); }
+.ptab-row.is-bundle .ptab-scope.is-excl, .ptab-row.is-bundle .ptab-scope.is-excl .ptab-lab { color: #F25C5C; }
+.ptab-row.is-bundle .ptab-meta, .ptab-row.is-bundle .ptab-line > div + div,
+.ptab-row.is-bundle .ptab-line + .ptab-line > div { border-color: var(--navy-64); }
+
+
+/* ============= PROFILE-HEAD — portrait beside the name ============= */
+/* The trainer-detail slide opens with the name and the role line; when the
+   profile has a usable portrait it sits to their left, round, the same person
+   the PPTX shows beside the name. Without a photo the generator drops the
+   <img> and the head reads exactly as before. */
+.profile-head { display: flex; align-items: center; gap: clamp(14px, 2.4cqw, 34px);
+                margin-top: 0.4em; margin-bottom: clamp(6px, 1cqh, 12px); }
+.profile-head > div { min-width: 0; }
+.profile-head .section-title { margin-top: 0; }
+.profile-head .role-line { margin-bottom: 0; }
+.profile-photo { flex: none; width: clamp(64px, 13cqh, 140px); aspect-ratio: 1 / 1;
+                 border-radius: 50%; object-fit: cover; display: block;
+                 border: 3px solid var(--foam); box-shadow: 0 0 0 2px rgba(0,17,125,0.18); }

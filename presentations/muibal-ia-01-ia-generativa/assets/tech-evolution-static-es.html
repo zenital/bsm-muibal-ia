@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico estático de la evolución</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Llibreria per capturar la pantalla -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800;900&family=PT+Mono&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --ocean-100: #00117D;
+            --ocean-80: #344097;
+            --ocean-64: #5b66ab;
+            --ocean-40: #999ecc;
+            --ocean-16: #d7d9e9;
+            --rojo: #9A1B1B;
+            --coral: #F25C5C;
+            --menta: #7cae98;
+            --oliva: #77B28C;
+            --mostaza: #FFC857;
+            --lavanda: #A96BB0;
+            --celeste: #7caed6;
+            --foam: #fefdf7;
+            --gris: #666666;
+            --gris-oscuro: #444444;
+            --negro: #000000;
+            --noche: #1a1a2e;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--negro);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: var(--foam);
+        }
+
+        #slide-container {
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at 60% 60%, var(--noche) 0%, var(--ocean-100) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background Grid */
+        .grid-bg {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px;
+            pointer-events: none;
+        }
+
+        /* Canvas for Lines */
+        canvas {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+        }
+
+        /* Content Layer */
+        .content-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Title Block posicionat DINS dels eixos */
+        .title-block {
+            position: absolute;
+            top: 100px;
+            left: 140px;
+            padding-left: 20px;
+            border-left: 4px solid var(--mostaza);
+            max-width: 40%;
+        }
+
+        .main-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: var(--mostaza);
+            margin-bottom: 5px;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        /* Labels Container */
+        .labels-container {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        /* Estil per etiquetes esparses (esquerra) */
+        .sparse-label {
+            position: absolute;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--foam);
+            font-size: 0.9rem;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .sparse-label span {
+            display: block;
+            font-family: 'PT Mono', monospace;
+            font-size: 0.8em;
+            color: var(--celeste);
+            margin-top: 2px;
+            font-weight: normal;
+        }
+
+        /* Estil per etiquetes denses (dreta) */
+        .dense-label {
+            position: absolute;
+            font-family: 'PT Mono', monospace;
+            font-weight: 400;
+            color: var(--celeste);
+            font-size: 0.75rem;
+            line-height: 1.1;
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+            transition: color 0.2s;
+        }
+
+        .sub-text {
+            color: var(--ocean-40);
+            font-size: 0.9em;
+        }
+
+        .dense-label strong {
+            color: var(--foam);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            margin-right: 8px;
+            font-size: 0.85rem;
+        }
+
+        .axis-label {
+            font-family: 'PT Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--ocean-40);
+            position: absolute;
+        }
+
+        #downloadBtn {
+            position: absolute;
+            top: 20px;
+            right: 70px;
+            background-color: var(--ocean-64);
+            color: white;
+            border: 1px solid var(--celeste);
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            z-index: 100;
+            transition: background 0.3s;
+        }
+
+        #downloadBtn:hover {
+            background-color: var(--ocean-80);
+        }
+
+        #fullscreenBtn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: var(--ocean-64);
+            color: white;
+            border: 1px solid var(--celeste);
+            width: 38px;
+            height: 38px;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        #fullscreenBtn:hover {
+            background-color: var(--ocean-80);
+        }
+
+        /* Media Query for Mobile/Tablet */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 1.5rem;
+                /* Smaller title */
+                margin-bottom: 2px;
+            }
+
+            .title-block {
+                top: 80px;
+                left: 20px;
+                /* More space on left */
+                max-width: 70%;
+                padding-left: 10px;
+            }
+
+            .axis-label {
+                font-size: 0.6rem;
+            }
+
+            #downloadBtn {
+                top: 10px;
+                right: 60px;
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            #fullscreenBtn {
+                top: 10px;
+                right: 10px;
+                width: 32px;
+                height: 32px;
+            }
+
+            .sparse-label {
+                font-size: 0.7rem;
+                /* Smaller sparse labels */
+                white-space: normal;
+                max-width: 150px;
+                line-height: 1.1;
+            }
+
+            .sparse-label span {
+                font-size: 0.7em;
+            }
+
+            .dense-label {
+                font-size: 0.65rem;
+                /* Smaller dense labels */
+                white-space: normal;
+                max-width: 130px;
+                line-height: 1.1;
+            }
+
+            .dense-label strong {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <button id="downloadBtn" onclick="downloadPNG()">Descargar imagen</button>
+    <button id="fullscreenBtn" onclick="toggleFullscreen()" aria-label="Pantalla completa">
+        <!-- Icon Out (Expand) -->
+        <svg id="icon-expand" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+        </svg>
+        <!-- Icon In (Compress) -->
+        <svg id="icon-compress" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            style="display: none;">
+            <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+        </svg>
+    </button>
+
+    <div id="slide-container">
+        <div class="grid-bg"></div>
+        <canvas id="chartCanvas"></canvas>
+
+        <div class="content-layer">
+            <!-- Títol únic amb restricció d'espai -->
+            <div class="title-block">
+                <h1 class="main-title">300.000 AÑOS DE HISTORIA HUMANA</h1>
+            </div>
+
+            <div class="axis-label" style="bottom: 30px; right: 400px;">TIEMPO -></div>
+            <div class="axis-label" style="top: 50%; left: 20px; transform: rotate(-90deg);">CAPACIDAD TECNOLÓGICA ->
+            </div>
+        </div>
+
+        <div id="labels-layer" class="labels-container"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('chartCanvas');
+        const ctx = canvas.getContext('2d');
+        const labelsLayer = document.getElementById('labels-layer');
+        const container = document.getElementById('slide-container');
+
+        let width = container.clientWidth;
+        let height = container.clientHeight;
+
+        const cssVar = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+        const colors = {
+            line: cssVar('--celeste'),
+            dot: cssVar('--mostaza'),
+            highlight: cssVar('--mostaza'),
+            connect: 'rgba(124, 174, 214, 0.3)',
+            grid: cssVar('--gris-oscuro'),
+            lavanda: cssVar('--lavanda'),
+            coral: cssVar('--coral')
+        };
+
+        // Lista completa de eventos (el orden importa: los índices se buscan por nombre)
+        const events = [
+            { t: -300000, name: "HOMO SAPIENS", sub: "Origen", y: 0.05 },
+            { t: -70000, name: "LENGUAJE", sub: "Rev. cognitiva", y: 0.06 },
+            // Stack starts here
+            { t: -12000, name: "AGRICULTURA", sub: "Asentamientos", y: 0.08 },
+            { t: -5000, name: "ESCRITURA", sub: "Historia", y: 0.10 },
+            { t: -580, name: "IMPRENTA", sub: "Conocimiento", y: 0.15 },
+            { t: -255, name: "MÁQUINA DE VAPOR", sub: "Rev. Industrial", y: 0.20 },
+            { t: -235, name: "REVOLUCIÓN FRANCESA", sub: "Derechos modernos", y: 0.22 },
+            { t: -140, name: "ELECTRICIDAD", sub: "Energía y luz", y: 0.28 },
+            { t: -110, name: "GUERRAS MUNDIALES", sub: "Conflicto", y: 0.32 },
+            { t: -69, name: "IA TRADICIONAL", sub: "Dartmouth", y: 0.35 },
+            { t: -50, name: "INTERNET", sub: "ARPANET", y: 0.40 },
+            { t: -40, name: "PC", sub: "Informática", y: 0.45 },
+            { t: -30, name: "WWW", sub: "Web global", y: 0.50 },
+            { t: -27, name: "GOOGLE", sub: "Buscadores", y: 0.55 },
+            { t: -21, name: "DECODIFICACIÓN ADN", sub: "Genoma", y: 0.60 },
+            { t: -21, name: "FACEBOOK", sub: "Redes sociales", y: 0.62 },
+            { t: -19, name: "CLOUD COMPUTING", sub: "La nube", y: 0.65 },
+            { t: -17, name: "SMARTPHONE", sub: "Movilidad", y: 0.70 },
+            { t: -13, name: "BIG DATA", sub: "Datos masivos", y: 0.75 },
+            { t: -12, name: "BOSÓN DE HIGGS", sub: "Física", y: 0.78 },
+            { t: -10, name: "OPENAI", sub: "Fundación", y: 0.82 },
+            { t: -7, name: "TRANSFORMERS", sub: "Arq. IA", y: 0.85 },
+            { t: -4, name: "ALPHAFOLD", sub: "Proteínas", y: 0.88 },
+            { t: -3, name: "CHATGPT", sub: "IA generativa", y: 0.92 },
+            { t: -0.5, name: "AGENTES IA", sub: "Autonomía", y: 0.98 }
+        ];
+
+        const idxOf = (name) => events.findIndex((e) => e.name === name);
+
+        let MARGIN_BOTTOM = 80;
+        let MARGIN_TOP = 80;
+        let MARGIN_LEFT = 100;
+        let MARGIN_RIGHT = 400;
+        let LABELS_X_OFFSET = 50;
+
+        // Global flag for export mode
+        let isExporting = false;
+
+        function getIsMobile() {
+            if (isExporting) return false; // Always desktop during export
+            return window.innerWidth < 768;
+        }
+
+        function updateMargins() {
+            if (getIsMobile()) {
+                // Mobile layout
+                MARGIN_LEFT = 40;
+                MARGIN_RIGHT = 140; // Reduced right margin for labels
+                MARGIN_TOP = 120; // More space for title at top
+                MARGIN_BOTTOM = 50;
+                LABELS_X_OFFSET = 10; // Less offset to give more space for text
+            } else {
+                // Desktop layout
+                MARGIN_LEFT = 100;
+                MARGIN_RIGHT = 400;
+                MARGIN_TOP = 80;
+                MARGIN_BOTTOM = 80;
+                LABELS_X_OFFSET = 50;
+            }
+        }
+
+        function resize() {
+            updateMargins(); // Update margins based on new size
+            width = container.clientWidth;
+            height = container.clientHeight;
+            canvas.width = width;
+            canvas.height = height;
+            draw();
+        }
+
+        function mapX(t) {
+            const range = 300000;
+            const normalized = (t + 300000) / range;
+            return MARGIN_LEFT + normalized * (width - MARGIN_LEFT - MARGIN_RIGHT);
+        }
+
+        function mapY(y) {
+            const drawHeight = height - MARGIN_BOTTOM - MARGIN_TOP;
+            return (height - MARGIN_BOTTOM) - (y * drawHeight);
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            labelsLayer.innerHTML = '';
+
+            // 1. Draw Base Axes
+            ctx.strokeStyle = colors.grid;
+            ctx.lineWidth = 1;
+
+            ctx.beginPath();
+            ctx.moveTo(MARGIN_LEFT, height - MARGIN_BOTTOM);
+            ctx.lineTo(width - 50, height - MARGIN_BOTTOM);
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(MARGIN_LEFT, height - MARGIN_BOTTOM);
+            ctx.lineTo(MARGIN_LEFT, 50);
+            ctx.stroke();
+
+
+            // 2. Draw The Curve
+            ctx.strokeStyle = colors.line;
+            ctx.lineWidth = 4;
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = 'rgba(124, 174, 214, 0.5)';
+
+            ctx.beginPath();
+            ctx.moveTo(mapX(events[0].t), mapY(events[0].y));
+
+            for (let i = 0; i < events.length - 1; i++) {
+                const curr = events[i];
+                const next = events[i + 1];
+
+                const x1 = mapX(curr.t);
+                const y1 = mapY(curr.y);
+                const x2 = mapX(next.t);
+                const y2 = mapY(next.y);
+
+                const cp1x = x1 + (x2 - x1) * 0.6;
+                const cp1y = y1;
+                const cp2x = x1 + (x2 - x1) * 0.9;
+                const cp2y = y2;
+
+                ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, x2, y2);
+            }
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+
+            // 3. Draw Points & Labels
+            const DENSE_DESKTOP_START = 2; // Agriculture
+            const DENSE_MOBILE_START = idxOf('WWW');
+            const isMobile = getIsMobile();
+            const DENSE_START_INDEX = isMobile ? DENSE_MOBILE_START : DENSE_DESKTOP_START;
+
+            // --- DRAW SPARSE EVENTS (Always 0, 1 for consistent visual start) ---
+            for (let i = 0; i < 2; i++) {
+                const e = events[i];
+                const x = mapX(e.t);
+                const y = mapY(e.y);
+
+                ctx.fillStyle = colors.dot;
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                const label = document.createElement('div');
+                label.className = 'sparse-label';
+                label.innerHTML = `${e.name}<span>${e.sub}</span>`;
+
+                const offset = (i % 2 === 0) ? -60 : 40;
+                label.style.left = (x - 10) + 'px';
+                label.style.top = (y + offset) + 'px';
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x, y + offset + 15);
+                ctx.stroke();
+
+                labelsLayer.appendChild(label);
+            }
+
+            // --- DRAW ALTERNATING EVENTS (Mobile Only: 2 to 12) ---
+            // From Agriculture (2) to the event before WWW
+            if (isMobile) {
+                for (let i = 2; i < idxOf('WWW'); i++) {
+                    const e = events[i];
+                    const x = mapX(e.t);
+                    const y = mapY(e.y);
+
+                    ctx.fillStyle = colors.dot;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    const label = document.createElement('div');
+                    label.className = 'sparse-label';
+                    // Ensure wrapping is respected
+                    label.style.whiteSpace = 'normal';
+                    label.style.maxWidth = '120px'; // Slightly tighter for alternating
+                    label.innerHTML = `${e.name}<span>${e.sub}</span>`;
+
+                    const isLeft = (i % 2 === 0);
+                    let labelY = y - 10; // Center vertically on point
+
+                    // Manual adjustment for World Wars to avoid overlapping with Electricity
+                    if (i === idxOf('GUERRAS MUNDIALES')) {
+                        labelY -= 15;
+                    }
+
+                    ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+
+                    if (isLeft) {
+                        // Left side
+                        label.style.textAlign = 'right';
+                        label.style.left = (x - 20) + 'px';
+                        label.style.top = labelY + 'px';
+                        label.style.transform = 'translateX(-100%)';
+                        ctx.lineTo(x - 20, y);
+                    } else {
+                        // Right side
+                        label.style.textAlign = 'left';
+                        label.style.left = (x + 20) + 'px';
+                        label.style.top = labelY + 'px';
+                        label.style.transform = 'none';
+                        ctx.lineTo(x + 20, y);
+                    }
+                    ctx.stroke();
+                    labelsLayer.appendChild(label);
+                }
+            }
+
+
+            // --- DRAW DENSE EVENTS (Stack) ---
+            const stackTop = MARGIN_TOP;
+            // On mobile, the stack should visually start where the first stack item (WWW) is, 
+            // instead of the bottom of the screen, to avoid long empty lines.
+            let stackBottom = height - MARGIN_BOTTOM;
+            if (isMobile) {
+                // Calculate Y for the first dense item (e.g., WWW)
+                const firstDenseY = events[DENSE_START_INDEX].y;
+                stackBottom = mapY(firstDenseY) + 20; // Start stack slightly below the point
+            }
+
+            const totalStackHeight = stackBottom - stackTop;
+            const denseEvents = events.slice(DENSE_START_INDEX);
+            const step = totalStackHeight / (Math.max(denseEvents.length - 1, 1));
+
+            denseEvents.forEach((e, idx) => {
+                const pointX = mapX(e.t);
+                const pointY = mapY(e.y);
+
+                const labelX = width - MARGIN_RIGHT + LABELS_X_OFFSET;
+                // Note: idx goes from 0 to N. 0 is the "oldest" in the stack (lowest Y value in data, highest Y pixel value).
+                const labelY = stackBottom - (idx * step) - 10;
+
+                ctx.fillStyle = colors.highlight;
+                ctx.beginPath();
+                ctx.arc(pointX, pointY, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.strokeStyle = colors.connect;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(pointX, pointY);
+
+                const midX = pointX + (labelX - pointX) * 0.5;
+                ctx.bezierCurveTo(midX, pointY, midX, labelY + 10, labelX, labelY + 10);
+
+                ctx.stroke();
+
+                const label = document.createElement('div');
+                label.className = 'dense-label';
+                label.style.left = labelX + 'px';
+                label.style.top = labelY + 'px';
+
+                // On mobile, maybe hide sub if it's too crowded? For now, keep it simple but allow CSS control
+                // We'll trust the CSS font-size reduction for now.
+                label.innerHTML = `<strong>${e.name}</strong> <span class="sub-text">${e.sub}</span>`;
+
+                labelsLayer.appendChild(label);
+            });
+
+            // 4. Draw Brackets (Braces)
+            // Helpers to find Y positions of specific events in the rendered stack
+            // We need to know the labelY for "WWW", "HIGGS" and "SINGULARITAT"
+            // denseEvents indices: WWW (13-2=11), BOSÓ (20-2=18), SINGULARITAT (27-2=25) (Desktop)
+            // Mobile: relative to DENSE_START_INDEX (13).
+
+            // To get exact Y, we can recalculate:
+            function getLabelY(originalIndex) {
+                const denseIdx = originalIndex - DENSE_START_INDEX;
+                if (denseIdx < 0) return stackBottom; // Should not happen for bracket targets if logic is correct
+                return stackBottom - (denseIdx * step) - 10 + 7; // +7 to center roughly on text middle
+            }
+
+            const ySingularity = mapY(events[events.length - 1].y); // Top (AI Agents point)
+            const yWWW = getLabelY(idxOf('WWW')); // Bottom for 10s
+            const yHiggs = getLabelY(idxOf('BOSÓN DE HIGGS')); // Bottom for 4s
+
+            // Draw Vertical Group Lines (Alternatives to Brackets)
+            // Position: Left of the curve data points
+            const curveX = mapX(events[idxOf('WWW')].t);
+            const lineX = curveX - 40; // Base position (inner line)
+
+            // Draw "10s" Line (Outer) - Shifted further left to avoid text overlap
+            drawTimelineBar(ctx, lineX - 60, ySingularity, yWWW, "10 s", colors.lavanda);
+
+            // Draw "4s" Line (Inner)
+            drawTimelineBar(ctx, lineX, ySingularity, yHiggs, "4 s", colors.coral);
+        }
+
+        function drawTimelineBar(ctx, x, topY, bottomY, text, color) {
+            ctx.beginPath();
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+
+            // Vertical Line with Arrows
+            ctx.moveTo(x, topY + 5);
+            ctx.lineTo(x, bottomY - 5);
+            ctx.stroke();
+
+            // Arrowhead Top (Up)
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(x, topY);
+            ctx.lineTo(x - 5, topY + 10);
+            ctx.lineTo(x + 5, topY + 10);
+            ctx.closePath();
+            ctx.fill();
+
+            // Arrowhead Bottom (Down)
+            ctx.beginPath();
+            ctx.moveTo(x, bottomY);
+            ctx.lineTo(x - 5, bottomY - 10);
+            ctx.lineTo(x + 5, bottomY - 10);
+            ctx.closePath();
+            ctx.fill();
+
+            // Text Label
+            ctx.font = "700 14px 'Montserrat', sans-serif";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.fillText(text, x - 10, (topY + bottomY) / 2);
+        }
+
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.error(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function downloadPNG() {
+            const fBtn = document.getElementById('fullscreenBtn');
+            const btn = document.getElementById('downloadBtn');
+
+            // Hide buttons
+            fBtn.style.display = 'none';
+            btn.style.display = 'none';
+
+            // Enable Export Mode
+            isExporting = true;
+
+            // Capture current styles to restore later
+            const container = document.getElementById('slide-container');
+            const originalWidth = container.style.width;
+            const originalHeight = container.style.height;
+            const originalPosition = container.style.position;
+            const originalTop = container.style.top;
+            const originalLeft = container.style.left;
+            const originalZIndex = container.style.zIndex;
+
+            // Force Desktop Resolution (1920x1080)
+            container.style.width = '1920px';
+            container.style.height = '1080px';
+            container.style.position = 'fixed';
+            container.style.top = '0';
+            container.style.left = '0';
+            container.style.zIndex = '9999';
+
+            // Force resize to apply desktop margins and layout
+            resize();
+
+            // Allow a small delay for render (optional but safer)
+            setTimeout(() => {
+                html2canvas(container, {
+                    scale: 2, // 2x 1920 = 3840 (4K / High Res)
+                    width: 1920,
+                    height: 1080,
+                    backgroundColor: null,
+                    useCORS: true,
+                    windowWidth: 1920,
+                    windowHeight: 1080
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'evolucio_tecnologica_full.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    cleanup();
+                }).catch(err => {
+                    console.error("Error exportando imagen:", err);
+                    alert("Error al generar la imagen. Revisa la consola.");
+                    cleanup();
+                });
+            }, 100);
+
+            function cleanup() {
+                // Restore state
+                isExporting = false;
+
+                container.style.width = originalWidth;
+                container.style.height = originalHeight;
+                container.style.position = originalPosition;
+                container.style.top = originalTop;
+                container.style.left = originalLeft;
+                container.style.zIndex = originalZIndex;
+
+                btn.style.display = 'block';
+                fBtn.style.display = 'flex';
+
+                // Restore original view
+                resize();
+            }
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+
+        function updateFullscreenIcon() {
+            const expand = document.getElementById('icon-expand');
+            const compress = document.getElementById('icon-compress');
+            if (document.fullscreenElement) {
+                expand.style.display = 'none';
+                compress.style.display = 'block';
+            } else {
+                expand.style.display = 'block';
+                compress.style.display = 'none';
+            }
+        }
+    </script>
+<script>
+/* zenital deck embed bridge: static slide, ready immediately */
+(function () {
+  function post(msg) { try { parent.postMessage(msg, '*'); } catch (e) {} }
+  post({ type: 'embed-finished' });
+  window.addEventListener('load', function () { post({ type: 'embed-finished' }); });
+  document.addEventListener('keydown', function (e) {
+    post({ type: 'embed-key', key: e.key, code: e.code });
+  });
+  // A click advances the deck, as it does on any other slide; the buttons
+  // (download, full screen) keep theirs. The deck also gets the keyboard back,
+  // which a click leaves inside this iframe.
+  document.addEventListener('click', function (e) {
+    if (e.target.closest && e.target.closest('button, a, input, select, textarea')) return;
+    try { parent.focus(); } catch (err) {}
+    post({ type: 'embed-key', key: 'ArrowRight', code: 'ArrowRight' });
+  });
+})();
+</script>
+</body>
+
+</html>

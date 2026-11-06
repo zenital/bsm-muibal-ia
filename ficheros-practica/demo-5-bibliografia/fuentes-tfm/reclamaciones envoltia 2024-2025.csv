@@ -1,0 +1,12 @@
+# Datos ficticios para practicar. Envoltia no existe.
+año,trimestre,pais,reclamaciones,de_ellas_por_retraso
+2024,1,Francia,3,1
+2024,2,Francia,4,2
+2024,3,Francia,5,2
+2024,4,Francia,2,1
+2025,1,Francia,3,1
+2025,2,Francia,7,4
+2025,3,Francia,8,4
+2025,4,Francia,3,1
+2024,1-4,Alemania,12,5
+2025,1-4,Alemania,16,5

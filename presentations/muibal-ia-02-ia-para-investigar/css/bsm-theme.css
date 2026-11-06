@@ -1,0 +1,163 @@
+/* ============================================================================
+   bsm-theme.css · capa de adaptación BSM para los decks de la sesión de IA de MUIBAL.
+   ----------------------------------------------------------------------------
+   Se carga DESPUÉS de deck-shell.css y deck-components.css y solo
+   sobreescribe variables y añade bloques propios. Los ficheros canónicos de
+   zenital no se tocan nunca (ver CLAUDE.md).
+
+   Fuente maestra: assets/bsm/bsm-theme.css. Cada deck lleva su copia en
+   css/bsm-theme.css; los bloques propios de un deck van al final de su copia,
+   bajo el comentario "BLOQUES DE ESTE DECK".
+
+   Color BSM: crimson #C8102E (variante oscura #9A0C23). Sustituye al ámbar
+   zenital. Para tinta de acento sobre navy se usa una versión aclarada
+   (#E8556A), legible; el crimson puro queda para rellenos y bordes.
+   ========================================================================== */
+
+:root {
+  --amber: #E8556A;        /* acento: rojo BSM aclarado, legible sobre navy */
+  --amber-soft: #C8102E;   /* crimson BSM puro, para rellenos */
+  --red: #9A0C23;          /* rojo profundo BSM */
+}
+
+/* ===== BSM-COBRAND ===== */
+/* Portada y cierre: logo zenital + separador + logo BSM, en blanco sobre navy. */
+.bsm-cobrand {
+  display: flex; align-items: center; gap: 1.4vw;
+  margin-top: 2.2vh;
+}
+.bsm-cobrand img { display: block; height: clamp(20px, 2.6vh, 30px); width: auto; }
+.bsm-cobrand .cb-sep {
+  width: 1px; height: clamp(18px, 2.4vh, 28px);
+  background: var(--foam); opacity: 0.35;
+}
+
+/* ===== BSM-PROGRAM ===== */
+/* Línea del programa arriba a la izquierda, simétrica al logo BSM. */
+.slide:not(.black):not(:has(.bsm-cobrand))::before {
+  content: "Máster en Negocios Internacionales · La IA aplicada a investigar mercados";
+  position: absolute; top: 5%; left: 7%;
+  font-family: 'PT Mono', monospace;
+  font-size: clamp(10px, 0.85vw, 13px);
+  letter-spacing: 0.08em; line-height: 1.4;
+  color: var(--muted);
+  opacity: 0.9; pointer-events: none;
+}
+.slide.dark:not(:has(.bsm-cobrand))::before {
+  color: var(--navy-40); opacity: 0.85;
+}
+
+/* ===== BSM-MARK ===== */
+/* Logo BSM discreto arriba a la derecha. Navy en claras, blanco en oscuras. */
+.slide:not(.black):not(:has(.bsm-cobrand))::after {
+  content: "";
+  position: absolute; top: 5%; right: 7%;
+  width: clamp(78px, 8vw, 122px); height: clamp(20px, 2.1vw, 32px);
+  background: url("../assets/bsm-logo-navy.svg") no-repeat right top / contain;
+  opacity: 0.9; pointer-events: none;
+}
+.slide.dark:not(:has(.bsm-cobrand))::after {
+  background-image: url("../assets/bsm-logo-footer.svg");
+  opacity: 0.85;
+}
+
+/* ===== PRACTICE-BADGE ===== */
+/* Marca las slides donde la sala trabaja con el portátil: chip crimson
+   encima del label. Remite al ejercicio del compañero. */
+.practice-badge {
+  display: inline-flex; align-items: center; gap: 0.55em;
+  font-family: 'PT Mono', monospace; font-weight: 700;
+  font-size: clamp(9px, 0.8vw, 12px);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--foam); background: var(--amber-soft);
+  padding: 0.45em 0.9em; border-radius: 2px;
+  align-self: flex-start; margin-top: 1vh;
+}
+.practice-badge::before {
+  content: ""; width: 0.5em; height: 0.5em; border-radius: 50%;
+  background: var(--foam); opacity: 0.9;
+}
+.practice-badge + .label { margin-top: 1.1vh; }
+
+/* ===== IMG-PLATE (ajuste de esta capa) ===== */
+/* Capturas verticales o casi cuadradas: se acota la altura sin tocar el canónico. */
+.img-plate-frame img { max-height: 52vh; }
+
+/* ===== LEVEL-DESC y STEPWAY (ajustes de esta capa) ===== */
+/* Cuerpos un punto más grandes para leerse proyectados en el aula. */
+.level-desc { font-size: clamp(14px, 1.25vw, 20px); }
+.stepway-col:nth-child(2)::before,
+.stepway-col:nth-child(4)::before { display: none; }
+.stepway-title { font-size: clamp(18px, 1.7vw, 26px); }
+.stepway-bullets li { font-size: clamp(14px, 1.25vw, 20px); }
+
+/* ========================================================================
+   BLOQUES DE ESTE DECK
+   ===================================================================== */
+
+
+/* ===== TINTES DEL ACENTO ===== */
+/* Los fondos tintados del CSS canónico son rgba fijos del ámbar
+   (255, 200, 87) y no siguen a --amber. Junto a un borde crimson, un lavado
+   amarillo desentona, así que se repiten aquí con el crimson BSM
+   (200, 16, 46). Solo los componentes que usa este deck. */
+.hud-item.is-current                  { background: rgba(200, 16, 46, 0.08); }
+.hud-action                           { background: rgba(200, 16, 46, 0.08); border-color: rgba(200, 16, 46, 0.35); }
+.hud-action:hover                     { background: rgba(200, 16, 46, 0.15); }
+.hud-action .ha-key                   { background: rgba(200, 16, 46, 0.15); }
+#deck-menu .dm-item kbd               { border-color: rgba(200, 16, 46, 0.35); }
+.level-card.is-target                 { background: rgba(200, 16, 46, 0.06); }
+.stepway-num                          { background: rgba(200, 16, 46, 0.08); }
+.clinic-good                          { background: rgba(200, 16, 46, 0.07); }
+
+/* ===== MTAB ===== */
+/* Tabla de lectura (tipos de pregunta, técnicas, herramientas, calendario).
+   Cabecera en PT Mono, filas con filete navy-08. .is-sm para tablas densas, .is-lg para
+   pocas filas que se leen proyectadas. Envolver en .mtab-wrap para centrarla
+   en vertical. */
+.mtab { width: 100%; border-collapse: collapse; background: var(--foam); }
+.mtab th {
+  text-align: left; vertical-align: bottom;
+  font-family: 'PT Mono', monospace; font-weight: 400;
+  font-size: clamp(9px, 0.85cqw, 13px); letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); padding: 0.5em 0.8em 0.6em; border-bottom: 2px solid var(--navy-16);
+}
+.mtab td {
+  vertical-align: top; padding: 0.45em 0.8em;
+  font-family: 'Libre Franklin', sans-serif; font-size: clamp(11px, 1.05cqw, 16px);
+  line-height: 1.35; color: var(--text); border-top: 1px solid var(--navy-08);
+}
+.mtab td:first-child { font-weight: 700; color: var(--navy); }
+.mtab.is-sm td { font-size: clamp(10px, 0.95cqw, 14px); padding: 0.35em 0.7em; }
+.mtab.is-lg td { font-size: clamp(12px, 1.3cqw, 20px); padding: 0.55em 0.9em; }
+.mtab.is-lg th { font-size: clamp(10px, 0.95cqw, 14px); }
+.mtab .is-bad { color: var(--red); font-weight: 600; }
+.mtab .is-key { color: var(--amber-soft); font-weight: 700; }
+.mtab-wrap { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+/* ===== DIV-SUB ===== */
+/* Subíndice bajo el título de un divisor (2.1, 2.2): los temas del bloque. */
+.div-sub { list-style: none; margin: 2.4cqh 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.6em 1.6em; }
+.div-sub li { font-family: 'PT Mono', monospace; font-size: clamp(11px, 1.05cqw, 16px); letter-spacing: 0.06em; color: var(--navy-40); }
+.div-sub li::before { content: ""; display: inline-block; width: 0.5em; height: 0.5em; border-radius: 50%; background: var(--amber); margin-right: 0.6em; vertical-align: 0.1em; }
+
+/* ===== RAG-FLOW (slide 15) ===== */
+/* Los cuatro pasos de RAG y la nota de consecuencias. Tomado del deck
+   02-prompting de BSM, con unidades de contenedor. */
+.rag-flow { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: clamp(14px, 2.4cqh, 30px); }
+.rag-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(10px, 1.2cqw, 20px); align-items: stretch; }
+.rag-step { position: relative; background: var(--navy-08); border-left: 3px solid var(--amber-soft); border-radius: 3px; padding: clamp(12px, 1.5cqh, 20px) clamp(12px, 1.2cqw, 20px); }
+.rag-step .rs-num { font-family: 'PT Mono', monospace; font-weight: 700; font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.2em; color: var(--amber-soft); }
+.rag-step .rs-name { font-family: 'Literata', serif; font-weight: 700; font-size: clamp(15px, 1.45cqw, 22px); color: var(--navy); line-height: 1.15; margin-top: 0.35em; }
+.rag-step .rs-desc { font-family: 'Libre Franklin', sans-serif; font-size: clamp(12px, 1.1cqw, 17px); color: var(--text); line-height: 1.4; margin-top: 0.5em; }
+.rag-note { background: var(--navy); border-radius: 3px; padding: clamp(14px, 1.8cqh, 24px) clamp(16px, 1.6cqw, 28px); }
+.rag-note .rn-lab { font-family: 'PT Mono', monospace; font-size: clamp(10px, 0.85cqw, 13px); letter-spacing: 0.2em; text-transform: uppercase; color: var(--amber); }
+.rag-note .rn-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.2cqw, 19px); color: var(--foam); line-height: 1.5; margin-top: 0.5em; }
+.rag-note .rn-text strong { color: var(--amber); font-weight: 600; }
+
+/* ===== FRAME-COL y FRAME-TEXT (slide 07) ===== */
+/* Columna de un .frames-wrap (marco + pie) y párrafo de lectura dentro del marco. */
+.frame-col { display: flex; flex-direction: column; }
+.frame-text { font-family: 'Libre Franklin', sans-serif; font-size: clamp(13px, 1.15cqw, 18px); line-height: 1.5; color: var(--text); }
+.frame-text strong { color: var(--navy); }
+

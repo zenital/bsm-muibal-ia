@@ -1,0 +1,5 @@
+{
+  "decks": [
+    { "from": "modulos/01-ia-generativa", "to": "presentations/muibal-ia-01-ia-generativa", "overrides": "common-overrides/01-ia-generativa" }
+  ]
+}
