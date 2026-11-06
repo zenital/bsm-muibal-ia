@@ -36,7 +36,7 @@ Pedid que cada pareja decida ahora con qué caso trabaja: si los dos tienen tema
 
 ### 08 · El compañero
 
-TODO: cuando el compañero esté registrado en el portal, poned aquí su enlace compartido y un QR (scripts/qr-companero.mjs). Hasta entonces, el enlace va en el Aula Global.
+El QR abre el compañero del alumnado: https://presentation.zenital.io/share/wTniVbSYok-L-fmwB1fhU1e5G5GhYVAi. Dejad la slide un minuto para que lo escaneen; el mismo enlace está en el Aula Global.
 
 ### 09 · Tres reglas para hoy
 

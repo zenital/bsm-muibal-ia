@@ -27,4 +27,4 @@ Decidido por Manel el 06/11/2026: lo de esta sesión entra en el examen tipo tes
 
 - Preparar las tres demos de Claude con una cuenta de pago (Cowork lo necesita) y tenerlas también ya hechas por si falla la conexión. Los guiones están en el compañero del formador.
 - Comprobar que Gemini Notebook y la investigación profunda siguen disponibles en el plan gratuito (deck 02, slide de "Dónde está"); la tabla es de noviembre de 2026.
-- Poner el enlace compartido del compañero y su QR en la slide 08 del deck 00.
+- Publicar en el Aula Global el enlace del compañero del alumnado (el mismo del QR de la slide 08 del deck 00).
