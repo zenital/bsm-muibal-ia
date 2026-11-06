@@ -1,0 +1,66 @@
+[
+  {
+    "repo": "zenital/zenital-claude-training",
+    "branch": "client/bsm-muibal-ia",
+    "path": "presentations/02-claude-plataforma",
+    "slug": "bsm-muibal-ia-03-claude-plataforma",
+    "title": "Claude.ai: la plataforma · sesión de IA",
+    "tags": [
+      "curso",
+      "claude"
+    ],
+    "client": "BSM",
+    "section": "Presentaciones",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  },
+  {
+    "repo": "zenital/zenital-claude-training",
+    "branch": "client/bsm-muibal-ia",
+    "path": "presentations/03-proyectos-artefactos",
+    "slug": "bsm-muibal-ia-04-proyectos-artefactos",
+    "title": "Proyectos, workflows y artefactos · sesión de IA",
+    "tags": [
+      "curso",
+      "claude"
+    ],
+    "client": "BSM",
+    "section": "Presentaciones",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  },
+  {
+    "repo": "zenital/zenital-claude-training",
+    "branch": "client/bsm-muibal-ia",
+    "path": "presentations/04-cowork",
+    "slug": "bsm-muibal-ia-05-cowork",
+    "title": "Claude Cowork · sesión de IA",
+    "tags": [
+      "curso",
+      "claude"
+    ],
+    "client": "BSM",
+    "section": "Presentaciones",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  },
+  {
+    "repo": "zenital/zenital-claude-training",
+    "branch": "client/bsm-muibal-ia",
+    "path": "presentations/05-conectores-skills",
+    "slug": "bsm-muibal-ia-06-conectores-skills",
+    "title": "Conectores, MCP y skills · sesión de IA",
+    "tags": [
+      "curso",
+      "claude"
+    ],
+    "client": "BSM",
+    "section": "Presentaciones",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  }
+]

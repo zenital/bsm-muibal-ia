@@ -1,0 +1,80 @@
+[
+  {
+    "repo": "zenital/bsm-muibal-ia",
+    "branch": "main",
+    "path": "presentations/muibal-ia-00-sesion",
+    "slug": "bsm-muibal-ia-00-sesion",
+    "title": "La sesión y el TFM con IA",
+    "tags": [
+      "curso"
+    ],
+    "client": "BSM",
+    "section": "Presentaciones",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  },
+  {
+    "repo": "zenital/bsm-muibal-ia",
+    "branch": "main",
+    "path": "presentations/muibal-ia-01-ia-generativa",
+    "slug": "bsm-muibal-ia-01-ia-generativa",
+    "title": "Qué es la IA generativa · sesión de IA",
+    "tags": [
+      "curso"
+    ],
+    "client": "BSM",
+    "section": "Presentaciones",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  },
+  {
+    "repo": "zenital/bsm-muibal-ia",
+    "branch": "main",
+    "path": "presentations/muibal-ia-02-ia-para-investigar",
+    "slug": "bsm-muibal-ia-02-ia-para-investigar",
+    "title": "La IA para investigar: prompts, documentos y agentes",
+    "tags": [
+      "curso"
+    ],
+    "client": "BSM",
+    "section": "Presentaciones",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  },
+  {
+    "repo": "zenital/bsm-muibal-ia",
+    "branch": "main",
+    "path": "documents/companion",
+    "slug": "bsm-muibal-ia-companion",
+    "title": "Compañero de la sesión de IA",
+    "tags": [
+      "curso",
+      "companion"
+    ],
+    "client": "BSM",
+    "section": "Documentos",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  },
+  {
+    "repo": "zenital/bsm-muibal-ia",
+    "branch": "main",
+    "path": "documents/companion-formador",
+    "slug": "bsm-muibal-ia-companion-formador",
+    "title": "Compañero de la sesión de IA · formador",
+    "tags": [
+      "curso",
+      "companion",
+      "formador"
+    ],
+    "client": "BSM",
+    "section": "Documentos",
+    "date": "2026-11-16",
+    "public_link": true,
+    "requested_by": "manel.vericat@zenital.io"
+  }
+]
