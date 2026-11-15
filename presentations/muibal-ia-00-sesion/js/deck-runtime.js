@@ -36,7 +36,7 @@
    lead-stage / accumulator reveals) lives in deck-runtime-advanced.js.
    ========================================================================== */
 
-const LAST_SLIDE = '15';   // <-- EDIT PER DECK: data-slide of your last slide
+const LAST_SLIDE = '14';   // <-- EDIT PER DECK: data-slide of your last slide
 const CREATED = 'creado 06/11/2026';        // <-- EDIT PER DECK: e.g. 'creado 16/09/2026', or '' to omit
 const LAST_UPDATED = 'actualizado 06/11/2026';   // <-- EDIT PER DECK: e.g. 'actualizado 21/07/2026', or '' to omit
 
@@ -51,7 +51,7 @@ const PDF_ACTION = {
 
 const REVEAL_SEQ = {
   '02': ['p-photo', 'p-block'],
-  '15': ['cl-eye','cl-claim','cl-sub','cl-th','cl-logo'],
+  '14': ['cl-eye','cl-claim','cl-th','cl-logo'],
 };
 
 /* ---------- Auto-inject brand chrome (watermark + ornament) -------------- */

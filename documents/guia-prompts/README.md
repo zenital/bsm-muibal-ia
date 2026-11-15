@@ -766,7 +766,7 @@ Revisa este capítulo de mi TFM sobre [tu tema] con la rúbrica oficial de mi m�
 
 ## El TFM con IA · Siete pasos
 
-El resumen de la sesión, ordenado como un TFM: qué paso de vuestro trabajo cubre cada ejercicio y cada demo, lo que la IA no hace por vosotros y cómo se declara lo que sí ha hecho. Es el cierre de la sesión (deck 00, slides 10 a 15) y la ficha a la que volver cuando empecéis cada capítulo.
+El resumen de la sesión, ordenado como un TFM: qué paso de vuestro trabajo cubre cada ejercicio y cada demo, lo que la IA no hace por vosotros y cómo se declara lo que sí ha hecho. Es el cierre de la sesión (deck 00, slides 09 a 14) y la ficha a la que volver cuando empecéis cada capítulo.
 
 ### Flujo · De la pregunta a la defensa, paso a paso
 
