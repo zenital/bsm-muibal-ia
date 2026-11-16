@@ -8,11 +8,11 @@ Actualizado el 31/10/2026.
 
 ### 01 · Portada
 
-*Apertura · 15 min en total (slides 01 a 09)*
+*Apertura · 15 min en total (slides 01 a 08)*
 
-Proyectad esta slide mientras entran. En cuanto haya quórum, pasad a la 08 (el compañero) y pedid que lo abran en el portátil: lo van a necesitar en el primer ejercicio, dentro de una hora.
+Proyectad esta slide mientras entran. En cuanto haya quórum, pasad a la 07 (el compañero) y pedid que lo abran en el portátil: lo van a necesitar en el primer ejercicio, dentro de una hora.
 
-Este deck abre y cierra la sesión. Las slides 10 a 15 son el cierre: el TFM con IA en siete pasos.
+Este deck abre y cierra la sesión. Las slides 09 a 14 son el cierre: el TFM con IA en siete pasos.
 
 ### 02 · Quién soy
 
@@ -22,37 +22,37 @@ Un minuto. Lo que importa al grupo: hoy no viene alguien que solo usa la IA, sin
 
 Confirmado con Manel: lo de esta sesión entra en el examen tipo test del 23/11/2026. Decidlo al principio: cambia cómo se toman la sesión.
 
-### 04 · El plan · hasta la pausa
+### 04 · El plan
 
-Los minutos son los de internal/plan-sesion.md. Si el deck 01 se alarga, el bloque de Claude es el que absorbe el retraso: tiene una versión con una sola demo.
+Los minutos de cada bloque están en internal/plan-sesion.md. La pausa, de unos 15 minutos, se decide sobre la marcha. Si el deck 01 se alarga, el bloque de Claude es el que absorbe el retraso: tiene una versión con una sola demo.
 
-### 06 · Lo que ya visteis con Manel
+### 05 · Lo que ya visteis con Manel
 
 No se repite nada de las sesiones de Manel (encuestas, Trends, Analytics, TAM, ficha de fuente). Si alguien saca un tema de esos, se le remite al compañero de la asignatura.
 
-### 07 · El caso: vuestro TFM o Envoltia
+### 06 · El caso: vuestro TFM o Envoltia
 
 Pedid que cada pareja decida ahora con qué caso trabaja: si los dos tienen tema, eligen uno. El caso Envoltia está en ficheros-practica/caso-envoltia.md.
 
-### 08 · El compañero
+### 07 · El compañero
 
 El QR abre el compañero del alumnado: https://presentation.zenital.io/share/wTniVbSYok-L-fmwB1fhU1e5G5GhYVAi. Dejad la slide un minuto para que lo escaneen; el mismo enlace está en el Aula Global.
 
-### 09 · Tres reglas para hoy
+### 08 · Tres reglas para hoy
 
-Un minuto y al deck 01. Las tres reglas vuelven en el cierre (slides 12 y 13). Las tres reglas son las habituales de integridad académica en un trabajo final: la autoría es de quien firma, lo que se usa se cita y lo que hace una herramienta se declara.
+Un minuto y al deck 01. Las tres reglas vuelven en el cierre (slides 11 y 12). Las tres reglas son las habituales de integridad académica en un trabajo final: la autoría es de quien firma, lo que se usa se cita y lo que hace una herramienta se declara.
 
-### 10 · El TFM con IA
+### 09 · El TFM con IA
 
-*Cierre · 15 min (slides 10 a 15)*
+*Cierre · 15 min (slides 09 a 14)*
 
 Se vuelve a este deck después de las demos de Claude. Es el resumen de la sesión ordenado como un TFM: cada paso dice qué ejercicio o demo de hoy lo cubre.
 
-### 11 · Siete pasos
+### 10 · Siete pasos
 
 Recorred la tabla de arriba abajo en 4 minutos, señalando lo que ya han hecho hoy. El paso 5 remite a las sesiones de Manel a propósito: análisis de encuestas y datos ya se vio allí.
 
-### 12 · Lo que la IA no hace por vosotros
+### 11 · Lo que la IA no hace por vosotros
 
 Son las normas habituales de integridad académica aplicadas a la IA: autoría propia, nada inventado, protección de datos de las personas entrevistadas y el tutor como quien valida las decisiones. Si la guía del TFM de BSM añade algo, manda la guía.
 
@@ -324,7 +324,7 @@ Hacerlo en directo con una referencia de la investigación de referencia: copiar
 
 La fila que más sorprende: la cita que existe pero no dice eso. Es el fallo más frecuente de la investigación profunda y el más difícil de ver, porque el enlace funciona.
 
-Retraction Watch: su base de datos de retractaciones es de acceso abierto desde que Crossref la adquirió en 2023 (TODO: verificar la forma actual de consultarla). Revistas depredadoras: no hay una lista oficial; la señal práctica es si la revista está indexada en Scopus o Web of Science, o en DOAJ si es de acceso abierto.
+Revistas depredadoras: no hay una lista oficial; la señal práctica es si la revista está indexada en Scopus o Web of Science, o en DOAJ si es de acceso abierto.
 
 Esto no es lo mismo que comprobar un dato estadístico concreto, que ya trabajaron en otra sesión de la asignatura: aquí se audita la referencia académica entera.
 
@@ -360,7 +360,7 @@ Categorías, no marcas: los nombres de producto cambian cada pocos meses. Si alg
 
 *2 min · cuándo no*
 
-Retoma el human in the loop del módulo 0 con casos del TFM. Lo que se permite y cómo se declara siguen las normas habituales de integridad académica: la autoría es vuestra, lo que hace la IA se declara y nada se inventa (deck 00, slides 12 y 13). Decirlo antes de que lo piense la sala: hay casos en que la respuesta es no. Recorte: pasa a casa.
+Retoma el human in the loop del módulo 0 con casos del TFM. Lo que se permite y cómo se declara siguen las normas habituales de integridad académica: la autoría es vuestra, lo que hace la IA se declara y nada se inventa (deck 00, slides 11 y 12). Decirlo antes de que lo piense la sala: hay casos en que la respuesta es no. Recorte: pasa a casa.
 
 ### 31 · Más allá del texto
 

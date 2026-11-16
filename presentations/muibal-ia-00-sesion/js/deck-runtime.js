@@ -38,7 +38,7 @@
 
 const LAST_SLIDE = '14';   // <-- EDIT PER DECK: data-slide of your last slide
 const CREATED = 'creado 06/11/2026';        // <-- EDIT PER DECK: e.g. 'creado 16/09/2026', or '' to omit
-const LAST_UPDATED = 'actualizado 06/11/2026';   // <-- EDIT PER DECK: e.g. 'actualizado 21/07/2026', or '' to omit
+const LAST_UPDATED = 'actualizado 16/11/2026';   // <-- EDIT PER DECK: e.g. 'actualizado 21/07/2026', or '' to omit
 
 /* <-- EDIT PER DECK: the index's print button, written in the deck's own
    language. Leave label '' to omit it; P and the deck menu still print.
