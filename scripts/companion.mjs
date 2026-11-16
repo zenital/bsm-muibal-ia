@@ -44,12 +44,23 @@ try {
     return `${config.portalBase}/share/${token}`
   })
 
+  // El zip con todo el material (npm run material) solo vive junto al compañero
+  // del alumnado. La variante del formador lo enlaza por el enlace compartido
+  // de ese compañero; si no, el botón da 404.
+  const ZIP = 'material-muibal-ia-2026.zip'
+  const studentToken = shareMap['bsm-muibal-ia-companion']
+  const zipRewrite = (html) => {
+    if (!html.includes(`href="${ZIP}"`)) return html
+    if (!studentToken) { missing.add('bsm-muibal-ia-companion'); return html }
+    return html.replaceAll(`href="${ZIP}"`, `href="${config.portalBase}/share/${studentToken}/${ZIP}"`)
+  }
+
   let stale = 0
   for (const [i, out] of OUTS.entries()) {
     const src = join(tmp, i === 0 ? 'a' : 'f')
     for (const name of readdirSync(src)) {
       let buf = readFileSync(join(src, name))
-      if (name.endsWith('.html')) buf = Buffer.from(rewrite(buf.toString('utf8')), 'utf8')
+      if (name.endsWith('.html')) buf = Buffer.from((i === 0 ? (h) => h : zipRewrite)(rewrite(buf.toString('utf8'))), 'utf8')
       const dest = join(root, out, name)
       if (existsSync(dest) && readFileSync(dest).equals(buf)) continue
       stale++
